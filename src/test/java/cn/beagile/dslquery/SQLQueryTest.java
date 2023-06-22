@@ -9,6 +9,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class SQLQueryTest {
     private int timezoneOffset = -8;
@@ -37,6 +38,16 @@ class SQLQueryTest {
         SQLQuery sqlQuery = new SQLQuery(QueryResultForTest.class, this.timezoneOffset);
         sqlQuery.addParam("weight", "weight", "55.4");
         assertEquals(55.4f, sqlQuery.getParams().get("weight"));
+    }
+
+    @Test
+    public void add_param_not_exist() {
+        SQLQuery sqlQuery = new SQLQuery(QueryResultForTest.class, this.timezoneOffset);
+        RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> {
+            sqlQuery.addParam("weight1", "weight1", "55.4");
+        });
+        assertEquals(runtimeException.getMessage(), "No such field: weight1");
+
     }
 
     @Test

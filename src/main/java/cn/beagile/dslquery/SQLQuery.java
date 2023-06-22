@@ -60,7 +60,7 @@ public class SQLQuery {
             }
             params.put(paramName, FIELD_CAST_MAP.get(type).apply(value));
         } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("No such field: " + paramName);
         }
     }
 

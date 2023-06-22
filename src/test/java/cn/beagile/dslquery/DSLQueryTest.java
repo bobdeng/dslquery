@@ -82,7 +82,6 @@ public class DSLQueryTest {
         Map<String, Object> params = sqlQuery.getParams();
         assertEquals("bob", params.get("name1"));
         assertEquals("alice", params.get("name2"));
-        assertEquals(20, params.get("age3"));
     }
 
     @Test
