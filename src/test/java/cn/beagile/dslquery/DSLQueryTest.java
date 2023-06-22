@@ -63,6 +63,9 @@ public class DSLQueryTest {
         assertEquals("alice", params.get("name2"));
         assertEquals(20, params.get("age3"));
     }
+    //todo 查询字段类型是日期
+    //todo 查询字段类型是日期时间
+    //todo 查询字段类型是浮点数
 
     @View("view_query")
     public static class QueryResultWithAlias {

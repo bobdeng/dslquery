@@ -21,13 +21,16 @@ public class DefaultResultSetReaderTest {
         assertNotNull(result);
         assertEquals("bob", result.getName());
     }
+
     public static class QueryResultWithAliasBean {
         @Column("name1")
         private String name;
+
         public String getName() {
             return name;
         }
     }
+
     @Test
     public void should_read_string_field_with_alias() throws SQLException {
         DefaultResultSetReader<QueryResultWithAliasBean> defaultResultSetReader = new DefaultResultSetReader(QueryResultWithAliasBean.class);
@@ -51,6 +54,7 @@ public class DefaultResultSetReaderTest {
     public static class QueryResultWithDecimalFieldBean {
         @Column("weight")
         private BigDecimal weight;
+
         public BigDecimal getWeight() {
             return weight;
         }
@@ -64,5 +68,24 @@ public class DefaultResultSetReaderTest {
         QueryResultWithDecimalFieldBean result = defaultResultSetReader.apply(rs);
         assertNotNull(result);
         assertEquals(new BigDecimal("18.001"), result.getWeight());
+    }
+
+    public static class QueryResultWithLongFieldBean {
+        @Column("weight")
+        private Long weight;
+
+        public Long getWeight() {
+            return weight;
+        }
+    }
+
+    @Test
+    public void should_read_long_field() throws SQLException {
+        DefaultResultSetReader<QueryResultWithLongFieldBean> defaultResultSetReader = new DefaultResultSetReader(QueryResultWithLongFieldBean.class);
+        ResultSet rs = mock(ResultSet.class);
+        when(rs.getLong("weight")).thenReturn(18L);
+        QueryResultWithLongFieldBean result = defaultResultSetReader.apply(rs);
+        assertNotNull(result);
+        assertEquals(18L, result.getWeight());
     }
 }

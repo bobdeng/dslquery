@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="cn.beagile.dslquery.WhereParserTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2023-06-22T09:53:09" hostname="dengzhiguodeMacBook-Pro.local" time="0.003">
+  <properties/>
+  <testcase name="should_parse_where_with_inner_predicate()" classname="cn.beagile.dslquery.WhereParserTest" time="0.001"/>
+  <testcase name="should_parse_where_with_2_predicate()" classname="cn.beagile.dslquery.WhereParserTest" time="0.001"/>
+  <testcase name="should_parse_where()" classname="cn.beagile.dslquery.WhereParserTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

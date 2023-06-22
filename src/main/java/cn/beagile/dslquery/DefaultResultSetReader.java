@@ -17,6 +17,8 @@ public class DefaultResultSetReader<T> implements Function<ResultSet, T> {
         COLUMN_FIELD_READER_HASH_MAP.put(int.class, ResultSet::getInt);
         COLUMN_FIELD_READER_HASH_MAP.put(String.class, ResultSet::getString);
         COLUMN_FIELD_READER_HASH_MAP.put(BigDecimal.class, ResultSet::getBigDecimal);
+        COLUMN_FIELD_READER_HASH_MAP.put(Long.class, ResultSet::getLong);
+        COLUMN_FIELD_READER_HASH_MAP.put(long.class, ResultSet::getLong);
     }
 
     public DefaultResultSetReader(Class<T> queryResultBeanClass) {

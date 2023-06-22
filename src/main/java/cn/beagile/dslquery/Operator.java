@@ -30,10 +30,6 @@ public enum Operator {
         return this.operator;
     }
 
-    public Object value(String originalValue) {
-        return value.apply(originalValue);
-    }
-
     public String getKeyword() {
         return keyword;
     }
