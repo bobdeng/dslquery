@@ -12,30 +12,33 @@ public class WhereParser {
         String content = whereString.substring(whereString.indexOf('(', 1), whereString.lastIndexOf(')'));
         List<String> subWhereStrings = new WhereList(content).list();
         subWhereStrings.stream()
-                .filter(subWhere1 -> !isSubWhere(subWhere1))
-                .map(subWhere -> {
-                    Pattern wordPattern = Pattern.compile("\\w+");
-                    Matcher matcher = wordPattern.matcher(subWhere);
-                    matcher.find();
-                    String fieldName = matcher.group();
-                    matcher.find();
-                    String operator = matcher.group();
-                    String value = subWhere.substring(subWhere.indexOf(operator) + operator.length(), subWhere.length() - 1).trim();
-                    return new Predicate(fieldName, operator, value);
-                })
+                .filter(this::isPredicate)
+                .map(this::parsePredicate)
                 .forEach(where::addPredicate);
         subWhereStrings.stream()
-                .filter(subWhere1 -> isSubWhere(subWhere1))
-                .map(subWhere -> {
-                    return new WhereParser().parse(subWhere);
-                })
+                .filter(this::isSubWhere)
+                .map(this::parse)
                 .forEach(where::addWhere);
-
         return where;
+    }
+
+    private Predicate parsePredicate(String subWhere) {
+        Pattern wordPattern = Pattern.compile("\\w+");
+        Matcher matcher = wordPattern.matcher(subWhere);
+        matcher.find();
+        String fieldName = matcher.group();
+        matcher.find();
+        String operator = matcher.group();
+        String value = subWhere.substring(subWhere.indexOf(operator) + operator.length(), subWhere.length() - 1).trim();
+        return new Predicate(fieldName, operator, value);
     }
 
     private boolean isSubWhere(String subWhere) {
         return subWhere.startsWith("(and") || subWhere.startsWith("(or");
+    }
+
+    private boolean isPredicate(String subWhere) {
+        return !isSubWhere(subWhere);
     }
 
 }

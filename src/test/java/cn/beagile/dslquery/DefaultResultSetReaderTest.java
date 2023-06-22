@@ -21,6 +21,22 @@ public class DefaultResultSetReaderTest {
         assertNotNull(result);
         assertEquals("bob", result.getName());
     }
+    public static class QueryResultWithAliasBean {
+        @Column("name1")
+        private String name;
+        public String getName() {
+            return name;
+        }
+    }
+    @Test
+    public void should_read_string_field_with_alias() throws SQLException {
+        DefaultResultSetReader<QueryResultWithAliasBean> defaultResultSetReader = new DefaultResultSetReader(QueryResultWithAliasBean.class);
+        ResultSet rs = mock(ResultSet.class);
+        when(rs.getString("name1")).thenReturn("bob");
+        QueryResultWithAliasBean result = defaultResultSetReader.apply(rs);
+        assertNotNull(result);
+        assertEquals("bob", result.getName());
+    }
 
     @Test
     public void should_read_int_field() throws SQLException {

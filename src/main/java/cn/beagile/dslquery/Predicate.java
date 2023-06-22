@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static cn.beagile.dslquery.Operators.of;
 
 
-public class Predicate {
+public class Predicate implements ToSQL{
     private String field;
     private String operator;
     private String value;
@@ -78,5 +78,11 @@ public class Predicate {
                 ", operator='" + operator + '\'' +
                 ", value='" + value + '\'' +
                 '}';
+    }
+
+    public String toSQL(SQLQuery sqlQuery) {
+        String paramName = field + sqlQuery.next();
+        sqlQuery.addParam(paramName,field, this.value);
+        return "("+sqlQuery.aliasOf(field) + " " + Operators.of(operator).getOperator() + " :" + paramName+")";
     }
 }
