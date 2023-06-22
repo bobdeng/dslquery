@@ -22,7 +22,8 @@
 ## 服务端解析
 
 ```java
-    public class QueryResultBean {
+@View("view_example")
+public class QueryResultBean {
     @Column("field_a")
     private String fieldA;
     @Column("field_a")
@@ -39,16 +40,14 @@ public class QueryParams {
 }
     //使用方法1
     List<QueryResultBean> result = new DSLQuery(jdbcNamedTemplate, QueryResultBean.class)
-            .from("view_example")
             .where("or(and(fieldA = value)(fieldB >= value))(or(fieldB <= value)(fieldB != value))")
-            .where("field=100")
+            .where("fieldA=100")
             .limit(10).skip(0)
             .sort("fieldA desc,fieldB asc")
             .query();
     //使用方法2
     List<QueryResultBean> result = new DSLQuery(jdbcNamedTemplate, QueryResultBean.class)
-            .from("view_example")
-            .where("field=100")
+            .where("fieldB=100")
             .queryParams(new QueryParams("or(and(fieldA = value)(fieldB >= value))(or(fieldB <= value)(fieldB != value))", 10, 0, "fieldA desc,fieldB asc"))
             .query();
 
