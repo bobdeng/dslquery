@@ -2,6 +2,7 @@ package cn.beagile.dslquery;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 public class SQLQuery {
     private String sql;
@@ -10,6 +11,17 @@ public class SQLQuery {
     private int index;
     private Class queryResultBeanClass;
     private Integer limit;
+    private static final Map<Class, Function<String, Object>> FIELD_CAST_MAP = new HashMap<>();
+
+    static {
+        FIELD_CAST_MAP.put(Integer.class, Integer::parseInt);
+        FIELD_CAST_MAP.put(int.class, Integer::parseInt);
+        FIELD_CAST_MAP.put(Float.class, Float::parseFloat);
+        FIELD_CAST_MAP.put(float.class, Float::parseFloat);
+        FIELD_CAST_MAP.put(Double.class, Double::parseDouble);
+        FIELD_CAST_MAP.put(double.class, Double::parseDouble);
+        FIELD_CAST_MAP.put(String.class, s -> s);
+    }
 
     public SQLQuery(Class queryResultBeanClass) {
         this.index = 1;
@@ -24,14 +36,11 @@ public class SQLQuery {
 
     public void addParam(String paramName, String field, String value) {
         try {
-            if (this.queryResultBeanClass.getDeclaredField(field).getType().equals(Integer.class)) {
-                params.put(paramName, 20);
-                return;
-            }
+            Class<?> type = this.queryResultBeanClass.getDeclaredField(field).getType();
+            params.put(paramName, FIELD_CAST_MAP.get(type).apply(value));
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
-        params.put(paramName, value);
     }
 
     public String sql() {

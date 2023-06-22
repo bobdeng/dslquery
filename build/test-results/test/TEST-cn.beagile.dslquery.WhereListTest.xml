@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.beagile.dslquery.WhereListTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2023-06-22T09:52:59" hostname="dengzhiguodeMacBook-Pro.local" time="0.043">
-  <properties/>
-  <testcase name="should_return_2_has_inner()" classname="cn.beagile.dslquery.WhereListTest" time="0.039"/>
-  <testcase name="should_return_1()" classname="cn.beagile.dslquery.WhereListTest" time="0.001"/>
-  <testcase name="should_return_2()" classname="cn.beagile.dslquery.WhereListTest" time="0.001"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>
