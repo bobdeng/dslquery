@@ -11,43 +11,45 @@
 ```
 (or(and(field = value)(fieldb >= value))(or(fieldc <= value)(fieldd != value)))
 ```
+
 - 分页条件
-  
-  limit 最大返回条数
-  skip  跳过条数
+
+  limit 最大返回条数 skip 跳过条数
 - 排序条件
-  
+
   sort fieldA desc,fieldB asc
 
 ## 服务端解析
+
 ```java
     public class QueryResultBean {
-        @Column("field_a")
-        private String fieldA;
-        @Column("field_a")
-        private String fieldB;
-        //getter setter
-    }
-    public class QueryParams{
-        private String query;
-        private int limit;
-        private int skip;
-        private String sort;
-        //getter setter
-    }
-    
-   List<QueryResultBean> result = new DSLQuery(jdbcNamedTemplate,QueryResultBean.class)
-                .from("view_example")
-                .where("or(and(fieldA = value)(fieldB >= value))(or(fieldB <= value)(fieldB != value))")
-                .where("field=100")
-                .limit(10).skip(0)
-                .sort("fieldA desc,fieldB asc")
-                .query();
+    @Column("field_a")
+    private String fieldA;
+    @Column("field_a")
+    private String fieldB;
+    //getter setter
+}
 
-      List<QueryResultBean> result = new DSLQuery(jdbcNamedTemplate,QueryResultBean.class)
-              .from("view_example")
-              .where("field=100")
-              .queryParams(new QueryParams("or(and(fieldA = value)(fieldB >= value))(or(fieldB <= value)(fieldB != value))",10,0,"fieldA desc,fieldB asc"))
-              .query();
-        
+public class QueryParams {
+    private String query;
+    private int limit;
+    private int skip;
+    private String sort;
+    //getter setter
+}
+    //使用方法1
+    List<QueryResultBean> result = new DSLQuery(jdbcNamedTemplate, QueryResultBean.class)
+            .from("view_example")
+            .where("or(and(fieldA = value)(fieldB >= value))(or(fieldB <= value)(fieldB != value))")
+            .where("field=100")
+            .limit(10).skip(0)
+            .sort("fieldA desc,fieldB asc")
+            .query();
+    //使用方法2
+    List<QueryResultBean> result = new DSLQuery(jdbcNamedTemplate, QueryResultBean.class)
+            .from("view_example")
+            .where("field=100")
+            .queryParams(new QueryParams("or(and(fieldA = value)(fieldB >= value))(or(fieldB <= value)(fieldB != value))", 10, 0, "fieldA desc,fieldB asc"))
+            .query();
+
 ```
