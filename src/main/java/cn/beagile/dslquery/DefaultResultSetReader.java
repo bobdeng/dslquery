@@ -32,15 +32,18 @@ public class DefaultResultSetReader<T> implements Function<ResultSet, T> {
 
     @Override
     public T apply(ResultSet resultSet) {
+        final T result;
         try {
-            final T result = this.queryResultBeanClass.newInstance();
+            result = this.queryResultBeanClass.newInstance();
             Stream.of(this.queryResultBeanClass.getDeclaredFields())
                     .filter(field -> field.isAnnotationPresent(Column.class))
                     .forEach(field -> setFieldValue(resultSet, result, field));
             return result;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException("Can not create instance of " + this.queryResultBeanClass.getName() + "");
         }
+
+
     }
 
     private void setFieldValue(ResultSet resultSet, T result, Field field) {

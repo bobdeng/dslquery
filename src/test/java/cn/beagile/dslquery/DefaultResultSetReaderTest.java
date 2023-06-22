@@ -8,8 +8,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -22,6 +21,27 @@ public class DefaultResultSetReaderTest {
         QueryResultBean result = defaultResultSetReader.apply(rs);
         assertNotNull(result);
         assertEquals("bob", result.getName());
+    }
+
+    public static class QueryResultWithoutDefaultConstructorBean {
+        @Column("name1")
+        private String name;
+
+        public String getName() {
+            return name;
+        }
+
+        public QueryResultWithoutDefaultConstructorBean(String name) {
+            this.name = name;
+        }
+    }
+
+    @Test
+    public void should_throw_when_class_init_fail() {
+        DefaultResultSetReader<QueryResultWithoutDefaultConstructorBean> defaultResultSetReader = new DefaultResultSetReader(QueryResultWithoutDefaultConstructorBean.class);
+        ResultSet rs = mock(ResultSet.class);
+        RuntimeException e = assertThrows(RuntimeException.class, () -> defaultResultSetReader.apply(rs));
+        assertEquals("Can not create instance of cn.beagile.dslquery.DefaultResultSetReaderTest$QueryResultWithoutDefaultConstructorBean", e.getMessage());
     }
 
     public static class QueryResultWithAliasBean {
@@ -107,11 +127,13 @@ public class DefaultResultSetReaderTest {
         assertNotNull(result);
         assertEquals(18L, result.createdAt.toEpochMilli());
     }
+
     public static class QueryResultWithTimestampFieldBean {
         @Column("created_at")
         private Timestamp createdAt;
 
     }
+
     @Test
     public void should_read_timestamp_field() throws SQLException {
         DefaultResultSetReader<QueryResultWithTimestampFieldBean> defaultResultSetReader = new DefaultResultSetReader(QueryResultWithTimestampFieldBean.class);

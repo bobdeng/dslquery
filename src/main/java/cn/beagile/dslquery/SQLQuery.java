@@ -93,7 +93,7 @@ public class SQLQuery {
         try {
             return this.queryResultBeanClass.getDeclaredField(field).getAnnotation(Column.class).value();
         } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("No such field: " + field);
         }
     }
 

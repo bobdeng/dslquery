@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="cn.beagile.dslquery.DefaultResultSetReaderTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2023-06-22T13:28:09" hostname="dengzhiguodeMacBook-Pro.local" time="1.351">
+  <properties/>
+  <testcase name="should_read_string_field_with_alias()" classname="cn.beagile.dslquery.DefaultResultSetReaderTest" time="1.324"/>
+  <testcase name="should_throw_when_class_init_fail()" classname="cn.beagile.dslquery.DefaultResultSetReaderTest" time="0.004"/>
+  <testcase name="should_read_decimal_field()" classname="cn.beagile.dslquery.DefaultResultSetReaderTest" time="0.007"/>
+  <testcase name="should_read_int_field()" classname="cn.beagile.dslquery.DefaultResultSetReaderTest" time="0.002"/>
+  <testcase name="should_read_long_field()" classname="cn.beagile.dslquery.DefaultResultSetReaderTest" time="0.002"/>
+  <testcase name="should_read_string_field()" classname="cn.beagile.dslquery.DefaultResultSetReaderTest" time="0.002"/>
+  <testcase name="should_read_timestamp_field()" classname="cn.beagile.dslquery.DefaultResultSetReaderTest" time="0.002"/>
+  <testcase name="should_read_instant_field()" classname="cn.beagile.dslquery.DefaultResultSetReaderTest" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -21,7 +21,7 @@ class SQLQueryTest {
         private Integer age;
         @Column("name")
         private String name;
-        @Column("doubleValue")
+        @Column("double_value")
         private double doubleValue;
         @Column("instant")
         @DateFormat("yyyy-MM-dd HH:mm:ss")
@@ -47,7 +47,6 @@ class SQLQueryTest {
             sqlQuery.addParam("weight1", "weight1", "55.4");
         });
         assertEquals(runtimeException.getMessage(), "No such field: weight1");
-
     }
 
     @Test
@@ -93,5 +92,20 @@ class SQLQueryTest {
         SQLQuery sqlQuery = new SQLQuery(QueryResultForTest.class, this.timezoneOffset);
         sqlQuery.addParam("normalLong", "normalLong", "18");
         assertEquals(18L, sqlQuery.getParams().get("normalLong"));
+    }
+
+    @Test
+    public void should_return_alias() {
+        SQLQuery sqlQuery = new SQLQuery(QueryResultForTest.class, this.timezoneOffset);
+        assertEquals("double_value", sqlQuery.aliasOf("doubleValue"));
+    }
+    @Test
+    public void should_throw_when_alias_not_exist() {
+        SQLQuery sqlQuery = new SQLQuery(QueryResultForTest.class, this.timezoneOffset);
+        RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> {
+            assertEquals("double_value", sqlQuery.aliasOf("doubleValue1"));
+        });
+        assertEquals(runtimeException.getMessage(), "No such field: doubleValue1");
+
     }
 }
