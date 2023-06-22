@@ -25,6 +25,11 @@ class SQLQueryTest {
         @Column("instant")
         @DateFormat("yyyy-MM-dd HH:mm:ss")
         private Instant instant;
+        @Column("longTimestamp")
+        @DateFormat("yyyy-MM-dd HH:mm:ss")
+        private Long longTimestamp;
+        @Column("normalLong")
+        private Long normalLong;
     }
 
     @Test
@@ -61,5 +66,21 @@ class SQLQueryTest {
         sqlQuery.addParam("instant", "instant", "2020-01-01 00:00:00");
         ZoneId zoneId = ZoneOffset.ofHours(this.timezoneOffset).normalized();
         assertEquals(LocalDateTime.parse("2020-01-01 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).atZone(zoneId).toInstant(), sqlQuery.getParams().get("instant"));
+    }
+
+    @Test
+    public void add_long_timestamp_param() {
+        SQLQuery sqlQuery = new SQLQuery(QueryResultForTest.class, this.timezoneOffset);
+        sqlQuery.addParam("longTimestamp", "longTimestamp", "2020-01-01 00:00:00");
+        ZoneId zoneId = ZoneOffset.ofHours(this.timezoneOffset).normalized();
+        assertEquals(LocalDateTime.parse("2020-01-01 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).atZone(zoneId)
+                .toInstant().toEpochMilli(), sqlQuery.getParams().get("longTimestamp"));
+    }
+
+    @Test
+    public void add_long_param() {
+        SQLQuery sqlQuery = new SQLQuery(QueryResultForTest.class, this.timezoneOffset);
+        sqlQuery.addParam("normalLong", "normalLong", "18");
+        assertEquals(18L, sqlQuery.getParams().get("normalLong"));
     }
 }
