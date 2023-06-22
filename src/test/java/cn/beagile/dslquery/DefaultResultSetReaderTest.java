@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.Instant;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -87,5 +89,37 @@ public class DefaultResultSetReaderTest {
         QueryResultWithLongFieldBean result = defaultResultSetReader.apply(rs);
         assertNotNull(result);
         assertEquals(18L, result.getWeight());
+    }
+
+    public static class QueryResultWithInstantFieldBean {
+        @Column("created_at")
+        private Instant createdAt;
+
+    }
+
+    @Test
+    public void should_read_instant_field() throws SQLException {
+        DefaultResultSetReader<QueryResultWithInstantFieldBean> defaultResultSetReader = new DefaultResultSetReader(QueryResultWithInstantFieldBean.class);
+        ResultSet rs = mock(ResultSet.class);
+        Timestamp time = new Timestamp(18L);
+        when(rs.getTimestamp("created_at")).thenReturn(time);
+        QueryResultWithInstantFieldBean result = defaultResultSetReader.apply(rs);
+        assertNotNull(result);
+        assertEquals(18L, result.createdAt.toEpochMilli());
+    }
+    public static class QueryResultWithTimestampFieldBean {
+        @Column("created_at")
+        private Timestamp createdAt;
+
+    }
+    @Test
+    public void should_read_timestamp_field() throws SQLException {
+        DefaultResultSetReader<QueryResultWithTimestampFieldBean> defaultResultSetReader = new DefaultResultSetReader(QueryResultWithTimestampFieldBean.class);
+        ResultSet rs = mock(ResultSet.class);
+        Timestamp time = new Timestamp(18L);
+        when(rs.getTimestamp("created_at")).thenReturn(time);
+        QueryResultWithTimestampFieldBean result = defaultResultSetReader.apply(rs);
+        assertNotNull(result);
+        assertEquals(18L, result.createdAt.getTime());
     }
 }

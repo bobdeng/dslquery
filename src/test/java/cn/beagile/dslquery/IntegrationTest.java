@@ -4,13 +4,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
+import java.time.Instant;
 import java.util.List;
 import java.util.function.Function;
 
@@ -28,6 +26,9 @@ public class IntegrationTest {
         private String name;
         @Column("age")
         private Integer age;
+        @Column("born_at")
+        @DateFormat("yyyy-MM-dd HH:mm:ss")
+        private Instant bornAt;
     }
 
     public static class SpringQueryExecutor implements QueryExecutor {
@@ -52,6 +53,13 @@ public class IntegrationTest {
         DSLQuery query = new DSLQuery(new SpringQueryExecutor(jdbcTemplate), Person.class);
         List result = query.skip(0).limit(10).query();
         assertEquals(2, result.size());
+    }
+
+    @Test
+    public void should_query_by_born_at() {
+        DSLQuery query = new DSLQuery(new SpringQueryExecutor(jdbcTemplate), Person.class);
+        List result = query.timezoneOffset(-8).where("(and(bornAt greaterthan 1980-01-01 12:00:00))").skip(0).limit(10).query();
+        assertEquals(1, result.size());
     }
 
     @Test

@@ -3,6 +3,8 @@ package cn.beagile.dslquery;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -19,6 +21,8 @@ public class DefaultResultSetReader<T> implements Function<ResultSet, T> {
         COLUMN_FIELD_READER_HASH_MAP.put(BigDecimal.class, ResultSet::getBigDecimal);
         COLUMN_FIELD_READER_HASH_MAP.put(Long.class, ResultSet::getLong);
         COLUMN_FIELD_READER_HASH_MAP.put(long.class, ResultSet::getLong);
+        COLUMN_FIELD_READER_HASH_MAP.put(Instant.class, (rs, columnName) -> rs.getTimestamp(columnName).toInstant());
+        COLUMN_FIELD_READER_HASH_MAP.put(Timestamp.class, ResultSet::getTimestamp);
     }
 
     public DefaultResultSetReader(Class<T> queryResultBeanClass) {
@@ -34,7 +38,6 @@ public class DefaultResultSetReader<T> implements Function<ResultSet, T> {
                     .filter(field -> field.isAnnotationPresent(Column.class))
                     .forEach(field -> setFieldValue(resultSet, result, field));
             return result;
-
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

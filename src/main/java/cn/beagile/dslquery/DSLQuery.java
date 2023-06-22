@@ -12,6 +12,7 @@ public class DSLQuery<T> {
     private Sort sort;
     private Integer skip;
     private Integer limit;
+    private int timezoneOffset;
 
     public DSLQuery(QueryExecutor queryExecutor, Class<T> queryResultBeanClass) {
         this.queryExecutor = queryExecutor;
@@ -20,7 +21,7 @@ public class DSLQuery<T> {
     }
 
     public List<T> query() {
-        SQLQuery sqlQuery = new SQLQuery(queryResultBeanClass);
+        SQLQuery sqlQuery = new SQLQuery(queryResultBeanClass,this.timezoneOffset);
         View view = queryResultBeanClass.getAnnotation(View.class);
         String fields = Stream.of(queryResultBeanClass.getDeclaredFields())
                 .filter(field -> field.isAnnotationPresent(Column.class))
@@ -57,6 +58,11 @@ public class DSLQuery<T> {
 
     public DSLQuery<T> limit(Integer limit) {
         this.limit = limit;
+        return this;
+    }
+
+    public DSLQuery<T> timezoneOffset(int timezoneOffset) {
+        this.timezoneOffset = timezoneOffset;
         return this;
     }
 }

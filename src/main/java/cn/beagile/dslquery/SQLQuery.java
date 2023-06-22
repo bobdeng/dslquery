@@ -1,5 +1,11 @@
 package cn.beagile.dslquery;
 
+import java.lang.reflect.Field;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -11,6 +17,7 @@ public class SQLQuery {
     private int index;
     private Class queryResultBeanClass;
     private Integer limit;
+    private int timezoneOffset;
     private static final Map<Class, Function<String, Object>> FIELD_CAST_MAP = new HashMap<>();
 
     static {
@@ -23,10 +30,11 @@ public class SQLQuery {
         FIELD_CAST_MAP.put(String.class, s -> s);
     }
 
-    public SQLQuery(Class queryResultBeanClass) {
+    public SQLQuery(Class queryResultBeanClass, int timezoneOffset) {
         this.index = 1;
         this.queryResultBeanClass = queryResultBeanClass;
         this.params = new HashMap<>();
+        this.timezoneOffset = timezoneOffset;
     }
 
 
@@ -36,7 +44,15 @@ public class SQLQuery {
 
     public void addParam(String paramName, String field, String value) {
         try {
-            Class<?> type = this.queryResultBeanClass.getDeclaredField(field).getType();
+            Field declaredField = this.queryResultBeanClass.getDeclaredField(field);
+            Class<?> type = declaredField.getType();
+            if (type.equals(Instant.class)) {
+                String dateFormat = declaredField.getAnnotation(DateFormat.class).value();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateFormat);
+                ZoneId zoneId = ZoneOffset.ofHours(this.timezoneOffset).normalized();
+                params.put(paramName, LocalDateTime.parse(value, formatter).atZone(zoneId).toInstant());
+                return;
+            }
             params.put(paramName, FIELD_CAST_MAP.get(type).apply(value));
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
