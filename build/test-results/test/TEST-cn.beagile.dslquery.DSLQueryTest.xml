@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.beagile.dslquery.DSLQueryTest" tests="11" skipped="0" failures="0" errors="0" timestamp="2023-06-22T08:36:59" hostname="dengzhiguodeMacBook-Pro.local" time="0.048">
+<testsuite name="cn.beagile.dslquery.DSLQueryTest" tests="11" skipped="0" failures="0" errors="0" timestamp="2023-06-22T09:11:37" hostname="dengzhiguodeMacBook-Pro.local" time="0.06">
   <properties/>
-  <testcase name="should_execute_with_2_where()" classname="cn.beagile.dslquery.DSLQueryTest" time="0.027"/>
-  <testcase name="should_execute_query_with_actual_field_name()" classname="cn.beagile.dslquery.DSLQueryTest" time="0.001"/>
+  <testcase name="should_execute_with_2_where()" classname="cn.beagile.dslquery.DSLQueryTest" time="0.037"/>
+  <testcase name="should_execute_query_with_actual_field_name()" classname="cn.beagile.dslquery.DSLQueryTest" time="0.002"/>
   <testcase name="should_execute_query_with_limit()" classname="cn.beagile.dslquery.DSLQueryTest" time="0.001"/>
   <testcase name="should_execute_query_with_where()" classname="cn.beagile.dslquery.DSLQueryTest" time="0.002"/>
-  <testcase name="should_execute_query_with_sort()" classname="cn.beagile.dslquery.DSLQueryTest" time="0.003"/>
+  <testcase name="should_execute_query_with_sort()" classname="cn.beagile.dslquery.DSLQueryTest" time="0.004"/>
   <testcase name="should_execute_query_without_filter_sort_page()" classname="cn.beagile.dslquery.DSLQueryTest" time="0.002"/>
-  <testcase name="should_execute_query_with_field_alias()" classname="cn.beagile.dslquery.DSLQueryTest" time="0.001"/>
+  <testcase name="should_execute_query_with_field_alias()" classname="cn.beagile.dslquery.DSLQueryTest" time="0.002"/>
   <testcase name="should_execute_query_without_limit()" classname="cn.beagile.dslquery.DSLQueryTest" time="0.002"/>
   <testcase name="should_execute_query_with_sort_asc()" classname="cn.beagile.dslquery.DSLQueryTest" time="0.001"/>
   <testcase name="should_execute_query_with_multiple_fields()" classname="cn.beagile.dslquery.DSLQueryTest" time="0.001"/>
