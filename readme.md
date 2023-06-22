@@ -21,39 +21,47 @@
 
 ## 服务端解析
 
+- 实现查询执行的接口
+
+```java
+public interface QueryExecutor {
+    <T> List<T> execute(SQLQuery sqlQuery, Function<ResultSet, T> resultSetReader);
+}
+```
+
+- 编写查询结果Bean
+
 ```java
 
 @View("view_example")
 public class QueryResultBean {
     @Column("field_a")
     private String fieldA;
-    @Column("field_a")
-    private String fieldB;
+    @Column("long_field")
+    private Long longField;
+    @Column("long_field_as_timestamp")
+    @DateFormat("yyyy-MM-dd HH:mm:ss")
+    private Long longFieldAsTimestamp;
+    @Column("instant_field")
+    @DateFormat("yyyy-MM-dd HH:mm:ss")
+    private Instant instantField;
+    @Column("float_field")
+    private Float floatField;
+    @Column("double_field")
+    private Double doubleField;
     //getter setter
 }
+```
 
-public class QueryParams {
-    private String where;
-    private int limit;
-    private int skip;
-    private String sort;
-    //getter setter
-}
-    //使用方法1
-function listA() {
-  List<QueryResultBean> result = new DSLQuery(jdbcNamedTemplate, QueryResultBean.class)
-          .where("or(and(fieldA=value)(fieldB>=value))(or(fieldB<=value)(fieldB!=value))")
-          .where("fieldA=100")
-          .limit(10).skip(0)
-          .sort("fieldA desc,fieldB asc")
-          .query();
-}
-    //使用方法2
-function listB() {
-  List<QueryResultBean> result = new DSLQuery(jdbcNamedTemplate, QueryResultBean.class)
-          .where("fieldB=100")
-          .queryParams(new QueryParams("or(and(fieldA=value)(fieldB>=value))(or(fieldB<=value)(fieldB!=value))", 10, 0, "fieldA desc,fieldB asc"))
-          .query();
-}
-
+```java
+//使用方法
+public void listA(){
+        List<QueryResultBean> result=new DSLQuery(queryExecutor,QueryResultBean.class)
+        .timezoneOffset(-8)
+        .where("or(and(fieldA equal value)(fieldB greaterthan value))(or(fieldB equal value)(fieldB notequal value))")
+        .where("(and(fieldA equal 100)")
+        .limit(10).skip(0)
+        .sort("fieldA desc,fieldB asc")
+        .query();
+        }
 ```
