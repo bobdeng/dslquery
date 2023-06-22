@@ -9,7 +9,7 @@
 - 查询条件 示例：
 
 ```
-(or(and(field = value)(fieldb >= value))(or(fieldc <= value)(fieldd != value)))
+(or(and(field equal value)(fieldb greaterthan value))(or(fieldc lessthanorequal value)(fieldd notequal value)))
 ```
 
 支持的运算符有 equal notequal greaterthan greaterthanorequal lessthan lessthanorequal startswith endswith contains isnull
