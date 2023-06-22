@@ -6,8 +6,10 @@ import java.util.Map;
 public class SQLQuery {
     private String sql;
     private Map<String, Object> params;
+    private Integer skip;
     private int index;
     private Class queryResultBeanClass;
+    private Integer limit;
 
     public SQLQuery(Class queryResultBeanClass) {
         this.index = 1;
@@ -51,5 +53,22 @@ public class SQLQuery {
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public Integer skip() {
+        return this.skip;
+    }
+
+    public void setSkip(Integer skip) {
+        this.skip = skip;
+    }
+
+    public void setLimit(Integer limit) {
+
+        this.limit = limit;
+    }
+
+    public Integer limit() {
+        return this.limit;
     }
 }
