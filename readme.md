@@ -28,7 +28,6 @@
     }
     
    List<QueryResultBean> result = new DSLQuery(jdbcNamedTemplate,QueryResultBean.class)
-                .select("fieldA,fieldB")
                 .from("view_example")
                 .where("or(and(fieldA = value)(fieldB >= value))(or(fieldB <= value)(fieldB != value))")
                 .where("field=100")
