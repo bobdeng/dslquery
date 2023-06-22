@@ -1,5 +1,4 @@
 plugins {
-    id 'org.springframework.boot' version "$springBootVersion"
     id 'java-library'
     id 'maven-publish'
 }
