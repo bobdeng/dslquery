@@ -32,7 +32,7 @@ public class QueryResultBean {
 }
 
 public class QueryParams {
-    private String query;
+    private String where;
     private int limit;
     private int skip;
     private String sort;
@@ -40,7 +40,7 @@ public class QueryParams {
 }
     //使用方法1
     List<QueryResultBean> result = new DSLQuery(jdbcNamedTemplate, QueryResultBean.class)
-            .where("or(and(fieldA = value)(fieldB >= value))(or(fieldB <= value)(fieldB != value))")
+            .where("or(and(fieldA=value)(fieldB>=value))(or(fieldB<=value)(fieldB!=value))")
             .where("fieldA=100")
             .limit(10).skip(0)
             .sort("fieldA desc,fieldB asc")
@@ -48,7 +48,7 @@ public class QueryParams {
     //使用方法2
     List<QueryResultBean> result = new DSLQuery(jdbcNamedTemplate, QueryResultBean.class)
             .where("fieldB=100")
-            .queryParams(new QueryParams("or(and(fieldA = value)(fieldB >= value))(or(fieldB <= value)(fieldB != value))", 10, 0, "fieldA desc,fieldB asc"))
+            .queryParams(new QueryParams("or(and(fieldA=value)(fieldB>=value))(or(fieldB<=value)(fieldB!=value))", 10, 0, "fieldA desc,fieldB asc"))
             .query();
 
 ```
