@@ -3,4 +3,9 @@ package cn.beagile.dslquery;
 public class QueryResultBean {
     @Column("name")
     private String name;
+
+    public String getName() {
+        return name;
+    }
+
 }
