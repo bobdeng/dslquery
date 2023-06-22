@@ -23,6 +23,7 @@
                 .select("fieldA,fieldB")
                 .from("table")
                 .where("or(and(field = value)(fieldb >= value))(or(fieldc <= value)(fieldd != value))")
+                .where("field=100")
                 .limit(10).skip(0)
                 .sort("fieldA desc,fieldB asc")
                 .query();
