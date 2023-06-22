@@ -22,6 +22,7 @@
 ## 服务端解析
 
 ```java
+
 @View("view_example")
 public class QueryResultBean {
     @Column("field_a")
@@ -39,16 +40,20 @@ public class QueryParams {
     //getter setter
 }
     //使用方法1
-    List<QueryResultBean> result = new DSLQuery(jdbcNamedTemplate, QueryResultBean.class)
-            .where("or(and(fieldA=value)(fieldB>=value))(or(fieldB<=value)(fieldB!=value))")
-            .where("fieldA=100")
-            .limit(10).skip(0)
-            .sort("fieldA desc,fieldB asc")
-            .query();
+function listA() {
+  List<QueryResultBean> result = new DSLQuery(jdbcNamedTemplate, QueryResultBean.class)
+          .where("or(and(fieldA=value)(fieldB>=value))(or(fieldB<=value)(fieldB!=value))")
+          .where("fieldA=100")
+          .limit(10).skip(0)
+          .sort("fieldA desc,fieldB asc")
+          .query();
+}
     //使用方法2
-    List<QueryResultBean> result = new DSLQuery(jdbcNamedTemplate, QueryResultBean.class)
-            .where("fieldB=100")
-            .queryParams(new QueryParams("or(and(fieldA=value)(fieldB>=value))(or(fieldB<=value)(fieldB!=value))", 10, 0, "fieldA desc,fieldB asc"))
-            .query();
+function listB() {
+  List<QueryResultBean> result = new DSLQuery(jdbcNamedTemplate, QueryResultBean.class)
+          .where("fieldB=100")
+          .queryParams(new QueryParams("or(and(fieldA=value)(fieldB>=value))(or(fieldB<=value)(fieldB!=value))", 10, 0, "fieldA desc,fieldB asc"))
+          .query();
+}
 
 ```
