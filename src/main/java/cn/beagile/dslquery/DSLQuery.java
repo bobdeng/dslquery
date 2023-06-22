@@ -24,4 +24,8 @@ public class DSLQuery<T> {
         sqlQuery.setSql("select " + fields + " from " + view.value());
         return queryExecutor.execute(sqlQuery, new DefaultResultSetReader<>(queryResultBeanClass));
     }
+
+    public DSLQuery<T> where(String where) {
+        return this;
+    }
 }

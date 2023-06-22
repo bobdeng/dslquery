@@ -35,7 +35,6 @@ public class DefaultResultSetReaderTest {
     public static class QueryResultWithDecimalFieldBean {
         @Column("weight")
         private BigDecimal weight;
-
         public BigDecimal getWeight() {
             return weight;
         }
