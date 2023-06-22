@@ -19,10 +19,18 @@
 
 ## 服务端解析
 ```java
+    public class QueryResultBean {
+        @Column("field_a")
+        private String fieldA;
+        @Column("field_a")
+        private String fieldB;
+        //getter setter
+    }
+    
    List<QueryResultBean> result = new DSLQuery(jdbcNamedTemplate,QueryResultBean.class)
                 .select("fieldA,fieldB")
-                .from("table")
-                .where("or(and(field = value)(fieldb >= value))(or(fieldc <= value)(fieldd != value))")
+                .from("view_example")
+                .where("or(and(fieldA = value)(fieldB >= value))(or(fieldB <= value)(fieldB != value))")
                 .where("field=100")
                 .limit(10).skip(0)
                 .sort("fieldA desc,fieldB asc")
