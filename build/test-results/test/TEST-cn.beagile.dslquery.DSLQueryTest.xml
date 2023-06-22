@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="cn.beagile.dslquery.DSLQueryTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2023-06-22T03:16:07" hostname="dengzhiguodeMacBook-Pro.local" time="0.408">
+  <properties/>
+  <testcase name="should_execute_query_without_filter_sort_page()" classname="cn.beagile.dslquery.DSLQueryTest" time="0.408"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
