@@ -12,6 +12,9 @@
 (or(and(field = value)(fieldb >= value))(or(fieldc <= value)(fieldd != value)))
 ```
 
+支持的运算符有 equal notequal greaterthan greaterthanorequal lessthan lessthanorequal startswith endswith contains isnull
+notnull
+
 - 分页条件
 
   limit 最大返回条数 skip 跳过条数
