@@ -12,17 +12,17 @@ import java.util.stream.Stream;
 
 public class DefaultResultSetReader<T> implements Function<ResultSet, T> {
     private Class<T> queryResultBeanClass;
-    private static final Map<Class, ColumnFieldReader> COLUMN_FIELD_READER_HASH_MAP = new HashMap<>();
+    private static final Map<Class, ColumnFieldReader> COLUMN_READER_MAP = new HashMap<>();
 
     static {
-        COLUMN_FIELD_READER_HASH_MAP.put(Integer.class, ResultSet::getInt);
-        COLUMN_FIELD_READER_HASH_MAP.put(int.class, ResultSet::getInt);
-        COLUMN_FIELD_READER_HASH_MAP.put(String.class, ResultSet::getString);
-        COLUMN_FIELD_READER_HASH_MAP.put(BigDecimal.class, ResultSet::getBigDecimal);
-        COLUMN_FIELD_READER_HASH_MAP.put(Long.class, ResultSet::getLong);
-        COLUMN_FIELD_READER_HASH_MAP.put(long.class, ResultSet::getLong);
-        COLUMN_FIELD_READER_HASH_MAP.put(Instant.class, (rs, columnName) -> rs.getTimestamp(columnName).toInstant());
-        COLUMN_FIELD_READER_HASH_MAP.put(Timestamp.class, ResultSet::getTimestamp);
+        COLUMN_READER_MAP.put(Integer.class, ResultSet::getInt);
+        COLUMN_READER_MAP.put(int.class, ResultSet::getInt);
+        COLUMN_READER_MAP.put(String.class, ResultSet::getString);
+        COLUMN_READER_MAP.put(BigDecimal.class, ResultSet::getBigDecimal);
+        COLUMN_READER_MAP.put(Long.class, ResultSet::getLong);
+        COLUMN_READER_MAP.put(long.class, ResultSet::getLong);
+        COLUMN_READER_MAP.put(Instant.class, (rs, columnName) -> rs.getTimestamp(columnName).toInstant());
+        COLUMN_READER_MAP.put(Timestamp.class, ResultSet::getTimestamp);
     }
 
     public DefaultResultSetReader(Class<T> queryResultBeanClass) {
@@ -50,7 +50,8 @@ public class DefaultResultSetReader<T> implements Function<ResultSet, T> {
         try {
             Column column = field.getAnnotation(Column.class);
             field.setAccessible(true);
-            field.set(result, COLUMN_FIELD_READER_HASH_MAP.get(field.getType()).readValue(resultSet, column.value()));
+            Object value = COLUMN_READER_MAP.get(field.getType()).readValue(resultSet, column.value());
+            field.set(result, value);
             field.setAccessible(false);
         } catch (Exception e) {
             throw new RuntimeException(e);

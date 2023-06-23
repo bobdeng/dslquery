@@ -21,24 +21,40 @@ public class DSLQuery<T> {
     }
 
     public List<T> query() {
-        SQLQuery sqlQuery = new SQLQuery(queryResultBeanClass,this.timezoneOffset);
+        SQLQuery sqlQuery = new SQLQuery(queryResultBeanClass, this.timezoneOffset);
+        sqlQuery.setSql(getSQL(sqlQuery));
+        sqlQuery.setSkip(this.skip);
+        sqlQuery.setLimit(this.limit);
+        return queryExecutor.execute(sqlQuery, new DefaultResultSetReader<>(queryResultBeanClass));
+    }
+
+    private String getSQL(SQLQuery sqlQuery) {
+        String sql = getSelectSQL();
+        if (whereList.size() > 0) {
+            sql += getWhereSQL(sqlQuery);
+        }
+        if (this.sort != null) {
+            sql += getSortSQL(sqlQuery);
+        }
+        return sql;
+    }
+
+    private String getSortSQL(SQLQuery sqlQuery) {
+        return " order by " + this.sort.toSQL(sqlQuery);
+    }
+
+    private String getWhereSQL(SQLQuery sqlQuery) {
+        return " where " + whereList.stream().map(where -> where.toSQL(sqlQuery)).collect(Collectors.joining(" and "));
+    }
+
+    private String getSelectSQL() {
         View view = queryResultBeanClass.getAnnotation(View.class);
         String fields = Stream.of(queryResultBeanClass.getDeclaredFields())
                 .filter(field -> field.isAnnotationPresent(Column.class))
                 .map(field -> field.getAnnotation(Column.class))
                 .map(Column::value)
                 .collect(Collectors.joining(","));
-        String sql = "select " + fields + " from " + view.value();
-        if (whereList.size() > 0) {
-            sql += " where " + whereList.stream().map(where -> where.toSQL(sqlQuery)).collect(Collectors.joining(" and "));
-        }
-        if (this.sort != null) {
-            sql += " order by " + this.sort.toSQL(sqlQuery);
-        }
-        sqlQuery.setSql(sql);
-        sqlQuery.setSkip(this.skip);
-        sqlQuery.setLimit(this.limit);
-        return queryExecutor.execute(sqlQuery, new DefaultResultSetReader<>(queryResultBeanClass));
+        return "select " + fields + " from " + view.value();
     }
 
     public DSLQuery<T> where(String where) {
