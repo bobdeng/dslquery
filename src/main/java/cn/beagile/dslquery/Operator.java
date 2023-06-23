@@ -18,12 +18,12 @@ enum Operator {
 
     private String operator;
     private String keyword;
-    private Function<String, String> value;
+    private Function<String, String> valueTransfer;
 
-    Operator(String keyword, String operator, Function<String, String> value) {
+    Operator(String keyword, String operator, Function<String, String> valueTransfer) {
         this.keyword = keyword;
         this.operator = operator;
-        this.value = value;
+        this.valueTransfer = valueTransfer;
     }
 
     public String getOperator() {
@@ -39,6 +39,6 @@ enum Operator {
     }
 
     public String transferValue(String value) {
-        return this.value.apply(value);
+        return this.valueTransfer.apply(value);
     }
 }
