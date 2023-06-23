@@ -32,6 +32,8 @@ public class SQLQuery {
         FIELD_CAST_MAP.put(String.class, s -> s);
     }
 
+    private Paging page;
+
     public SQLQuery(Class queryResultBeanClass, int timezoneOffset) {
         this.index = 1;
         this.queryResultBeanClass = queryResultBeanClass;
@@ -94,11 +96,11 @@ public class SQLQuery {
     }
 
     public Integer skip() {
-        return this.skip;
+        return this.page.getSkip();
     }
 
     public Integer limit() {
-        return this.limit;
+        return this.page.getLimit();
     }
 
     void setSql(String sql) {
@@ -122,4 +124,9 @@ public class SQLQuery {
 
         this.limit = limit;
     }
+
+    public void setPaging(Paging page) {
+        this.page = page;
+    }
+
 }

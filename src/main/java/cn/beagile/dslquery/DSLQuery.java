@@ -23,8 +23,7 @@ public class DSLQuery<T> {
     public List<T> query() {
         SQLQuery sqlQuery = new SQLQuery(queryResultClass, this.timezoneOffset);
         sqlQuery.setSql(getSQL(sqlQuery));
-        sqlQuery.setSkip(this.skip);
-        sqlQuery.setLimit(this.limit);
+        sqlQuery.setPaging(new Paging(this.skip, this.limit));
         return queryExecutor.execute(sqlQuery, new DefaultResultSetReader<>(queryResultClass));
     }
 
