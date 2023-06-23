@@ -9,7 +9,7 @@ interface Operators {
     Map<String, Operator> OPERATORS = Stream.of(Operator.values())
             .collect(Collectors.toMap(Operator::getKeyword, Function.identity()));
 
-    static Operator of(String condition) {
-        return OPERATORS.get(condition);
+    static Operator of(String operatorName) {
+        return OPERATORS.get(operatorName);
     }
 }

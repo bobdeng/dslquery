@@ -13,17 +13,26 @@ enum Operator {
     StartWith("startswith", "like", (value) -> value + "%"),
     EndsWith("endswith", "like", (value) -> "%" + value),
     Contains("contains", "like", (value) -> "%" + value + "%"),
-    IsNull("isnull", "is null", (value) -> null),
-    NotNull("notnull", "is not null", (value) -> null);
+    IsNull("isnull", "is null", (value) -> null, false),
+    NotNull("notnull", "is not null", (value) -> null, false);
 
     private String operator;
     private String keyword;
     private Function<String, String> valueTransfer;
+    private boolean needValue;
 
     Operator(String keyword, String operator, Function<String, String> valueTransfer) {
         this.keyword = keyword;
         this.operator = operator;
         this.valueTransfer = valueTransfer;
+        this.needValue = true;
+    }
+
+    Operator(String keyword, String operator, Function<String, String> valueTransfer, boolean needValue) {
+        this.keyword = keyword;
+        this.operator = operator;
+        this.valueTransfer = valueTransfer;
+        this.needValue = needValue;
     }
 
     public String getOperator() {
@@ -35,7 +44,7 @@ enum Operator {
     }
 
     public boolean needValue() {
-        return !keyword.equals("isnull") && !keyword.equals("notnull");
+        return this.needValue;
     }
 
     public String transferValue(String value) {
