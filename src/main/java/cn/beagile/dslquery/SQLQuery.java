@@ -11,14 +11,14 @@ import java.util.Map;
 import java.util.function.Function;
 
 public class SQLQuery {
-    private String sql;
     private final Map<String, Object> params;
-    private Integer skip;
-    private int index;
     private final Class queryResultBeanClass;
-    private Integer limit;
     private final int timezoneOffset;
     private static final Map<Class, Function<String, Object>> FIELD_CAST_MAP = new HashMap<>();
+    private int index;
+    private String sql;
+    private Integer skip;
+    private Integer limit;
 
     static {
         FIELD_CAST_MAP.put(Integer.class, Integer::parseInt);
@@ -44,29 +44,38 @@ public class SQLQuery {
         return this.index++;
     }
 
-    void addParam(String paramName, String field, String value) {
+    void addParam(String paramName, String fieldName, String value) {
         try {
-            Field declaredField = this.queryResultBeanClass.getDeclaredField(field);
-            Class<?> type = declaredField.getType();
-            if (type.equals(Instant.class)) {
-                setInstantParam(paramName, value, declaredField);
-                return;
-            }
-            if (type.equals(Long.class) || type.equals(long.class)) {
-                if (declaredField.isAnnotationPresent(DateFormat.class)) {
-                    params.put(paramName, getInstantValue(value, declaredField).toEpochMilli());
-                    return;
-                }
-            }
-            params.put(paramName, FIELD_CAST_MAP.get(type).apply(value));
+            Field field = this.queryResultBeanClass.getDeclaredField(fieldName);
+            Object paramValue = castValueByField(value, field);
+            params.put(paramName, paramValue);
         } catch (NoSuchFieldException e) {
             throw new RuntimeException("No such field: " + paramName);
         }
     }
 
-    private void setInstantParam(String paramName, String value, Field field) {
-        Instant instant = getInstantValue(value, field);
-        params.put(paramName, instant);
+    private Object castValueByField(String value, Field field) {
+        if (isInstant(field.getType())) {
+            return getInstantValue(value, field);
+        }
+        if (isTimestampAsDate(field)) {
+            return getInstantValue(value, field).toEpochMilli();
+        }
+        return FIELD_CAST_MAP.get(field.getType()).apply(value);
+    }
+
+    private boolean isInstant(Class<?> type) {
+        return type.equals(Instant.class);
+    }
+
+    private boolean isTimestampAsDate(Field field) {
+        if (field.getType().equals(Long.class)) {
+            return field.isAnnotationPresent(DateFormat.class);
+        }
+        if (field.getType().equals(long.class)) {
+            return field.isAnnotationPresent(DateFormat.class);
+        }
+        return false;
     }
 
     private Instant getInstantValue(String value, Field field) {
@@ -92,12 +101,12 @@ public class SQLQuery {
         return this.limit;
     }
 
-     void setSql(String sql) {
+    void setSql(String sql) {
         this.sql = sql;
     }
 
 
-     String aliasOf(String field) {
+    String aliasOf(String field) {
         try {
             return this.queryResultBeanClass.getDeclaredField(field).getAnnotation(Column.class).value();
         } catch (NoSuchFieldException e) {
@@ -105,11 +114,11 @@ public class SQLQuery {
         }
     }
 
-     void setSkip(Integer skip) {
+    void setSkip(Integer skip) {
         this.skip = skip;
     }
 
-     void setLimit(Integer limit) {
+    void setLimit(Integer limit) {
 
         this.limit = limit;
     }
