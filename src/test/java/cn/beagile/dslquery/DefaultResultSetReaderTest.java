@@ -23,6 +23,15 @@ public class DefaultResultSetReaderTest {
         assertEquals("bob", result.getName());
     }
 
+    @Test
+    public void should_throw_when_sql_fail() throws SQLException {
+        DefaultResultSetReader<QueryResultBean> defaultResultSetReader = new DefaultResultSetReader(QueryResultBean.class);
+        ResultSet rs = mock(ResultSet.class);
+        when(rs.getString("name")).thenThrow(new SQLException("sql error"));
+        RuntimeException e = assertThrows(RuntimeException.class, () -> defaultResultSetReader.apply(rs));
+        assertEquals("java.sql.SQLException: sql error", e.getMessage());
+    }
+
     public static class QueryResultWithoutDefaultConstructorBean {
         @Column("name1")
         private String name;

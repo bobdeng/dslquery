@@ -3,6 +3,7 @@ package cn.beagile.dslquery;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.HashMap;
@@ -47,13 +48,11 @@ public class DefaultResultSetReader<T> implements Function<ResultSet, T> {
     }
 
     private void setFieldValue(ResultSet resultSet, T result, Field field) {
+        Column column = field.getAnnotation(Column.class);
         try {
-            Column column = field.getAnnotation(Column.class);
-            field.setAccessible(true);
             Object value = COLUMN_READER_MAP.get(field.getType()).readValue(resultSet, column.value());
-            field.set(result, value);
-            field.setAccessible(false);
-        } catch (Exception e) {
+            new ReflectFieldSetter(result, field, value).set();
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
