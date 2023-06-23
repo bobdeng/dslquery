@@ -2,6 +2,8 @@ package cn.beagile.dslquery;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.ArgumentCaptor;
 
 import java.util.ArrayList;
@@ -116,6 +118,26 @@ public class DSLQueryTest {
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
         assertEquals("select name from view_query where ((name is not null))", sqlQuery.sql());
         assertEquals(0, sqlQuery.getParams().size());
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "startswith,like,bob%",
+            "contains,like,%bob%",
+            "endswith,like,%bob",
+            "greaterthanorequal,>=,bob",
+            "greaterthan,>,bob",
+            "lessthanorequal,<=,bob",
+            "lessthan,<,bob",
+    })
+    public void should_execute_query_with_condition(String operator, String condition, String expected) {
+        DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultBean.class);
+        dslQuery.where("(and(name " + operator + " bob))").query();
+        verify(queryExecutor).list(sqlQueryArgumentCaptor.capture(), any());
+        SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
+        assertEquals("select name from view_query where ((name " + condition + " :name1))", sqlQuery.sql());
+        assertEquals(1, sqlQuery.getParams().size());
+        assertEquals(expected, sqlQuery.getParams().get("name1"));
     }
 
     @Test

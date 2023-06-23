@@ -41,12 +41,13 @@ class SingleExpression implements FilterExpression {
     }
 
     public String toSQL(SQLQuery sqlQuery) {
-        if (Operators.of(operator).needValue()) {
+        Operator operator = Operators.of(this.operator);
+        if (operator.needValue()) {
             String paramName = field + sqlQuery.next();
-            sqlQuery.addParam(paramName, field, this.value);
-            return "(" + sqlQuery.aliasOf(field) + " " + Operators.of(operator).getOperator() + " :" + paramName + ")";
+            sqlQuery.addParam(paramName, field, operator.transferValue(value));
+            return "(" + sqlQuery.aliasOf(field) + " " + operator.getOperator() + " :" + paramName + ")";
         }
-        return "(" + sqlQuery.aliasOf(field) + " " + Operators.of(operator).getOperator() + ")";
+        return "(" + sqlQuery.aliasOf(field) + " " + operator.getOperator() + ")";
     }
 
     @Override

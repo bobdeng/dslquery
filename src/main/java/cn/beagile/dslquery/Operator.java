@@ -10,17 +10,17 @@ enum Operator {
     LessThanOrEqual("lessthanorequal", "<=", (value) -> value),
     GreaterThan("greaterthan", ">", (value) -> value),
     GreaterThanOrEqual("greaterthanorequal", ">=", (value) -> value),
-    StartWith("startswith", "like ", (value) -> value + "%"),
-    EndsWith("endswith", "like ", (value) -> "%" + value),
-    Contains("contains", "like ", (value) -> "%" + value + "%"),
+    StartWith("startswith", "like", (value) -> value + "%"),
+    EndsWith("endswith", "like", (value) -> "%" + value),
+    Contains("contains", "like", (value) -> "%" + value + "%"),
     IsNull("isnull", "is null", (value) -> null),
     NotNull("notnull", "is not null", (value) -> null);
 
     private String operator;
     private String keyword;
-    private Function<String, Object> value;
+    private Function<String, String> value;
 
-    Operator(String keyword, String operator, Function<String, Object> value) {
+    Operator(String keyword, String operator, Function<String, String> value) {
         this.keyword = keyword;
         this.operator = operator;
         this.value = value;
@@ -36,5 +36,9 @@ enum Operator {
 
     public boolean needValue() {
         return !keyword.equals("isnull") && !keyword.equals("notnull");
+    }
+
+    public String transferValue(String value) {
+        return this.value.apply(value);
     }
 }
