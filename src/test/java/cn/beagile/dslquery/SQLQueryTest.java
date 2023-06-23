@@ -31,6 +31,8 @@ class SQLQueryTest {
         private Long longTimestamp;
         @Column("normalLong")
         private Long normalLong;
+        @Column("normalLongPrimitive")
+        private long normalLongPrimitive;
     }
 
     @Test
@@ -88,10 +90,17 @@ class SQLQueryTest {
     }
 
     @Test
-    public void add_long_param() {
+    public void add_Long_param() {
         SQLQuery sqlQuery = new SQLQuery(QueryResultForTest.class, this.timezoneOffset);
         sqlQuery.addParam("normalLong", "normalLong", "18");
         assertEquals(18L, sqlQuery.getParams().get("normalLong"));
+    }
+
+    @Test
+    public void add_long_param() {
+        SQLQuery sqlQuery = new SQLQuery(QueryResultForTest.class, this.timezoneOffset);
+        sqlQuery.addParam("normalLongPrimitive", "normalLongPrimitive", "18");
+        assertEquals(18L, sqlQuery.getParams().get("normalLongPrimitive"));
     }
 
     @Test
@@ -99,6 +108,7 @@ class SQLQueryTest {
         SQLQuery sqlQuery = new SQLQuery(QueryResultForTest.class, this.timezoneOffset);
         assertEquals("double_value", sqlQuery.aliasOf("doubleValue"));
     }
+
     @Test
     public void should_throw_when_alias_not_exist() {
         SQLQuery sqlQuery = new SQLQuery(QueryResultForTest.class, this.timezoneOffset);
