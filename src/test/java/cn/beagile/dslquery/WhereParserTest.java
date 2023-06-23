@@ -8,43 +8,43 @@ public class WhereParserTest {
     @Test
     public void should_parse_where() {
         WhereParser whereParser = new WhereParser();
-        Where where = whereParser.parseSubWhere("(and(name equal bob))");
+        ComplexExpression where = whereParser.parseSubWhere("(and(name equal bob))");
         assertNotNull(where);
         assertEquals(where.getCondition(), "and");
         assertEquals(1, where.getExpressions().size());
-        assertEquals(new Predicate("name", "equal", "bob"), where.getExpressions().get(0));
+        assertEquals(new SingleExpression("name", "equal", "bob"), where.getExpressions().get(0));
     }
 
     @Test
     public void should_parse_where_with_2_predicate() {
         WhereParser whereParser = new WhereParser();
-        Where where = whereParser.parseSubWhere("(and(name equal bob)(age greaterthan 18))");
+        ComplexExpression where = whereParser.parseSubWhere("(and(name equal bob)(age greaterthan 18))");
         assertNotNull(where);
         assertEquals(where.getCondition(), "and");
         assertEquals(2, where.getExpressions().size());
-        assertEquals(new Predicate("name", "equal", "bob"), where.getExpressions().get(0));
+        assertEquals(new SingleExpression("name", "equal", "bob"), where.getExpressions().get(0));
     }
 
     @Test
     public void should_parse_where_with_inner_predicate() {
         WhereParser whereParser = new WhereParser();
-        Where where = whereParser.parseSubWhere("(and(or(name equal bob)(name equal alice))(age greaterthan 18))");
+        ComplexExpression where = whereParser.parseSubWhere("(and(or(name equal bob)(name equal alice))(age greaterthan 18))");
         assertNotNull(where);
         assertEquals(where.getCondition(), "and");
         assertEquals(2, where.getExpressions().size());
-        assertEquals(new Predicate("age", "greaterthan", "18"), where.getExpressions().get(1));
+        assertEquals(new SingleExpression("age", "greaterthan", "18"), where.getExpressions().get(1));
     }
 
     //当不是以and或者or开头的时候，会默认以and开头
     @Test
     public void should_parse_where_with_inner_predicate_without_and_or() {
         WhereParser whereParser = new WhereParser();
-        Where where = whereParser.parseSubWhere("((name equal bob)(age greaterthan 18))");
+        ComplexExpression where = whereParser.parseSubWhere("((name equal bob)(age greaterthan 18))");
         assertNotNull(where);
         assertEquals(where.getCondition(), "and");
         assertEquals(2, where.getExpressions().size());
-        assertEquals(new Predicate("name", "equal", "bob"), where.getExpressions().get(0));
-        assertEquals(new Predicate("age", "greaterthan", "18"), where.getExpressions().get(1));
+        assertEquals(new SingleExpression("name", "equal", "bob"), where.getExpressions().get(0));
+        assertEquals(new SingleExpression("age", "greaterthan", "18"), where.getExpressions().get(1));
         System.out.println(where);
     }
 

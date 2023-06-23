@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 public class DSLQuery<T> {
     private QueryExecutor queryExecutor;
     private Class<T> queryResultBeanClass;
-    private List<Where> whereList;
+    private List<ComplexExpression> whereList;
     private Sort sort;
     private Integer skip;
     private Integer limit;

@@ -5,12 +5,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-class Where implements FilterExpression {
+class ComplexExpression implements FilterExpression {
     private String condition;
     private List<FilterExpression> expressions;
     private static Set<String> VALID_CONDITIONS = Stream.of("and", "or").collect(Collectors.toSet());
 
-    public Where(String condition, List<FilterExpression> expressions) {
+    public ComplexExpression(String condition, List<FilterExpression> expressions) {
         this.condition = condition;
         if (!VALID_CONDITIONS.contains(condition.toLowerCase())) {
             throw new RuntimeException("invalid condition:" + condition);

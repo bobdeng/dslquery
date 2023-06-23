@@ -6,8 +6,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 class WhereParser {
-    public Where parseSubWhere(String whereString) {
-        return new Where(getCondition(whereString), getFilterExpressions(whereString));
+    public ComplexExpression parseSubWhere(String whereString) {
+        return new ComplexExpression(getCondition(whereString), getFilterExpressions(whereString));
     }
 
     private List<FilterExpression> getFilterExpressions(String whereString) {
@@ -30,7 +30,7 @@ class WhereParser {
         return parseSubWhere(sql);
     }
 
-    private Predicate parsePredicate(String subWhere) {
+    private SingleExpression parsePredicate(String subWhere) {
         Pattern wordPattern = Pattern.compile("\\w+");
         Matcher matcher = wordPattern.matcher(subWhere);
         if (!matcher.find()) {
@@ -45,7 +45,7 @@ class WhereParser {
         if (value.equals("")) {
             throw new RuntimeException("invalid predicate:" + subWhere);
         }
-        return new Predicate(fieldName, operator, value);
+        return new SingleExpression(fieldName, operator, value);
     }
 
     private boolean isSubWhere(String subWhere) {
