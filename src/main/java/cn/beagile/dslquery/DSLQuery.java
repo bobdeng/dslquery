@@ -20,14 +20,6 @@ public class DSLQuery<T> {
         this.whereList = new ArrayList<>();
     }
 
-    public List<T> query() {
-        SQLQuery sqlQuery = new SQLQuery(queryResultClass, this.timezoneOffset);
-        sqlQuery.setSql(getSQL(sqlQuery));
-        sqlQuery.setCountSql(getCountSQL(sqlQuery));
-        sqlQuery.setPaging(new Paging(this.skip, this.limit));
-        return queryExecutor.execute(sqlQuery, new DefaultResultSetReader<>(queryResultClass));
-    }
-
     private String getCountSQL(SQLQuery sqlQuery) {
         String result = "select count(1) from " + getViewName();
         if (whereList.size() > 0) {
@@ -95,12 +87,21 @@ public class DSLQuery<T> {
     }
 
     public Paged<T> pagedQuery() {
+        SQLQuery sqlQuery = getSqlQuery();
+        List<T> result = queryExecutor.execute(sqlQuery, new DefaultResultSetReader<>(queryResultClass));
+        int count = queryExecutor.queryCount(sqlQuery);
+        return new Paged<>(result, count, new Paging(this.skip, this.limit));
+    }
+
+    public List<T> query() {
+        return queryExecutor.execute(getSqlQuery(), new DefaultResultSetReader<>(queryResultClass));
+    }
+
+    private SQLQuery getSqlQuery() {
         SQLQuery sqlQuery = new SQLQuery(queryResultClass, this.timezoneOffset);
         sqlQuery.setSql(getSQL(sqlQuery));
         sqlQuery.setCountSql(getCountSQL(sqlQuery));
         sqlQuery.setPaging(new Paging(this.skip, this.limit));
-        List<T> result = queryExecutor.execute(sqlQuery, new DefaultResultSetReader<>(queryResultClass));
-        int count = queryExecutor.queryCount(sqlQuery);
-        return new Paged<>(result,count,new Paging(this.skip, this.limit));
+        return sqlQuery;
     }
 }
