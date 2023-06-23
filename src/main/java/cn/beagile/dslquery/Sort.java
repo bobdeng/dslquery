@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Sort {
+class Sort {
     private List<SortField> fields;
     public Sort(String sort) {
         this.fields = Stream.of(sort.split(","))

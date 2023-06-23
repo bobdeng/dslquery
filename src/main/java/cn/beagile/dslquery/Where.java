@@ -6,7 +6,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Where implements ToSQL {
+class Where implements ToSQL {
     private String condition;
     private List<Where> wheres = new ArrayList<>();
     private List<Predicate> predicates = new ArrayList<>();

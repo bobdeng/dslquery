@@ -2,7 +2,7 @@ package cn.beagile.dslquery;
 
 import java.util.Objects;
 
-public class SortField {
+class SortField {
     private String field;
     private String direction;
 

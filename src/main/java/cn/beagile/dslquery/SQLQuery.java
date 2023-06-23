@@ -40,11 +40,11 @@ public class SQLQuery {
     }
 
 
-    public int next() {
+    int next() {
         return this.index++;
     }
 
-    public void addParam(String paramName, String field, String value) {
+    void addParam(String paramName, String field, String value) {
         try {
             Field declaredField = this.queryResultBeanClass.getDeclaredField(field);
             Class<?> type = declaredField.getType();
@@ -84,12 +84,20 @@ public class SQLQuery {
         return params;
     }
 
-    public void setSql(String sql) {
+    public Integer skip() {
+        return this.skip;
+    }
+
+    public Integer limit() {
+        return this.limit;
+    }
+
+     void setSql(String sql) {
         this.sql = sql;
     }
 
 
-    public String aliasOf(String field) {
+     String aliasOf(String field) {
         try {
             return this.queryResultBeanClass.getDeclaredField(field).getAnnotation(Column.class).value();
         } catch (NoSuchFieldException e) {
@@ -97,20 +105,12 @@ public class SQLQuery {
         }
     }
 
-    public Integer skip() {
-        return this.skip;
-    }
-
-    public void setSkip(Integer skip) {
+     void setSkip(Integer skip) {
         this.skip = skip;
     }
 
-    public void setLimit(Integer limit) {
+     void setLimit(Integer limit) {
 
         this.limit = limit;
-    }
-
-    public Integer limit() {
-        return this.limit;
     }
 }

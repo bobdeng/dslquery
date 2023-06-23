@@ -2,10 +2,9 @@ package cn.beagile.dslquery;
 
 
 import java.util.Objects;
-import java.util.regex.Pattern;
 
 
-public class Predicate implements ToSQL {
+class Predicate implements ToSQL {
     private String field;
     private String operator;
     private String value;

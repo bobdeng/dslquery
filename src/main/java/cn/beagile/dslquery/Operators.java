@@ -5,7 +5,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public interface Operators {
+interface Operators {
     Map<String, Operator> OPERATORS = Stream.of(Operator.values())
             .collect(Collectors.toMap(Operator::getKeyword, Function.identity()));
 

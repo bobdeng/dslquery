@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class WhereParser {
+class WhereParser {
     public Where parse(String whereString) {
         Where where = new Where();
         String condition = whereString.substring(1, whereString.indexOf('(', 1));

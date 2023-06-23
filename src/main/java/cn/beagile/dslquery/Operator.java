@@ -2,7 +2,7 @@ package cn.beagile.dslquery;
 
 import java.util.function.Function;
 
-public enum Operator {
+enum Operator {
 
     Equal("equal", "=", (value) -> value),
     NotEqual("notequal", "!=", (value) -> value),

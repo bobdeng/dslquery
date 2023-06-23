@@ -3,7 +3,7 @@ package cn.beagile.dslquery;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WhereList {
+class WhereList {
     private final ArrayList<String> list;
     private int level = 0;
     private String listStr;

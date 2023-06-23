@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-public class DefaultResultSetReader<T> implements Function<ResultSet, T> {
+class DefaultResultSetReader<T> implements Function<ResultSet, T> {
     private Class<T> queryResultBeanClass;
     private static final Map<Class, ColumnFieldReader> COLUMN_READER_MAP = new HashMap<>();
 

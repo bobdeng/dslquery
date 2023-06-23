@@ -2,7 +2,7 @@ package cn.beagile.dslquery;
 
 import java.lang.reflect.Field;
 
-public class ReflectFieldSetter {
+class ReflectFieldSetter {
     private Object target;
     private Field field;
     private Object value;

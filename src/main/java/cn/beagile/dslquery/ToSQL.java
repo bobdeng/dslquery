@@ -1,5 +1,5 @@
 package cn.beagile.dslquery;
 
-public interface ToSQL {
+interface ToSQL {
     String toSQL(SQLQuery sqlQuery);
 }
