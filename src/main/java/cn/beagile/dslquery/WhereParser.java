@@ -3,27 +3,31 @@ package cn.beagile.dslquery;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 class WhereParser {
-    public Where parse(String whereString) {
-        Where where = new Where();
+    public Where parseSubWhere(String whereString) {
+        return new Where(getCondition(whereString), getFilterExpressions(whereString));
+    }
+
+    private List<FilterExpression> getFilterExpressions(String whereString) {
+        String content = whereString.substring(whereString.indexOf('(', 1), whereString.lastIndexOf(')'));
+        return new WhereList(content).list().stream().map(this::parseSQL).collect(Collectors.toList());
+    }
+
+    private String getCondition(String whereString) {
         String condition = whereString.substring(1, whereString.indexOf('(', 1));
         if (condition.equals("")) {
-            condition = "and";
+            return "and";
         }
-        where.setCondition(condition);
-        String content = whereString.substring(whereString.indexOf('(', 1), whereString.lastIndexOf(')'));
-        List<String> subWhereStrings = new WhereList(content).list();
-        System.out.println(subWhereStrings);
-        subWhereStrings.stream()
-                .filter(this::isPredicate)
-                .map(this::parsePredicate)
-                .forEach(where::addPredicate);
-        subWhereStrings.stream()
-                .filter(this::isSubWhere)
-                .map(this::parse)
-                .forEach(where::addWhere);
-        return where;
+        return condition;
+    }
+
+    private FilterExpression parseSQL(String sql) {
+        if (this.isPredicate(sql)) {
+            return parsePredicate(sql);
+        }
+        return parseSubWhere(sql);
     }
 
     private Predicate parsePredicate(String subWhere) {

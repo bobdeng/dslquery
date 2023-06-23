@@ -50,15 +50,15 @@ public class IntegrationTest {
 
     @Test
     public void should_query() {
-        DSLQuery query = new DSLQuery(new SpringQueryExecutor(jdbcTemplate), Person.class);
-        List result = query.skip(0).limit(10).query();
+        DSLQuery<Person> query = new DSLQuery<>(new SpringQueryExecutor(jdbcTemplate), Person.class);
+        List<Person> result = query.skip(0).limit(10).query();
         assertEquals(2, result.size());
     }
 
     @Test
     public void should_query_by_born_at() {
-        DSLQuery query = new DSLQuery(new SpringQueryExecutor(jdbcTemplate), Person.class);
-        List result = query.timezoneOffset(-8).where("(and(bornAt greaterthan 1980-01-01 12:00:00))").skip(0).limit(10).query();
+        DSLQuery<Person> query = new DSLQuery<>(new SpringQueryExecutor(jdbcTemplate), Person.class);
+        List<Person> result = query.timezoneOffset(-8).where("(and(bornAt greaterthan 1980-01-01 12:00:00))").skip(0).limit(10).query();
         assertEquals(1, result.size());
     }
 

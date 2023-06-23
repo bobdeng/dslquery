@@ -58,7 +58,7 @@ public class DSLQuery<T> {
     }
 
     public DSLQuery<T> where(String where) {
-        this.whereList.add(new WhereParser().parse(where));
+        this.whereList.add(new WhereParser().parseSubWhere(where));
         return this;
     }
 

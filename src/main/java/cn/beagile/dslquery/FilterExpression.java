@@ -1,5 +1,5 @@
 package cn.beagile.dslquery;
 
-interface ToSQL {
+interface FilterExpression {
     String toSQL(SQLQuery sqlQuery);
 }

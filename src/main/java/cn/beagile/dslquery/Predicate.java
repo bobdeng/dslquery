@@ -4,7 +4,7 @@ package cn.beagile.dslquery;
 import java.util.Objects;
 
 
-class Predicate implements ToSQL {
+class Predicate implements FilterExpression {
     private String field;
     private String operator;
     private String value;
