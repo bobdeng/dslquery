@@ -68,4 +68,14 @@ public void listA(){
         .sort("fieldA desc,fieldB asc")
         .query();
         }
+//分页查询
+public void listA(){
+        Paged<QueryResultBean> result=new DSLQuery(queryExecutor,QueryResultBean.class)
+        .timezoneOffset(-8)
+        .where("(or(and(fieldA equal value)(fieldB greaterthan value))(or(fieldB equal value)(fieldB notequal value)))")
+        .where("(and(fieldA equal 100))")
+        .limit(10).skip(0)
+        .sort("fieldA desc,fieldB asc")
+        .pagedQuery();
+        }
 ```
