@@ -14,6 +14,7 @@ class WhereListTest {
         assertEquals(1, list.size());
     }
 
+
     @Test
     public void should_return_2() {
         WhereList whereList = new WhereList("(name equal bob)(name equal alice)");

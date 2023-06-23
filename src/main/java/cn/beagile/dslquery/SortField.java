@@ -9,8 +9,16 @@ public class SortField {
     public SortField(String sort) {
         String[] tokens = sort.split("\\s+");
         this.field = tokens[0];
+        Validators.validateField(field);
         if (tokens.length == 2) {
             this.direction = tokens[1];
+            validateDirection();
+        }
+    }
+
+    private void validateDirection() {
+        if (!this.direction.equalsIgnoreCase("asc") && !this.direction.equalsIgnoreCase("desc")) {
+            throw new RuntimeException("invalid direction:" + this.direction);
         }
     }
 

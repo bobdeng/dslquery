@@ -23,10 +23,7 @@ public class Predicate implements ToSQL {
     }
 
     private void checkFieldName() {
-        Pattern validFieldPattern = Pattern.compile("[a-zA-Z]{1}[a-zA-Z0-9_-]+$");
-        if (!validFieldPattern.matcher(this.field).matches()) {
-            throw new RuntimeException("invalid field:" + this.field);
-        }
+        Validators.validateField(field);
     }
 
     private void checkOperator() {

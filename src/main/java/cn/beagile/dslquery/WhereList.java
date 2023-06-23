@@ -5,7 +5,7 @@ import java.util.List;
 
 public class WhereList {
     private final ArrayList<String> list;
-    private int level;
+    private int level = 0;
     private String listStr;
 
     public WhereList(String listStr) {
@@ -15,20 +15,28 @@ public class WhereList {
     }
 
     private void split() {
-        this.level = 0;
         for (int i = 0; i < this.listStr.length(); i++) {
-            if (this.listStr.charAt(i) == '(') {
-                this.level++;
-            }
-            if (this.listStr.charAt(i) == ')') {
-                this.level--;
-                if (this.level == 0) {
-                    this.list.add(this.listStr.substring(0, i + 1));
-                    this.listStr = this.listStr.substring(i + 1);
-                    split();
-                    break;
-                }
-            }
+            scanCharAt(i);
+        }
+    }
+
+    private void scanCharAt(int charIndex) {
+        char c = this.listStr.charAt(charIndex);
+        if (c == '(') {
+            this.level++;
+            return;
+        }
+        if (c == ')') {
+            this.level--;
+            splitAtCurrentWhenEnd(charIndex);
+        }
+    }
+
+    private void splitAtCurrentWhenEnd(int charIndex) {
+        if (this.level == 0) {
+            this.list.add(this.listStr.substring(0, charIndex + 1));
+            this.listStr = this.listStr.substring(charIndex + 1);
+            split();
         }
     }
 
