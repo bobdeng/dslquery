@@ -6,9 +6,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class DSLQuery<T> {
-    private QueryExecutor queryExecutor;
-    private Class<T> queryResultClass;
-    private List<ComplexExpression> whereList;
+    private final QueryExecutor queryExecutor;
+    private final Class<T> queryResultClass;
+    private final List<ComplexExpression> whereList;
     private Sort sort;
     private Integer skip;
     private Integer limit;
