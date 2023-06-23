@@ -17,8 +17,8 @@ public class SQLQuery {
     private static final Map<Class, Function<String, Object>> FIELD_CAST_MAP = new HashMap<>();
     private int index;
     private String sql;
-    private Integer skip;
-    private Integer limit;
+    private Paging page;
+    private String countSql;
 
     static {
         FIELD_CAST_MAP.put(Integer.class, Integer::parseInt);
@@ -31,8 +31,6 @@ public class SQLQuery {
         FIELD_CAST_MAP.put(double.class, Double::parseDouble);
         FIELD_CAST_MAP.put(String.class, s -> s);
     }
-
-    private Paging page;
 
     public SQLQuery(Class queryResultBeanClass, int timezoneOffset) {
         this.index = 1;
@@ -116,17 +114,15 @@ public class SQLQuery {
         }
     }
 
-    void setSkip(Integer skip) {
-        this.skip = skip;
-    }
-
-    void setLimit(Integer limit) {
-
-        this.limit = limit;
-    }
-
     public void setPaging(Paging page) {
         this.page = page;
     }
 
+    public void setCountSql(String countSql) {
+        this.countSql = countSql;
+    }
+
+    public String countSql() {
+        return this.countSql;
+    }
 }

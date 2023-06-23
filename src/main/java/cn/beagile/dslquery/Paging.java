@@ -1,19 +1,19 @@
 package cn.beagile.dslquery;
 
 public class Paging {
-    private int skip;
-    private int limit;
+    private Integer skip;
+    private Integer limit;
 
-    public Paging(int skip, int limit) {
+    public Paging(Integer skip, Integer limit) {
         this.skip = skip;
         this.limit = limit;
     }
 
-    public int getLimit() {
+    public Integer getLimit() {
         return limit;
     }
 
-    public int getSkip() {
+    public Integer getSkip() {
         return skip;
     }
 }

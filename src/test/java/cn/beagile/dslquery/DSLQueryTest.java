@@ -4,10 +4,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -19,7 +20,9 @@ public class DSLQueryTest {
     public void setup() {
         queryExecutor = mock(QueryExecutor.class);
         sqlQueryArgumentCaptor = ArgumentCaptor.forClass(SQLQuery.class);
-        when(queryExecutor.execute(any(), any())).thenReturn(null);
+        ArrayList<QueryResultBean> list = new ArrayList<>();
+        list.add(new QueryResultBean("bob"));
+        when(queryExecutor.execute(any(), any())).thenReturn(Collections.singletonList(list));
     }
 
     @Test
@@ -92,7 +95,6 @@ public class DSLQueryTest {
         verify(queryExecutor, times(1)).execute(sqlQueryArgumentCaptor.capture(), any());
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
         assertEquals("select name1,age from view_query where ((age > :age1)) and ((name1 = :name2))", sqlQuery.sql());
-
     }
 
     //带有排序条件，执行查询
@@ -150,5 +152,35 @@ public class DSLQueryTest {
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
         assertNull(sqlQuery.limit());
         assertNull(sqlQuery.skip());
+    }
+
+    @Test
+    public void should_get_total_count() {
+        DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultWithAlias.class);
+        dslQuery.query();
+        verify(queryExecutor).execute(sqlQueryArgumentCaptor.capture(), any());
+        SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
+        assertEquals("select count(1) from view_query", sqlQuery.countSql());
+    }
+
+    @Test
+    public void should_get_total_count_with_where() {
+        DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultWithAlias.class);
+        dslQuery.where("(and(name equal bob))").query();
+        verify(queryExecutor).execute(sqlQueryArgumentCaptor.capture(), any());
+        SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
+        assertEquals("select count(1) from view_query where ((name1 = :name2))", sqlQuery.countSql());
+    }
+
+    @Test
+    public void should_get_paged_result() {
+        DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultWithAlias.class);
+        when(queryExecutor.queryCount(any())).thenReturn(100);
+        Paged<QueryResultBean> pagedResult = dslQuery.skip(10).limit(20).where("(and(name equal bob))").pagedQuery();
+        assertNotNull(pagedResult);
+        assertEquals(1, pagedResult.getResult().size());
+        assertEquals(100, pagedResult.total());
+        assertEquals(20, pagedResult.limit());
+        assertEquals(10, pagedResult.skip());
     }
 }

@@ -46,6 +46,11 @@ public class IntegrationTest {
             }
             return jdbcTemplate.query(sql, sqlQuery.getParams(), (rs, rowNum) -> resultSetReader.apply(rs));
         }
+
+        @Override
+        public int queryCount(SQLQuery sqlQuery) {
+            return jdbcTemplate.query(sqlQuery.countSql(), sqlQuery.getParams(), (rs, rowNum) -> rs.getInt(1)).get(0);
+        }
     }
 
     @Test
@@ -53,6 +58,14 @@ public class IntegrationTest {
         DSLQuery<Person> query = new DSLQuery<>(new SpringQueryExecutor(jdbcTemplate), Person.class);
         List<Person> result = query.skip(0).limit(10).query();
         assertEquals(2, result.size());
+    }
+
+    @Test
+    public void should_query_paged() {
+        DSLQuery<Person> query = new DSLQuery<>(new SpringQueryExecutor(jdbcTemplate), Person.class);
+        Paged<Person> result = query.skip(0).limit(10).pagedQuery();
+        assertEquals(2, result.getResult().size());
+        assertEquals(2, result.total());
     }
 
     @Test

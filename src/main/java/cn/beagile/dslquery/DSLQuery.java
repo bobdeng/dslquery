@@ -23,8 +23,17 @@ public class DSLQuery<T> {
     public List<T> query() {
         SQLQuery sqlQuery = new SQLQuery(queryResultClass, this.timezoneOffset);
         sqlQuery.setSql(getSQL(sqlQuery));
+        sqlQuery.setCountSql(getCountSQL(sqlQuery));
         sqlQuery.setPaging(new Paging(this.skip, this.limit));
         return queryExecutor.execute(sqlQuery, new DefaultResultSetReader<>(queryResultClass));
+    }
+
+    private String getCountSQL(SQLQuery sqlQuery) {
+        String result = "select count(1) from " + getViewName();
+        if (whereList.size() > 0) {
+            result += getWhereSQL(sqlQuery);
+        }
+        return result;
     }
 
     private String getSQL(SQLQuery sqlQuery) {
@@ -47,13 +56,17 @@ public class DSLQuery<T> {
     }
 
     private String getSelectSQL() {
-        View view = queryResultClass.getAnnotation(View.class);
         String fields = Stream.of(queryResultClass.getDeclaredFields())
                 .filter(field -> field.isAnnotationPresent(Column.class))
                 .map(field -> field.getAnnotation(Column.class))
                 .map(Column::value)
                 .collect(Collectors.joining(","));
-        return "select " + fields + " from " + view.value();
+        return "select " + fields + " from " + getViewName();
+    }
+
+    private String getViewName() {
+        View view = queryResultClass.getAnnotation(View.class);
+        return view.value();
     }
 
     public DSLQuery<T> where(String where) {
@@ -79,5 +92,15 @@ public class DSLQuery<T> {
     public DSLQuery<T> timezoneOffset(int timezoneOffset) {
         this.timezoneOffset = timezoneOffset;
         return this;
+    }
+
+    public Paged<T> pagedQuery() {
+        SQLQuery sqlQuery = new SQLQuery(queryResultClass, this.timezoneOffset);
+        sqlQuery.setSql(getSQL(sqlQuery));
+        sqlQuery.setCountSql(getCountSQL(sqlQuery));
+        sqlQuery.setPaging(new Paging(this.skip, this.limit));
+        List<T> result = queryExecutor.execute(sqlQuery, new DefaultResultSetReader<>(queryResultClass));
+        int count = queryExecutor.queryCount(sqlQuery);
+        return new Paged<>(result,count,new Paging(this.skip, this.limit));
     }
 }
