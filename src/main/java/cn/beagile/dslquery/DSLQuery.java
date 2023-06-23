@@ -7,25 +7,25 @@ import java.util.stream.Stream;
 
 public class DSLQuery<T> {
     private QueryExecutor queryExecutor;
-    private Class<T> queryResultBeanClass;
+    private Class<T> queryResultClass;
     private List<ComplexExpression> whereList;
     private Sort sort;
     private Integer skip;
     private Integer limit;
     private int timezoneOffset;
 
-    public DSLQuery(QueryExecutor queryExecutor, Class<T> queryResultBeanClass) {
+    public DSLQuery(QueryExecutor queryExecutor, Class<T> queryResultClass) {
         this.queryExecutor = queryExecutor;
-        this.queryResultBeanClass = queryResultBeanClass;
+        this.queryResultClass = queryResultClass;
         this.whereList = new ArrayList<>();
     }
 
     public List<T> query() {
-        SQLQuery sqlQuery = new SQLQuery(queryResultBeanClass, this.timezoneOffset);
+        SQLQuery sqlQuery = new SQLQuery(queryResultClass, this.timezoneOffset);
         sqlQuery.setSql(getSQL(sqlQuery));
         sqlQuery.setSkip(this.skip);
         sqlQuery.setLimit(this.limit);
-        return queryExecutor.execute(sqlQuery, new DefaultResultSetReader<>(queryResultBeanClass));
+        return queryExecutor.execute(sqlQuery, new DefaultResultSetReader<>(queryResultClass));
     }
 
     private String getSQL(SQLQuery sqlQuery) {
@@ -48,8 +48,8 @@ public class DSLQuery<T> {
     }
 
     private String getSelectSQL() {
-        View view = queryResultBeanClass.getAnnotation(View.class);
-        String fields = Stream.of(queryResultBeanClass.getDeclaredFields())
+        View view = queryResultClass.getAnnotation(View.class);
+        String fields = Stream.of(queryResultClass.getDeclaredFields())
                 .filter(field -> field.isAnnotationPresent(Column.class))
                 .map(field -> field.getAnnotation(Column.class))
                 .map(Column::value)
