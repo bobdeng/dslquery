@@ -2,6 +2,7 @@ package cn.beagile.dslquery;
 
 
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 
 public class Predicate implements ToSQL {
@@ -11,11 +12,27 @@ public class Predicate implements ToSQL {
 
     public Predicate(String field, String operator, String value) {
         this.field = field;
-        if (Operators.of(operator) == null) {
-            throw new RuntimeException("invalid operator:" + operator);
-        }
         this.operator = operator;
         this.value = value;
+        checkFields();
+    }
+
+    private void checkFields() {
+        checkFieldName();
+        checkOperator();
+    }
+
+    private void checkFieldName() {
+        Pattern validFieldPattern = Pattern.compile("[a-zA-Z]{1}[a-zA-Z0-9_-]+$");
+        if (!validFieldPattern.matcher(this.field).matches()) {
+            throw new RuntimeException("invalid field:" + this.field);
+        }
+    }
+
+    private void checkOperator() {
+        if (Operators.of(this.operator) == null) {
+            throw new RuntimeException("invalid operator:" + this.operator);
+        }
     }
 
 
