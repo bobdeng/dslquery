@@ -2,6 +2,7 @@ package cn.beagile.dslquery;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 class WhereList {
     private final ArrayList<String> list;
@@ -42,5 +43,9 @@ class WhereList {
 
     public List<String> list() {
         return list;
+    }
+
+    public Stream<String> stream() {
+        return list.stream();
     }
 }

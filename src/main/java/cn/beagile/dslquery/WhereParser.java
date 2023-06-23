@@ -12,7 +12,7 @@ class WhereParser {
 
     private List<FilterExpression> getFilterExpressions(String whereString) {
         String content = whereString.substring(whereString.indexOf('(', 1), whereString.lastIndexOf(')'));
-        return new WhereList(content).list().stream().map(this::parseSQL).collect(Collectors.toList());
+        return new WhereList(content).stream().map(this::parseSQL).collect(Collectors.toList());
     }
 
     private String getCondition(String whereString) {
