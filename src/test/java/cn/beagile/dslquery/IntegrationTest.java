@@ -39,7 +39,7 @@ public class IntegrationTest {
         }
 
         @Override
-        public <T> List<T> execute(SQLQuery sqlQuery, Function<ResultSet, T> resultSetReader) {
+        public <T> List<T> list(SQLQuery sqlQuery, Function<ResultSet, T> resultSetReader) {
             String sql = sqlQuery.sql();
             if (sqlQuery.limit() != null) {
                 sql += " limit " + sqlQuery.skip() + "," + sqlQuery.limit();

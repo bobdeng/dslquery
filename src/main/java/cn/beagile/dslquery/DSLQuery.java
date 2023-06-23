@@ -88,13 +88,13 @@ public class DSLQuery<T> {
 
     public Paged<T> pagedQuery() {
         SQLQuery sqlQuery = getSqlQuery();
-        List<T> result = queryExecutor.execute(sqlQuery, new DefaultResultSetReader<>(queryResultClass));
+        List<T> result = queryExecutor.list(sqlQuery, new DefaultResultSetReader<>(queryResultClass));
         int count = queryExecutor.queryCount(sqlQuery);
         return new Paged<>(result, count, new Paging(this.skip, this.limit));
     }
 
     public List<T> query() {
-        return queryExecutor.execute(getSqlQuery(), new DefaultResultSetReader<>(queryResultClass));
+        return queryExecutor.list(getSqlQuery(), new DefaultResultSetReader<>(queryResultClass));
     }
 
     private SQLQuery getSqlQuery() {
