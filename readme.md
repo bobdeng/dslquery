@@ -1,4 +1,5 @@
 [![](https://jitpack.io/v/bobdeng/dslquery.svg)](https://jitpack.io/#bobdeng/dslquery)
+
 # 这是什么
 
 建立一套规则，让前端通过规则传递查询条件给服务端，在服务端进行解析，生成查询条件，然后查询数据库，返回结果。
@@ -30,8 +31,12 @@ notnull
 ```java
 public interface QueryExecutor {
     <T> List<T> execute(SQLQuery sqlQuery, Function<ResultSet, T> resultSetReader);
+
+    int queryCount(SQLQuery sqlQuery);
 }
 ```
+
+可查看测试代码里的IntegrationTest里的实现
 
 - 编写查询结果Bean
 
