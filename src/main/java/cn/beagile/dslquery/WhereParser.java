@@ -24,7 +24,7 @@ class WhereParser {
     }
 
     private FilterExpression parseSQL(String sql) {
-        if (this.isPredicate(sql)) {
+        if (this.isSingleExpression(sql)) {
             return parsePredicate(sql);
         }
         return parseSubWhere(sql);
@@ -52,7 +52,7 @@ class WhereParser {
         return subWhere.startsWith("(and") || subWhere.startsWith("(or");
     }
 
-    private boolean isPredicate(String subWhere) {
+    private boolean isSingleExpression(String subWhere) {
         return !isSubWhere(subWhere);
     }
 
