@@ -108,6 +108,16 @@ public class DSLQueryTest {
     }
 
     @Test
+    public void should_execute_query_with_notnull() {
+        DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultBean.class);
+        dslQuery.where("(and(name notnull))").query();
+        verify(queryExecutor).list(sqlQueryArgumentCaptor.capture(), any());
+        SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
+        assertEquals("select name from view_query where ((name is not null))", sqlQuery.sql());
+        assertEquals(0, sqlQuery.getParams().size());
+    }
+
+    @Test
     public void should_execute_query_with_sort_asc() {
         DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultBean.class);
         dslQuery.sort("name asc").query();

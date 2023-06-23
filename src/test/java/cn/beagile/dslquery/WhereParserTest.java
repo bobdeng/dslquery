@@ -16,6 +16,16 @@ public class WhereParserTest {
     }
 
     @Test
+    public void should_parse_isnull() {
+        WhereParser whereParser = new WhereParser();
+        ComplexExpression where = whereParser.parseSubWhere("(and(name isnull))");
+        assertNotNull(where);
+        assertEquals(where.getCondition(), "and");
+        assertEquals(1, where.getExpressions().size());
+        assertEquals(new SingleExpression("name", "isnull", ""), where.getExpressions().get(0));
+    }
+
+    @Test
     public void should_parse_where_with_2_predicate() {
         WhereParser whereParser = new WhereParser();
         ComplexExpression where = whereParser.parseSubWhere("(and(name equal bob)(age greaterthan 18))");

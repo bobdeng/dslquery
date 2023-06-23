@@ -42,7 +42,7 @@ class WhereParser {
         }
         String operator = matcher.group();
         String value = subWhere.substring(subWhere.indexOf(operator) + operator.length(), subWhere.length() - 1).trim();
-        if (value.equals("")) {
+        if (value.equals("") && Operators.of(operator).needValue()) {
             throw new RuntimeException("invalid predicate:" + subWhere);
         }
         return new SingleExpression(fieldName, operator, value);

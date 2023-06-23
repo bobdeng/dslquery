@@ -10,11 +10,11 @@ enum Operator {
     LessThanOrEqual("lessthanorequal", "<=", (value) -> value),
     GreaterThan("greaterthan", ">", (value) -> value),
     GreaterThanOrEqual("greaterthanorequal", ">=", (value) -> value),
-    StartWith("startswith", " like ", (value) -> value + "%"),
-    EndsWith("endswith", " like ", (value) -> "%" + value),
-    Contains("contains", " like ", (value) -> "%" + value + "%"),
-    IsNull("isnull", " is null", (value) -> null),
-    NotNull("notnull", " is not null", (value) -> null);
+    StartWith("startswith", "like ", (value) -> value + "%"),
+    EndsWith("endswith", "like ", (value) -> "%" + value),
+    Contains("contains", "like ", (value) -> "%" + value + "%"),
+    IsNull("isnull", "is null", (value) -> null),
+    NotNull("notnull", "is not null", (value) -> null);
 
     private String operator;
     private String keyword;
@@ -32,5 +32,9 @@ enum Operator {
 
     public String getKeyword() {
         return keyword;
+    }
+
+    public boolean needValue() {
+        return !keyword.equals("isnull") && !keyword.equals("notnull");
     }
 }
