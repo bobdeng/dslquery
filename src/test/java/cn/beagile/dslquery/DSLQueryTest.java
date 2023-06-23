@@ -175,7 +175,7 @@ public class DSLQueryTest {
     @Test
     public void should_get_paged_result() {
         DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultWithAlias.class);
-        when(queryExecutor.queryCount(any())).thenReturn(100);
+        when(queryExecutor.count(any())).thenReturn(100);
         Paged<QueryResultBean> pagedResult = dslQuery.skip(10).limit(20).where("(and(name equal bob))").pagedQuery();
         assertNotNull(pagedResult);
         assertEquals(1, pagedResult.getResult().size());

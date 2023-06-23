@@ -48,7 +48,7 @@ public class IntegrationTest {
         }
 
         @Override
-        public int queryCount(SQLQuery sqlQuery) {
+        public int count(SQLQuery sqlQuery) {
             return jdbcTemplate.query(sqlQuery.countSql(), sqlQuery.getParams(), (rs, rowNum) -> rs.getInt(1)).get(0);
         }
     }

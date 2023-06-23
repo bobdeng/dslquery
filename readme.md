@@ -32,7 +32,7 @@ notnull
 public interface QueryExecutor {
     <T> List<T> list(SQLQuery sqlQuery, Function<ResultSet, T> resultSetReader);
 
-    int queryCount(SQLQuery sqlQuery);
+    int count(SQLQuery sqlQuery);
 }
 ```
 
