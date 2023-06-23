@@ -41,7 +41,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">0.315s</div>
+<div class="counter">0.078s</div>
 <p>duration</p>
 </div>
 </td>
@@ -79,27 +79,27 @@
 </thead>
 <tr>
 <td class="success">should_query()</td>
-<td class="success">0.121s</td>
+<td class="success">0.028s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">should_query_by_born_at()</td>
-<td class="success">0.118s</td>
+<td class="success">0.024s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">should_query_with_order()</td>
-<td class="success">0.014s</td>
+<td class="success">0.007s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">should_return1_when_add_where()</td>
-<td class="success">0.020s</td>
+<td class="success">0.011s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">should_return_empty_when_wrong_page()</td>
-<td class="success">0.042s</td>
+<td class="success">0.008s</td>
 <td class="success">passed</td>
 </tr>
 </table>
@@ -107,21 +107,21 @@
 <div id="tab1" class="tab">
 <h2>Standard output</h2>
 <span class="code">
-<pre>21:28:11.296 [Test worker] DEBUG org.springframework.test.context.BootstrapUtils - Instantiating CacheAwareContextLoaderDelegate from class [org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate]
-21:28:11.327 [Test worker] DEBUG org.springframework.test.context.BootstrapUtils - Instantiating BootstrapContext using constructor [public org.springframework.test.context.support.DefaultBootstrapContext(java.lang.Class,org.springframework.test.context.CacheAwareContextLoaderDelegate)]
-21:28:11.425 [Test worker] DEBUG org.springframework.test.context.BootstrapUtils - Instantiating TestContextBootstrapper for test class [cn.beagile.dslquery.IntegrationTest] from class [org.springframework.boot.test.context.SpringBootTestContextBootstrapper]
-21:28:11.453 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper - Neither @ContextConfiguration nor @ContextHierarchy found for test class [cn.beagile.dslquery.IntegrationTest], using SpringBootContextLoader
-21:28:11.461 [Test worker] DEBUG org.springframework.test.context.support.AbstractContextLoader - Did not detect default resource location for test class [cn.beagile.dslquery.IntegrationTest]: class path resource [cn/beagile/dslquery/IntegrationTest-context.xml] does not exist
-21:28:11.464 [Test worker] DEBUG org.springframework.test.context.support.AbstractContextLoader - Did not detect default resource location for test class [cn.beagile.dslquery.IntegrationTest]: class path resource [cn/beagile/dslquery/IntegrationTestContext.groovy] does not exist
-21:28:11.464 [Test worker] INFO org.springframework.test.context.support.AbstractContextLoader - Could not detect default resource locations for test class [cn.beagile.dslquery.IntegrationTest]: no resource found for suffixes {-context.xml, Context.groovy}.
-21:28:11.553 [Test worker] DEBUG org.springframework.test.context.support.ActiveProfilesUtils - Could not find an 'annotation declaring class' for annotation type [org.springframework.test.context.ActiveProfiles] and class [cn.beagile.dslquery.IntegrationTest]
-21:28:11.838 [Test worker] DEBUG org.springframework.boot.test.context.SpringBootTestContextBootstrapper - @TestExecutionListeners is not present for class [cn.beagile.dslquery.IntegrationTest]: using defaults.
-21:28:11.840 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper - Loaded default TestExecutionListener class names from location [META-INF/spring.factories]: [org.springframework.boot.test.autoconfigure.restdocs.RestDocsTestExecutionListener, org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerResetTestExecutionListener, org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrintOnlyOnFailureTestExecutionListener, org.springframework.boot.test.autoconfigure.web.servlet.WebDriverTestExecutionListener, org.springframework.boot.test.autoconfigure.webservices.client.MockWebServiceServerTestExecutionListener, org.springframework.boot.test.mock.mockito.MockitoTestExecutionListener, org.springframework.boot.test.mock.mockito.ResetMocksTestExecutionListener, org.springframework.test.context.web.ServletTestExecutionListener, org.springframework.test.context.support.DirtiesContextBeforeModesTestExecutionListener, org.springframework.test.context.event.ApplicationEventsTestExecutionListener, org.springframework.test.context.support.DependencyInjectionTestExecutionListener, org.springframework.test.context.support.DirtiesContextTestExecutionListener, org.springframework.test.context.transaction.TransactionalTestExecutionListener, org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener, org.springframework.test.context.event.EventPublishingTestExecutionListener]
-21:28:11.863 [Test worker] DEBUG org.springframework.boot.test.context.SpringBootTestContextBootstrapper - Skipping candidate TestExecutionListener [org.springframework.test.context.web.ServletTestExecutionListener] due to a missing dependency. Specify custom listener classes or make the default listener classes and their required dependencies available. Offending class: [javax/servlet/ServletContext]
-21:28:11.883 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper - Using TestExecutionListeners: [org.springframework.test.context.support.DirtiesContextBeforeModesTestExecutionListener@6d28714a, org.springframework.test.context.event.ApplicationEventsTestExecutionListener@13aad54f, org.springframework.boot.test.mock.mockito.MockitoTestExecutionListener@115a51c2, org.springframework.boot.test.autoconfigure.SpringBootDependencyInjectionTestExecutionListener@6c6bb81e, org.springframework.test.context.support.DirtiesContextTestExecutionListener@426736f8, org.springframework.test.context.transaction.TransactionalTestExecutionListener@7228356, org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener@44350631, org.springframework.test.context.event.EventPublishingTestExecutionListener@75afede1, org.springframework.boot.test.autoconfigure.restdocs.RestDocsTestExecutionListener@e84c55a, org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerResetTestExecutionListener@1d2fdfef, org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrintOnlyOnFailureTestExecutionListener@71c756f5, org.springframework.boot.test.autoconfigure.web.servlet.WebDriverTestExecutionListener@7b0d6dc9, org.springframework.boot.test.autoconfigure.webservices.client.MockWebServiceServerTestExecutionListener@530bc9e7, org.springframework.boot.test.mock.mockito.ResetMocksTestExecutionListener@30b8b4ce]
-21:28:11.891 [Test worker] DEBUG org.springframework.test.context.support.AbstractDirtiesContextTestExecutionListener - Before test class: context [DefaultTestContext@62fcb151 testClass = IntegrationTest, testInstance = [null], testMethod = [null], testException = [null], mergedContextConfiguration = [MergedContextConfiguration@69f26d6c testClass = IntegrationTest, locations = '{}', classes = '{class cn.beagile.dslquery.TestApplication}', contextInitializerClasses = '[]', activeProfiles = '{}', propertySourceLocations = '{}', propertySourceProperties = '{org.springframework.boot.test.context.SpringBootTestContextBootstrapper=true}', contextCustomizers = set[org.springframework.boot.test.autoconfigure.actuate.metrics.MetricsExportContextCustomizerFactory$DisableMetricExportContextCustomizer@76fd1cca, org.springframework.boot.test.autoconfigure.properties.PropertyMappingContextCustomizer@0, org.springframework.boot.test.autoconfigure.web.servlet.WebDriverContextCustomizerFactory$Customizer@ae5a6a9, org.springframework.boot.test.context.filter.ExcludeFilterContextCustomizer@1953250, org.springframework.boot.test.json.DuplicateJsonObjectContextCustomizerFactory$DuplicateJsonObjectContextCustomizer@1f480de8, org.springframework.boot.test.mock.mockito.MockitoContextCustomizer@0, org.springframework.boot.test.web.client.TestRestTemplateContextCustomizer@73efa77d, org.springframework.boot.test.context.SpringBootTestArgs@1, org.springframework.boot.test.context.SpringBootTestWebEnvironment@5ea55260], contextLoader = 'org.springframework.boot.test.context.SpringBootContextLoader', parent = [null]], attributes = map[[empty]]], class annotated with @DirtiesContext [false] with mode [null].
-21:28:11.902 [Test worker] DEBUG org.springframework.test.context.support.DependencyInjectionTestExecutionListener - Performing dependency injection for test context [[DefaultTestContext@62fcb151 testClass = IntegrationTest, testInstance = cn.beagile.dslquery.IntegrationTest@16219a16, testMethod = [null], testException = [null], mergedContextConfiguration = [MergedContextConfiguration@69f26d6c testClass = IntegrationTest, locations = '{}', classes = '{class cn.beagile.dslquery.TestApplication}', contextInitializerClasses = '[]', activeProfiles = '{}', propertySourceLocations = '{}', propertySourceProperties = '{org.springframework.boot.test.context.SpringBootTestContextBootstrapper=true}', contextCustomizers = set[org.springframework.boot.test.autoconfigure.actuate.metrics.MetricsExportContextCustomizerFactory$DisableMetricExportContextCustomizer@76fd1cca, org.springframework.boot.test.autoconfigure.properties.PropertyMappingContextCustomizer@0, org.springframework.boot.test.autoconfigure.web.servlet.WebDriverContextCustomizerFactory$Customizer@ae5a6a9, org.springframework.boot.test.context.filter.ExcludeFilterContextCustomizer@1953250, org.springframework.boot.test.json.DuplicateJsonObjectContextCustomizerFactory$DuplicateJsonObjectContextCustomizer@1f480de8, org.springframework.boot.test.mock.mockito.MockitoContextCustomizer@0, org.springframework.boot.test.web.client.TestRestTemplateContextCustomizer@73efa77d, org.springframework.boot.test.context.SpringBootTestArgs@1, org.springframework.boot.test.context.SpringBootTestWebEnvironment@5ea55260], contextLoader = 'org.springframework.boot.test.context.SpringBootContextLoader', parent = [null]], attributes = map['org.springframework.test.context.event.ApplicationEventsTestExecutionListener.recordApplicationEvents' -&gt; false]]].
-21:28:11.984 [Test worker] DEBUG org.springframework.test.context.support.TestPropertySourceUtils - Adding inlined properties to environment: {spring.jmx.enabled=false, org.springframework.boot.test.context.SpringBootTestContextBootstrapper=true}
+<pre>09:47:35.264 [Test worker] DEBUG org.springframework.test.context.BootstrapUtils - Instantiating CacheAwareContextLoaderDelegate from class [org.springframework.test.context.cache.DefaultCacheAwareContextLoaderDelegate]
+09:47:35.282 [Test worker] DEBUG org.springframework.test.context.BootstrapUtils - Instantiating BootstrapContext using constructor [public org.springframework.test.context.support.DefaultBootstrapContext(java.lang.Class,org.springframework.test.context.CacheAwareContextLoaderDelegate)]
+09:47:35.350 [Test worker] DEBUG org.springframework.test.context.BootstrapUtils - Instantiating TestContextBootstrapper for test class [cn.beagile.dslquery.IntegrationTest] from class [org.springframework.boot.test.context.SpringBootTestContextBootstrapper]
+09:47:35.373 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper - Neither @ContextConfiguration nor @ContextHierarchy found for test class [cn.beagile.dslquery.IntegrationTest], using SpringBootContextLoader
+09:47:35.379 [Test worker] DEBUG org.springframework.test.context.support.AbstractContextLoader - Did not detect default resource location for test class [cn.beagile.dslquery.IntegrationTest]: class path resource [cn/beagile/dslquery/IntegrationTest-context.xml] does not exist
+09:47:35.380 [Test worker] DEBUG org.springframework.test.context.support.AbstractContextLoader - Did not detect default resource location for test class [cn.beagile.dslquery.IntegrationTest]: class path resource [cn/beagile/dslquery/IntegrationTestContext.groovy] does not exist
+09:47:35.380 [Test worker] INFO org.springframework.test.context.support.AbstractContextLoader - Could not detect default resource locations for test class [cn.beagile.dslquery.IntegrationTest]: no resource found for suffixes {-context.xml, Context.groovy}.
+09:47:35.444 [Test worker] DEBUG org.springframework.test.context.support.ActiveProfilesUtils - Could not find an 'annotation declaring class' for annotation type [org.springframework.test.context.ActiveProfiles] and class [cn.beagile.dslquery.IntegrationTest]
+09:47:35.653 [Test worker] DEBUG org.springframework.boot.test.context.SpringBootTestContextBootstrapper - @TestExecutionListeners is not present for class [cn.beagile.dslquery.IntegrationTest]: using defaults.
+09:47:35.654 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper - Loaded default TestExecutionListener class names from location [META-INF/spring.factories]: [org.springframework.boot.test.autoconfigure.restdocs.RestDocsTestExecutionListener, org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerResetTestExecutionListener, org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrintOnlyOnFailureTestExecutionListener, org.springframework.boot.test.autoconfigure.web.servlet.WebDriverTestExecutionListener, org.springframework.boot.test.autoconfigure.webservices.client.MockWebServiceServerTestExecutionListener, org.springframework.boot.test.mock.mockito.MockitoTestExecutionListener, org.springframework.boot.test.mock.mockito.ResetMocksTestExecutionListener, org.springframework.test.context.web.ServletTestExecutionListener, org.springframework.test.context.support.DirtiesContextBeforeModesTestExecutionListener, org.springframework.test.context.event.ApplicationEventsTestExecutionListener, org.springframework.test.context.support.DependencyInjectionTestExecutionListener, org.springframework.test.context.support.DirtiesContextTestExecutionListener, org.springframework.test.context.transaction.TransactionalTestExecutionListener, org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener, org.springframework.test.context.event.EventPublishingTestExecutionListener]
+09:47:35.670 [Test worker] DEBUG org.springframework.boot.test.context.SpringBootTestContextBootstrapper - Skipping candidate TestExecutionListener [org.springframework.test.context.web.ServletTestExecutionListener] due to a missing dependency. Specify custom listener classes or make the default listener classes and their required dependencies available. Offending class: [javax/servlet/ServletContext]
+09:47:35.683 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper - Using TestExecutionListeners: [org.springframework.test.context.support.DirtiesContextBeforeModesTestExecutionListener@75afede1, org.springframework.test.context.event.ApplicationEventsTestExecutionListener@e84c55a, org.springframework.boot.test.mock.mockito.MockitoTestExecutionListener@1d2fdfef, org.springframework.boot.test.autoconfigure.SpringBootDependencyInjectionTestExecutionListener@71c756f5, org.springframework.test.context.support.DirtiesContextTestExecutionListener@7b0d6dc9, org.springframework.test.context.transaction.TransactionalTestExecutionListener@530bc9e7, org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener@30b8b4ce, org.springframework.test.context.event.EventPublishingTestExecutionListener@7b033cd2, org.springframework.boot.test.autoconfigure.restdocs.RestDocsTestExecutionListener@6bf0655e, org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerResetTestExecutionListener@66b9dd36, org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrintOnlyOnFailureTestExecutionListener@13520beb, org.springframework.boot.test.autoconfigure.web.servlet.WebDriverTestExecutionListener@715550ff, org.springframework.boot.test.autoconfigure.webservices.client.MockWebServiceServerTestExecutionListener@1967111e, org.springframework.boot.test.mock.mockito.ResetMocksTestExecutionListener@319f3f69]
+09:47:35.689 [Test worker] DEBUG org.springframework.test.context.support.AbstractDirtiesContextTestExecutionListener - Before test class: context [DefaultTestContext@a223f42 testClass = IntegrationTest, testInstance = [null], testMethod = [null], testException = [null], mergedContextConfiguration = [MergedContextConfiguration@576c1a3d testClass = IntegrationTest, locations = '{}', classes = '{class cn.beagile.dslquery.TestApplication}', contextInitializerClasses = '[]', activeProfiles = '{}', propertySourceLocations = '{}', propertySourceProperties = '{org.springframework.boot.test.context.SpringBootTestContextBootstrapper=true}', contextCustomizers = set[org.springframework.boot.test.autoconfigure.actuate.metrics.MetricsExportContextCustomizerFactory$DisableMetricExportContextCustomizer@78afb588, org.springframework.boot.test.autoconfigure.properties.PropertyMappingContextCustomizer@0, org.springframework.boot.test.autoconfigure.web.servlet.WebDriverContextCustomizerFactory$Customizer@10f0957a, org.springframework.boot.test.context.filter.ExcludeFilterContextCustomizer@8bca1b6, org.springframework.boot.test.json.DuplicateJsonObjectContextCustomizerFactory$DuplicateJsonObjectContextCustomizer@6e9fb36c, org.springframework.boot.test.mock.mockito.MockitoContextCustomizer@0, org.springframework.boot.test.web.client.TestRestTemplateContextCustomizer@6ffb3269, org.springframework.boot.test.context.SpringBootTestArgs@1, org.springframework.boot.test.context.SpringBootTestWebEnvironment@5ea55260], contextLoader = 'org.springframework.boot.test.context.SpringBootContextLoader', parent = [null]], attributes = map[[empty]]], class annotated with @DirtiesContext [false] with mode [null].
+09:47:35.698 [Test worker] DEBUG org.springframework.test.context.support.DependencyInjectionTestExecutionListener - Performing dependency injection for test context [[DefaultTestContext@a223f42 testClass = IntegrationTest, testInstance = cn.beagile.dslquery.IntegrationTest@473647b3, testMethod = [null], testException = [null], mergedContextConfiguration = [MergedContextConfiguration@576c1a3d testClass = IntegrationTest, locations = '{}', classes = '{class cn.beagile.dslquery.TestApplication}', contextInitializerClasses = '[]', activeProfiles = '{}', propertySourceLocations = '{}', propertySourceProperties = '{org.springframework.boot.test.context.SpringBootTestContextBootstrapper=true}', contextCustomizers = set[org.springframework.boot.test.autoconfigure.actuate.metrics.MetricsExportContextCustomizerFactory$DisableMetricExportContextCustomizer@78afb588, org.springframework.boot.test.autoconfigure.properties.PropertyMappingContextCustomizer@0, org.springframework.boot.test.autoconfigure.web.servlet.WebDriverContextCustomizerFactory$Customizer@10f0957a, org.springframework.boot.test.context.filter.ExcludeFilterContextCustomizer@8bca1b6, org.springframework.boot.test.json.DuplicateJsonObjectContextCustomizerFactory$DuplicateJsonObjectContextCustomizer@6e9fb36c, org.springframework.boot.test.mock.mockito.MockitoContextCustomizer@0, org.springframework.boot.test.web.client.TestRestTemplateContextCustomizer@6ffb3269, org.springframework.boot.test.context.SpringBootTestArgs@1, org.springframework.boot.test.context.SpringBootTestWebEnvironment@5ea55260], contextLoader = 'org.springframework.boot.test.context.SpringBootContextLoader', parent = [null]], attributes = map['org.springframework.test.context.event.ApplicationEventsTestExecutionListener.recordApplicationEvents' -&gt; false]]].
+09:47:35.742 [Test worker] DEBUG org.springframework.test.context.support.TestPropertySourceUtils - Adding inlined properties to environment: {spring.jmx.enabled=false, org.springframework.boot.test.context.SpringBootTestContextBootstrapper=true}
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -131,42 +131,44 @@
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::                (v2.5.6)
 
-2023-06-22 21:28:12.581  INFO 67521 --- [    Test worker] cn.beagile.dslquery.IntegrationTest      : Starting IntegrationTest using Java 1.8.0_291 on dengzhiguodeMacBook-Pro.local with PID 67521 (started by dengzhiguo in /Users/dengzhiguo/Workspace/dslquery)
-2023-06-22 21:28:12.585  INFO 67521 --- [    Test worker] cn.beagile.dslquery.IntegrationTest      : No active profile set, falling back to default profiles: default
-2023-06-22 21:28:13.464  INFO 67521 --- [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2023-06-22 21:28:13.500  INFO 67521 --- [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 17 ms. Found 0 JPA repository interfaces.
-2023-06-22 21:28:14.565  INFO 67521 --- [    Test worker] o.t.utility.ImageNameSubstitutor         : Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')
-2023-06-22 21:28:14.716  INFO 67521 --- [    Test worker] o.t.d.DockerClientProviderStrategy       : Loaded org.testcontainers.dockerclient.UnixSocketClientProviderStrategy from ~/.testcontainers.properties, will try it first
-2023-06-22 21:28:17.186  INFO 67521 --- [    Test worker] o.t.d.DockerClientProviderStrategy       : Found Docker environment with local Unix socket (unix:///var/run/docker.sock)
-2023-06-22 21:28:17.191  INFO 67521 --- [    Test worker] org.testcontainers.DockerClientFactory   : Docker host IP address is localhost
-2023-06-22 21:28:17.293  INFO 67521 --- [    Test worker] org.testcontainers.DockerClientFactory   : Connected to docker: 
+2023-06-23 09:47:36.223  INFO 70725 --- [    Test worker] cn.beagile.dslquery.IntegrationTest      : Starting IntegrationTest using Java 1.8.0_291 on dengzhiguodeMacBook-Pro.local with PID 70725 (started by dengzhiguo in /Users/dengzhiguo/Workspace/dslquery)
+2023-06-23 09:47:36.226  INFO 70725 --- [    Test worker] cn.beagile.dslquery.IntegrationTest      : No active profile set, falling back to default profiles: default
+2023-06-23 09:47:37.270  INFO 70725 --- [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2023-06-23 09:47:37.305  INFO 70725 --- [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 17 ms. Found 0 JPA repository interfaces.
+2023-06-23 09:47:37.990  INFO 70725 --- [    Test worker] o.t.utility.ImageNameSubstitutor         : Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')
+2023-06-23 09:47:38.077  INFO 70725 --- [    Test worker] o.t.d.DockerClientProviderStrategy       : Loaded org.testcontainers.dockerclient.UnixSocketClientProviderStrategy from ~/.testcontainers.properties, will try it first
+2023-06-23 09:47:39.308  INFO 70725 --- [    Test worker] o.t.d.DockerClientProviderStrategy       : Found Docker environment with local Unix socket (unix:///var/run/docker.sock)
+2023-06-23 09:47:39.311  INFO 70725 --- [    Test worker] org.testcontainers.DockerClientFactory   : Docker host IP address is localhost
+2023-06-23 09:47:39.362  INFO 70725 --- [    Test worker] org.testcontainers.DockerClientFactory   : Connected to docker: 
   Server Version: 20.10.17
   API Version: 1.41
   Operating System: Docker Desktop
   Total Memory: 7960 MB
-2023-06-22 21:28:17.314  INFO 67521 --- [    Test worker] org.testcontainers.DockerClientFactory   : Checking the system...
-2023-06-22 21:28:17.316  INFO 67521 --- [    Test worker] org.testcontainers.DockerClientFactory   : ✔︎ Docker server version should be at least 1.6.0
-2023-06-22 21:28:22.066  INFO 67521 --- [    Test worker] org.testcontainers.DockerClientFactory   : ✔︎ Docker environment should have more than 2GB free disk space
-2023-06-22 21:28:22.390  INFO 67521 --- [    Test worker] &#x1f433; [mysql:5.7.28]                        : Creating container for image: mysql:5.7.28
-2023-06-22 21:28:22.649  INFO 67521 --- [    Test worker] &#x1f433; [mysql:5.7.28]                        : Reusing container with ID: b4ec54cdc3f7ad21feb956f0285573386b25f0cdfa547b23e7bed94ccbfbc104 and hash: 48dc79dd9b277b45b98c0de3d11190226bf94024
-2023-06-22 21:28:22.651  INFO 67521 --- [    Test worker] &#x1f433; [mysql:5.7.28]                        : Reusing existing container (b4ec54cdc3f7ad21feb956f0285573386b25f0cdfa547b23e7bed94ccbfbc104) and not creating a new one
-2023-06-22 21:28:22.702  INFO 67521 --- [    Test worker] &#x1f433; [mysql:5.7.28]                        : Waiting for database connection to become available at jdbc:mysql://localhost:63467/test using query 'SELECT 1'
-2023-06-22 21:28:23.639  INFO 67521 --- [    Test worker] &#x1f433; [mysql:5.7.28]                        : Container is started (JDBC URL: jdbc:mysql://localhost:63467/test)
-2023-06-22 21:28:23.640  INFO 67521 --- [    Test worker] &#x1f433; [mysql:5.7.28]                        : Container mysql:5.7.28 started in PT1.25S
-2023-06-22 21:28:23.766  INFO 67521 --- [    Test worker] o.f.c.internal.license.VersionPrinter    : Flyway Community Edition 5.2.4 by Boxfuse
-2023-06-22 21:28:23.790  INFO 67521 --- [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
-2023-06-22 21:28:24.593  INFO 67521 --- [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
-2023-06-22 21:28:24.613  INFO 67521 --- [    Test worker] o.f.c.internal.database.DatabaseFactory  : Database: jdbc:mysql://localhost:63467/test (MySQL 5.7)
-2023-06-22 21:28:24.933  INFO 67521 --- [    Test worker] o.f.core.internal.command.DbValidate     : Successfully validated 1 migration (execution time 00:00.089s)
-2023-06-22 21:28:24.980  INFO 67521 --- [    Test worker] o.f.core.internal.command.DbMigrate      : Current version of schema `test`: 1
-2023-06-22 21:28:24.986  INFO 67521 --- [    Test worker] o.f.core.internal.command.DbMigrate      : Schema `test` is up to date. No migration necessary.
-2023-06-22 21:28:25.959  INFO 67521 --- [    Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
-2023-06-22 21:28:26.302  INFO 67521 --- [    Test worker] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 5.4.32.Final
-2023-06-22 21:28:26.826  INFO 67521 --- [    Test worker] o.hibernate.annotations.common.Version   : HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
-2023-06-22 21:28:27.475  INFO 67521 --- [    Test worker] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.MySQL57Dialect
-2023-06-22 21:28:28.115  INFO 67521 --- [    Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
-2023-06-22 21:28:28.143  INFO 67521 --- [    Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
-2023-06-22 21:28:28.606  INFO 67521 --- [    Test worker] cn.beagile.dslquery.IntegrationTest      : Started IntegrationTest in 16.616 seconds (JVM running for 20.71)
+2023-06-23 09:47:39.383  INFO 70725 --- [    Test worker] org.testcontainers.DockerClientFactory   : Checking the system...
+2023-06-23 09:47:39.384  INFO 70725 --- [    Test worker] org.testcontainers.DockerClientFactory   : ✔︎ Docker server version should be at least 1.6.0
+2023-06-23 09:47:41.016  INFO 70725 --- [    Test worker] org.testcontainers.DockerClientFactory   : ✔︎ Docker environment should have more than 2GB free disk space
+2023-06-23 09:47:41.212  INFO 70725 --- [    Test worker] &#x1f433; [mysql:5.7.28]                        : Creating container for image: mysql:5.7.28
+2023-06-23 09:47:41.331  INFO 70725 --- [    Test worker] &#x1f433; [mysql:5.7.28]                        : Reusing container with ID: b4ec54cdc3f7ad21feb956f0285573386b25f0cdfa547b23e7bed94ccbfbc104 and hash: 48dc79dd9b277b45b98c0de3d11190226bf94024
+2023-06-23 09:47:41.332  INFO 70725 --- [    Test worker] &#x1f433; [mysql:5.7.28]                        : Reusing existing container (b4ec54cdc3f7ad21feb956f0285573386b25f0cdfa547b23e7bed94ccbfbc104) and not creating a new one
+2023-06-23 09:47:41.360  INFO 70725 --- [    Test worker] &#x1f433; [mysql:5.7.28]                        : Waiting for database connection to become available at jdbc:mysql://localhost:63467/test using query 'SELECT 1'
+2023-06-23 09:47:42.344  INFO 70725 --- [    Test worker] &#x1f433; [mysql:5.7.28]                        : Container is started (JDBC URL: jdbc:mysql://localhost:63467/test)
+2023-06-23 09:47:42.345  INFO 70725 --- [    Test worker] &#x1f433; [mysql:5.7.28]                        : Container mysql:5.7.28 started in PT1.134S
+2023-06-23 09:47:42.485  INFO 70725 --- [    Test worker] o.f.c.internal.license.VersionPrinter    : Flyway Community Edition 5.2.4 by Boxfuse
+2023-06-23 09:47:42.502  INFO 70725 --- [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2023-06-23 09:47:43.050  INFO 70725 --- [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2023-06-23 09:47:43.062  INFO 70725 --- [    Test worker] o.f.c.internal.database.DatabaseFactory  : Database: jdbc:mysql://localhost:63467/test (MySQL 5.7)
+2023-06-23 09:47:43.271  INFO 70725 --- [    Test worker] o.f.core.internal.command.DbValidate     : Successfully validated 1 migration (execution time 00:00.063s)
+2023-06-23 09:47:43.308  INFO 70725 --- [    Test worker] o.f.core.internal.command.DbMigrate      : Current version of schema `test`: 1
+2023-06-23 09:47:43.312  INFO 70725 --- [    Test worker] o.f.core.internal.command.DbMigrate      : Schema `test` is up to date. No migration necessary.
+2023-06-23 09:47:43.984  INFO 70725 --- [    Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2023-06-23 09:47:44.135  INFO 70725 --- [    Test worker] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 5.4.32.Final
+2023-06-23 09:47:44.235  INFO 70725 --- [    Test worker] o.hibernate.annotations.common.Version   : HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2023-06-23 09:47:44.516  INFO 70725 --- [    Test worker] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.MySQL57Dialect
+2023-06-23 09:47:44.970  INFO 70725 --- [    Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2023-06-23 09:47:44.991  INFO 70725 --- [    Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2023-06-23 09:47:45.228  INFO 70725 --- [    Test worker] cn.beagile.dslquery.IntegrationTest      : Started IntegrationTest in 9.482 seconds (JVM running for 13.296)
+[(bornAt greaterthan 1980-01-01 12:00:00)]
+[(name equal bob)]
 </pre>
 </span>
 </div>
@@ -178,7 +180,7 @@
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="http://www.gradle.org">Gradle 7.1.1</a> at 2023-6-22 21:28:30</p>
+<a href="http://www.gradle.org">Gradle 7.1.1</a> at 2023-6-23 9:47:46</p>
 </div>
 </div>
 </body>

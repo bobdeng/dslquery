@@ -8,9 +8,13 @@ public class WhereParser {
     public Where parse(String whereString) {
         Where where = new Where();
         String condition = whereString.substring(1, whereString.indexOf('(', 1));
+        if (condition.equals("")) {
+            condition = "and";
+        }
         where.setCondition(condition);
         String content = whereString.substring(whereString.indexOf('(', 1), whereString.lastIndexOf(')'));
         List<String> subWhereStrings = new WhereList(content).list();
+        System.out.println(subWhereStrings);
         subWhereStrings.stream()
                 .filter(this::isPredicate)
                 .map(this::parsePredicate)
@@ -25,11 +29,18 @@ public class WhereParser {
     private Predicate parsePredicate(String subWhere) {
         Pattern wordPattern = Pattern.compile("\\w+");
         Matcher matcher = wordPattern.matcher(subWhere);
-        matcher.find();
+        if (!matcher.find()) {
+            throw new RuntimeException("invalid predicate:" + subWhere);
+        }
         String fieldName = matcher.group();
-        matcher.find();
+        if (!matcher.find()) {
+            throw new RuntimeException("invalid predicate:" + subWhere);
+        }
         String operator = matcher.group();
         String value = subWhere.substring(subWhere.indexOf(operator) + operator.length(), subWhere.length() - 1).trim();
+        if (value.equals("")) {
+            throw new RuntimeException("invalid predicate:" + subWhere);
+        }
         return new Predicate(fieldName, operator, value);
     }
 

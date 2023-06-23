@@ -11,6 +11,9 @@ public class Predicate implements ToSQL {
 
     public Predicate(String field, String operator, String value) {
         this.field = field;
+        if (Operators.of(operator) == null) {
+            throw new RuntimeException("invalid operator:" + operator);
+        }
         this.operator = operator;
         this.value = value;
     }
@@ -28,5 +31,14 @@ public class Predicate implements ToSQL {
         String paramName = field + sqlQuery.next();
         sqlQuery.addParam(paramName, field, this.value);
         return "(" + sqlQuery.aliasOf(field) + " " + Operators.of(operator).getOperator() + " :" + paramName + ")";
+    }
+
+    @Override
+    public String toString() {
+        return "Predicate{" +
+                "field='" + field + '\'' +
+                ", operator='" + operator + '\'' +
+                ", value='" + value + '\'' +
+                '}';
     }
 }

@@ -1,9 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.beagile.dslquery.WhereParserTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2023-06-22T13:28:28" hostname="dengzhiguodeMacBook-Pro.local" time="0.009">
+<testsuite name="cn.beagile.dslquery.WhereParserTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2023-06-23T01:47:45" hostname="dengzhiguodeMacBook-Pro.local" time="0.01">
   <properties/>
   <testcase name="should_parse_where_with_inner_predicate()" classname="cn.beagile.dslquery.WhereParserTest" time="0.001"/>
+  <testcase name="should_throw_exception_when_wrong_predicate_empty()" classname="cn.beagile.dslquery.WhereParserTest" time="0.001"/>
+  <testcase name="should_parse_where_with_inner_predicate_without_and_or()" classname="cn.beagile.dslquery.WhereParserTest" time="0.001"/>
+  <testcase name="should_throw_exception_when_wrong_predicate()" classname="cn.beagile.dslquery.WhereParserTest" time="0.001"/>
+  <testcase name="should_throw_exception_when_wrong_predicate_no_value()" classname="cn.beagile.dslquery.WhereParserTest" time="0.001"/>
   <testcase name="should_parse_where_with_2_predicate()" classname="cn.beagile.dslquery.WhereParserTest" time="0.001"/>
-  <testcase name="should_parse_where()" classname="cn.beagile.dslquery.WhereParserTest" time="0.004"/>
-  <system-out><![CDATA[]]></system-out>
+  <testcase name="should_parse_where()" classname="cn.beagile.dslquery.WhereParserTest" time="0.001"/>
+  <testcase name="should_throw_exception_when_wrong_start()" classname="cn.beagile.dslquery.WhereParserTest" time="0.001"/>
+  <testcase name="should_throw_exception_when_wrong_predicate_operator()" classname="cn.beagile.dslquery.WhereParserTest" time="0.0"/>
+  <system-out><![CDATA[[(or(name equal bob)(name equal alice)), (age greaterthan 18)]
+[(name equal bob), (name equal alice)]
+[()]
+[(name equal bob), (age greaterthan 18)]
+Where{condition='and', wheres=[], predicates=[Predicate{field='name', operator='equal', value='bob'}, Predicate{field='age', operator='greaterthan', value='18'}]}
+[(nameequalbob)]
+[(name equal )]
+[(name equal bob), (age greaterthan 18)]
+[(name equal bob)]
+[(nameequal bob 123)]
+]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

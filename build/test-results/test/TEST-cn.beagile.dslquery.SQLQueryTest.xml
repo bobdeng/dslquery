@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="cn.beagile.dslquery.SQLQueryTest" tests="10" skipped="0" failures="0" errors="0" timestamp="2023-06-22T13:28:11" hostname="dengzhiguodeMacBook-Pro.local" time="0.035">
+<testsuite name="cn.beagile.dslquery.SQLQueryTest" tests="10" skipped="0" failures="0" errors="0" timestamp="2023-06-23T01:47:35" hostname="dengzhiguodeMacBook-Pro.local" time="0.108">
   <properties/>
   <testcase name="add_double_param()" classname="cn.beagile.dslquery.SQLQueryTest" time="0.001"/>
-  <testcase name="add_instant_param()" classname="cn.beagile.dslquery.SQLQueryTest" time="0.022"/>
+  <testcase name="add_instant_param()" classname="cn.beagile.dslquery.SQLQueryTest" time="0.095"/>
   <testcase name="add_long_param()" classname="cn.beagile.dslquery.SQLQueryTest" time="0.001"/>
   <testcase name="add_long_timestamp_param()" classname="cn.beagile.dslquery.SQLQueryTest" time="0.001"/>
   <testcase name="add_float_param()" classname="cn.beagile.dslquery.SQLQueryTest" time="0.0"/>
-  <testcase name="should_return_alias()" classname="cn.beagile.dslquery.SQLQueryTest" time="0.001"/>
+  <testcase name="should_return_alias()" classname="cn.beagile.dslquery.SQLQueryTest" time="0.0"/>
   <testcase name="add_int_param()" classname="cn.beagile.dslquery.SQLQueryTest" time="0.001"/>
-  <testcase name="should_throw_when_alias_not_exist()" classname="cn.beagile.dslquery.SQLQueryTest" time="0.001"/>
+  <testcase name="should_throw_when_alias_not_exist()" classname="cn.beagile.dslquery.SQLQueryTest" time="0.002"/>
   <testcase name="add_param_not_exist()" classname="cn.beagile.dslquery.SQLQueryTest" time="0.001"/>
   <testcase name="add_string_param()" classname="cn.beagile.dslquery.SQLQueryTest" time="0.0"/>
   <system-out><![CDATA[]]></system-out>
