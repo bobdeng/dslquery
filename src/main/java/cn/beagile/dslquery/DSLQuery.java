@@ -13,6 +13,7 @@ public class DSLQuery<T> {
     private Integer skip;
     private Integer limit;
     private int timezoneOffset;
+    private String whereCondition = null;
 
     public DSLQuery(QueryExecutor queryExecutor, Class<T> queryResultClass) {
         this.queryExecutor = queryExecutor;
@@ -44,7 +45,10 @@ public class DSLQuery<T> {
     }
 
     private String getWhereSQL(SQLQuery sqlQuery) {
-        return " where " + whereList.stream().map(where -> where.toSQL(sqlQuery)).collect(Collectors.joining(" and "));
+        if (this.whereCondition == null) {
+            this.whereCondition = " where " + whereList.stream().map(where -> where.toSQL(sqlQuery)).collect(Collectors.joining(" and "));
+        }
+        return this.whereCondition;
     }
 
     private String getSelectSQL() {
