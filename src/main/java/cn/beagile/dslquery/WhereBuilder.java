@@ -92,4 +92,9 @@ public class WhereBuilder {
     }
 
 
+    public WhereBuilder prev() {
+        expressionStack.pop();
+        currentExpression = expressionStack.lastElement();
+        return this;
+    }
 }

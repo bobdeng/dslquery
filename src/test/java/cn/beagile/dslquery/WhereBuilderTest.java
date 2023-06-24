@@ -127,7 +127,20 @@ public class WhereBuilderTest {
                 .greaterthan("age", "18")
                 .and()
                 .equal("name", "alice")
+                .contains("name", "bob")
                 .build();
-        assertEquals("(or(name equal bob)(age greaterthan 18)(and(name equal alice)))", result);
+        assertEquals("(or(name equal bob)(age greaterthan 18)(and(name equal alice)(name contains bob)))", result);
+    }
+    @Test
+    public void build_with_prev() {
+        String result = new WhereBuilder().or()
+                .equal("name", "bob")
+                .greaterthan("age", "18")
+                .and()
+                .equal("name", "alice")
+                .prev()
+                .contains("name", "bob")
+                .build();
+        assertEquals("(or(name equal bob)(age greaterthan 18)(and(name equal alice))(name contains bob))", result);
     }
 }
