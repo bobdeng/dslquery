@@ -13,11 +13,11 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class SQLBuilder {
+class SQLBuilder<T> {
     private static final Map<Class, Function<String, Object>> FIELD_CAST_MAP = new HashMap<>();
 
     private final Map<String, Object> params;
-    private final Class queryResultClass;
+    private final Class<T> queryResultClass;
     private final int timezoneOffset;
     private final List<ComplexExpression> whereList;
     private final Sort sort;
@@ -40,7 +40,7 @@ public class SQLBuilder {
         FIELD_CAST_MAP.put(String.class, s -> s);
     }
 
-    public SQLBuilder(DSLQuery dslQuery) {
+    SQLBuilder(DSLQuery<T> dslQuery) {
         this.whereList = dslQuery.getWhereList();
         this.sort = dslQuery.getSort();
         this.queryResultClass = dslQuery.getQueryResultClass();
@@ -129,6 +129,10 @@ public class SQLBuilder {
         return this.sql;
     }
 
+    public SQLQuery build() {
+        return new SQLQuery(this.sql(), this.countSql(), this.params, this.page);
+    }
+
     private String getSQL() {
         String sql = getSelectSQL();
         if (whereList.size() > 0) {
@@ -161,7 +165,7 @@ public class SQLBuilder {
     }
 
     private String getViewName() {
-        View view = (View) queryResultClass.getAnnotation(View.class);
+        View view = queryResultClass.getAnnotation(View.class);
         return view.value();
     }
 

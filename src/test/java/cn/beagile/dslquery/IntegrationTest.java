@@ -39,17 +39,17 @@ public class IntegrationTest {
         }
 
         @Override
-        public <T> List<T> list(SQLBuilder sqlBuilder, Function<ResultSet, T> resultSetReader) {
-            String sql = sqlBuilder.sql();
-            if (sqlBuilder.limit() != null) {
-                sql += " limit " + sqlBuilder.skip() + "," + sqlBuilder.limit();
+        public <T> List<T> list(Function<ResultSet, T> resultSetReader, SQLQuery sqlQuery) {
+            String sql = sqlQuery.getSql();
+            if (sqlQuery.getLimit() != null) {
+                sql += " limit " + sqlQuery.getSkip() + "," + sqlQuery.getLimit();
             }
-            return jdbcTemplate.query(sql, sqlBuilder.getParams(), (rs, rowNum) -> resultSetReader.apply(rs));
+            return jdbcTemplate.query(sql, sqlQuery.getParams(), (rs, rowNum) -> resultSetReader.apply(rs));
         }
 
         @Override
-        public int count(SQLBuilder sqlBuilder) {
-            return jdbcTemplate.query(sqlBuilder.countSql(), sqlBuilder.getParams(), (rs, rowNum) -> rs.getInt(1)).get(0);
+        public int count(SQLQuery sqlQuery) {
+            return (int) jdbcTemplate.query(sqlQuery.getCountSql(), sqlQuery.getParams(), (rs, rowNum) -> rs.getInt(1)).get(0);
         }
     }
 

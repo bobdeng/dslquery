@@ -11,7 +11,7 @@ import org.testcontainers.utility.DockerImageName;
 import javax.sql.DataSource;
 
 @Configuration
-public class DataSourceConfig {
+public class TestDataSourceConfig {
     @Rule
     public GenericContainer redis = new GenericContainer("redis:3.0.6")
             .withExposedPorts(6379);
