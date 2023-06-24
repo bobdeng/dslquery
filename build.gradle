@@ -42,6 +42,7 @@ publishing {
     }
 }
 tasks.jar {
+    dependsOn(test,jacocoTestReport)
     enabled = true
     archiveClassifier = ''
 }

@@ -6,7 +6,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class WhereListTest {
+public class WhereListTest {
     @Test
     public void should_return_1() {
         WhereList whereList = new WhereList("(name equal bob)");

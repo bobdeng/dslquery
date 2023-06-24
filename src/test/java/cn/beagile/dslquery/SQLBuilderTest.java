@@ -11,7 +11,7 @@ import java.time.format.DateTimeFormatter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class SQLBuilderTest {
+public class SQLBuilderTest {
     private int timezoneOffset = -8;
     @View("test_view")
     public static class QueryResultForTest {

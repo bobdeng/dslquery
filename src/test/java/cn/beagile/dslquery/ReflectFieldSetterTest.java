@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ReflectFieldSetterTest {
+public class ReflectFieldSetterTest {
     @Test
     public void should_throw_when_final() {
         RuntimeException e = assertThrows(RuntimeException.class, () -> new ReflectFieldSetter(new FinalFieldBean(), FinalFieldBean.class.getDeclaredFields()[0], "bob").set());

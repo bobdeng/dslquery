@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class SortFieldTest {
+public class SortFieldTest {
     //当字段名称不合法的时候，抛出异常
     @Test
     public void should_throw_exception_when_field_not_start_with_letter() {

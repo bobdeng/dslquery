@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class SingleExpressionTest {
+public class SingleExpressionTest {
     //当field不是以字母开头的时候，抛出异常
     @Test
     public void should_throw_exception_when_field_not_start_with_letter() {
