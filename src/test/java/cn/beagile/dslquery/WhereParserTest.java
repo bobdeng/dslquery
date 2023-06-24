@@ -25,6 +25,7 @@ public class WhereParserTest {
         assertEquals(new SingleExpression("name", "isnull", ""), where.getExpressions().get(0));
     }
 
+
     @Test
     public void should_parse_where_with_2_predicate() {
         WhereParser whereParser = new WhereParser();
