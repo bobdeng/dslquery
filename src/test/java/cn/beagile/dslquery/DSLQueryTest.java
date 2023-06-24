@@ -16,12 +16,12 @@ import static org.mockito.Mockito.*;
 
 public class DSLQueryTest {
     QueryExecutor queryExecutor;
-    ArgumentCaptor<SQLQuery> sqlQueryArgumentCaptor;
+    ArgumentCaptor<SQLBuilder> sqlQueryArgumentCaptor;
 
     @BeforeEach
     public void setup() {
         queryExecutor = mock(QueryExecutor.class);
-        sqlQueryArgumentCaptor = ArgumentCaptor.forClass(SQLQuery.class);
+        sqlQueryArgumentCaptor = ArgumentCaptor.forClass(SQLBuilder.class);
         ArrayList<QueryResultBean> list = new ArrayList<>();
         list.add(new QueryResultBean("bob"));
         when(queryExecutor.list(any(), any())).thenReturn(Collections.singletonList(list));
@@ -32,7 +32,7 @@ public class DSLQueryTest {
         DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultBean.class);
         dslQuery.query();
         verify(queryExecutor).list(sqlQueryArgumentCaptor.capture(), any());
-        SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
+        SQLBuilder sqlQuery = sqlQueryArgumentCaptor.getValue();
         assertEquals("select name from view_query", sqlQuery.sql());
     }
 
@@ -42,7 +42,7 @@ public class DSLQueryTest {
         DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultBean.class);
         dslQuery.where("(and(name equal bob))").query();
         verify(queryExecutor).list(sqlQueryArgumentCaptor.capture(), any());
-        SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
+        SQLBuilder sqlQuery = sqlQueryArgumentCaptor.getValue();
         assertEquals("select name from view_query where ((name = :name1))", sqlQuery.sql());
         Map<String, Object> params = sqlQuery.getParams();
         assertEquals("bob", params.get("name1"));
@@ -62,7 +62,7 @@ public class DSLQueryTest {
         DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultForComplexSearch.class);
         dslQuery.where("(and(or(name equal bob)(name equal alice))(age greaterthan 20))").query();
         verify(queryExecutor).list(sqlQueryArgumentCaptor.capture(), any());
-        SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
+        SQLBuilder sqlQuery = sqlQueryArgumentCaptor.getValue();
         assertEquals("select name,age from view_query where (((name = :name1) or (name = :name2)) and (age > :age3))", sqlQuery.sql());
         Map<String, Object> params = sqlQuery.getParams();
         assertEquals("bob", params.get("name1"));
@@ -83,7 +83,7 @@ public class DSLQueryTest {
         DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultWithAlias.class);
         dslQuery.where("(and(or(name equal bob)(name equal alice))(age greaterthan 20))").query();
         verify(queryExecutor).list(sqlQueryArgumentCaptor.capture(), any());
-        SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
+        SQLBuilder sqlQuery = sqlQueryArgumentCaptor.getValue();
         assertEquals("select name1,age from view_query where (((name1 = :name1) or (name1 = :name2)) and (age > :age3))", sqlQuery.sql());
         Map<String, Object> params = sqlQuery.getParams();
         assertEquals("bob", params.get("name1"));
@@ -96,7 +96,7 @@ public class DSLQueryTest {
         dslQuery.where("(and(age greaterthan 20))")
                 .where("(and(name equal bob))").query();
         verify(queryExecutor, times(1)).list(sqlQueryArgumentCaptor.capture(), any());
-        SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
+        SQLBuilder sqlQuery = sqlQueryArgumentCaptor.getValue();
         assertEquals("select name1,age from view_query where ((age > :age1)) and ((name1 = :name2))", sqlQuery.sql());
     }
 
@@ -106,7 +106,7 @@ public class DSLQueryTest {
         DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultBean.class);
         dslQuery.sort("name").query();
         verify(queryExecutor).list(sqlQueryArgumentCaptor.capture(), any());
-        SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
+        SQLBuilder sqlQuery = sqlQueryArgumentCaptor.getValue();
         assertEquals("select name from view_query order by name", sqlQuery.sql());
     }
 
@@ -115,7 +115,7 @@ public class DSLQueryTest {
         DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultBean.class);
         dslQuery.where("(and(name notnull))").query();
         verify(queryExecutor).list(sqlQueryArgumentCaptor.capture(), any());
-        SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
+        SQLBuilder sqlQuery = sqlQueryArgumentCaptor.getValue();
         assertEquals("select name from view_query where ((name is not null))", sqlQuery.sql());
         assertEquals(0, sqlQuery.getParams().size());
     }
@@ -134,7 +134,7 @@ public class DSLQueryTest {
         DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultBean.class);
         dslQuery.where("(and(name " + operator + " bob))").query();
         verify(queryExecutor).list(sqlQueryArgumentCaptor.capture(), any());
-        SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
+        SQLBuilder sqlQuery = sqlQueryArgumentCaptor.getValue();
         assertEquals("select name from view_query where ((name " + condition + " :name1))", sqlQuery.sql());
         assertEquals(1, sqlQuery.getParams().size());
         assertEquals(expected, sqlQuery.getParams().get("name1"));
@@ -145,7 +145,7 @@ public class DSLQueryTest {
         DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultBean.class);
         dslQuery.sort("name asc").query();
         verify(queryExecutor).list(sqlQueryArgumentCaptor.capture(), any());
-        SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
+        SQLBuilder sqlQuery = sqlQueryArgumentCaptor.getValue();
         assertEquals("select name from view_query order by name asc", sqlQuery.sql());
     }
 
@@ -154,7 +154,7 @@ public class DSLQueryTest {
         DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultWithAlias.class);
         dslQuery.sort("name asc").query();
         verify(queryExecutor).list(sqlQueryArgumentCaptor.capture(), any());
-        SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
+        SQLBuilder sqlQuery = sqlQueryArgumentCaptor.getValue();
         assertEquals("select name1,age from view_query order by name1 asc", sqlQuery.sql());
     }
 
@@ -163,7 +163,7 @@ public class DSLQueryTest {
         DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultWithAlias.class);
         dslQuery.sort("name asc,age desc").query();
         verify(queryExecutor).list(sqlQueryArgumentCaptor.capture(), any());
-        SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
+        SQLBuilder sqlQuery = sqlQueryArgumentCaptor.getValue();
         assertEquals("select name1,age from view_query order by name1 asc,age desc", sqlQuery.sql());
     }
 
@@ -173,7 +173,7 @@ public class DSLQueryTest {
         DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultWithAlias.class);
         dslQuery.skip(10).limit(10).query();
         verify(queryExecutor).list(sqlQueryArgumentCaptor.capture(), any());
-        SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
+        SQLBuilder sqlQuery = sqlQueryArgumentCaptor.getValue();
         assertEquals(10, sqlQuery.limit());
     }
 
@@ -182,7 +182,7 @@ public class DSLQueryTest {
         DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultWithAlias.class);
         dslQuery.query();
         verify(queryExecutor).list(sqlQueryArgumentCaptor.capture(), any());
-        SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
+        SQLBuilder sqlQuery = sqlQueryArgumentCaptor.getValue();
         assertNull(sqlQuery.limit());
         assertNull(sqlQuery.skip());
     }
@@ -192,7 +192,7 @@ public class DSLQueryTest {
         DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultWithAlias.class);
         dslQuery.query();
         verify(queryExecutor).list(sqlQueryArgumentCaptor.capture(), any());
-        SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
+        SQLBuilder sqlQuery = sqlQueryArgumentCaptor.getValue();
         assertEquals("select count(*) from view_query", sqlQuery.countSql());
     }
 
@@ -201,7 +201,7 @@ public class DSLQueryTest {
         DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultWithAlias.class);
         dslQuery.where("(and(name equal bob))").query();
         verify(queryExecutor).list(sqlQueryArgumentCaptor.capture(), any());
-        SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
+        SQLBuilder sqlQuery = sqlQueryArgumentCaptor.getValue();
         assertEquals("select count(*) from view_query where ((name1 = :name1))", sqlQuery.countSql());
         assertEquals(1, sqlQuery.getParams().size());
         assertEquals("bob", sqlQuery.getParams().get("name1"));

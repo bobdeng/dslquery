@@ -22,7 +22,7 @@ class SortField {
         }
     }
 
-    public String toSQL(SQLQuery sqlQuery) {
+    public String toSQL(SQLBuilder sqlQuery) {
         return sqlQuery.aliasOf(field) + (Objects.isNull(direction) ? "" : " " + direction);
     }
 }

@@ -39,7 +39,7 @@ public class IntegrationTest {
         }
 
         @Override
-        public <T> List<T> list(SQLQuery sqlQuery, Function<ResultSet, T> resultSetReader) {
+        public <T> List<T> list(SQLBuilder sqlQuery, Function<ResultSet, T> resultSetReader) {
             String sql = sqlQuery.sql();
             if (sqlQuery.limit() != null) {
                 sql += " limit " + sqlQuery.skip() + "," + sqlQuery.limit();
@@ -48,7 +48,7 @@ public class IntegrationTest {
         }
 
         @Override
-        public int count(SQLQuery sqlQuery) {
+        public int count(SQLBuilder sqlQuery) {
             return jdbcTemplate.query(sqlQuery.countSql(), sqlQuery.getParams(), (rs, rowNum) -> rs.getInt(1)).get(0);
         }
     }

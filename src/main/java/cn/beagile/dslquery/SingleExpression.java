@@ -40,7 +40,7 @@ class SingleExpression implements FilterExpression {
         return Objects.equals(field, predicate.field) && Objects.equals(operator, predicate.operator) && Objects.equals(value, predicate.value);
     }
 
-    public String toSQL(SQLQuery sqlQuery) {
+    public String toSQL(SQLBuilder sqlQuery) {
         Operator operatorEnum = Operators.of(this.operator);
         if (operatorEnum.needValue()) {
             String paramName = field + sqlQuery.next();

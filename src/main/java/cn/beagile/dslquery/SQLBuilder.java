@@ -7,12 +7,15 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class SQLQuery {
+public class SQLBuilder {
     private final Map<String, Object> params;
-    private final Class queryResultBeanClass;
+    private final Class queryResultClass;
     private final int timezoneOffset;
     private static final Map<Class, Function<String, Object>> FIELD_CAST_MAP = new HashMap<>();
     private int index;
@@ -32,11 +35,31 @@ public class SQLQuery {
         FIELD_CAST_MAP.put(String.class, s -> s);
     }
 
-    public SQLQuery(Class queryResultBeanClass, int timezoneOffset) {
+    private List<ComplexExpression> whereList;
+    private Sort sort;
+    private String whereCondition;
+
+    public SQLBuilder(Class queryResultBeanClass, int timezoneOffset, List<ComplexExpression> whereList, Sort sort) {
+        this.whereList = whereList;
+        this.sort = sort;
         this.index = 1;
-        this.queryResultBeanClass = queryResultBeanClass;
+        this.queryResultClass = queryResultBeanClass;
         this.params = new HashMap<>();
         this.timezoneOffset = timezoneOffset;
+        this.sql = getSQL(this);
+        this.countSql = getCountSQL(this);
+    }
+
+    public <T> SQLBuilder(DSLQuery dslQuery) {
+        this.whereList = dslQuery.getWhereList();
+        this.sort = dslQuery.getSort();
+        this.index = 1;
+        this.queryResultClass = dslQuery.getQueryResultClass();
+        this.params = new HashMap<>();
+        this.timezoneOffset = dslQuery.getTimezoneOffset();
+        this.sql = getSQL(this);
+        this.countSql = getCountSQL(this);
+        this.page = new Paging(dslQuery.getSkip(), dslQuery.getLimit());
     }
 
 
@@ -46,7 +69,7 @@ public class SQLQuery {
 
     void addParam(String paramName, String fieldName, String value) {
         try {
-            Field field = this.queryResultBeanClass.getDeclaredField(fieldName);
+            Field field = this.queryResultClass.getDeclaredField(fieldName);
             Object paramValue = castValueByField(value, field);
             params.put(paramName, paramValue);
         } catch (NoSuchFieldException e) {
@@ -108,7 +131,7 @@ public class SQLQuery {
 
     String aliasOf(String field) {
         try {
-            return this.queryResultBeanClass.getDeclaredField(field).getAnnotation(Column.class).value();
+            return this.queryResultClass.getDeclaredField(field).getAnnotation(Column.class).value();
         } catch (NoSuchFieldException e) {
             throw new RuntimeException("No such field: " + field);
         }
@@ -124,5 +147,50 @@ public class SQLQuery {
 
     public String countSql() {
         return this.countSql;
+    }
+
+    private String getSQL(SQLBuilder sqlQuery) {
+        String sql = getSelectSQL();
+        if (whereList.size() > 0) {
+            sql += getWhereSQL(sqlQuery);
+        }
+        if (this.sort != null) {
+            sql += getSortSQL(sqlQuery);
+        }
+        return sql;
+    }
+
+    private String getWhereSQL(SQLBuilder sqlQuery) {
+        if (this.whereCondition == null) {
+            this.whereCondition = String.format(" where %s", whereList.stream().map(where -> where.toSQL(sqlQuery)).collect(Collectors.joining(" and ")));
+        }
+        return this.whereCondition;
+    }
+
+    private String getSelectSQL() {
+        String fields = Stream.of(queryResultClass.getDeclaredFields())
+                .filter(field -> field.isAnnotationPresent(Column.class))
+                .map(field -> field.getAnnotation(Column.class))
+                .map(Column::value)
+                .collect(Collectors.joining(","));
+        return String.format("select %s from %s", fields, getViewName());
+    }
+
+    private String getSortSQL(SQLBuilder sqlQuery) {
+        return String.format(" order by %s", sort.toSQL(sqlQuery));
+    }
+
+    private String getViewName() {
+        System.out.println(queryResultClass);
+        View view = (View) queryResultClass.getAnnotation(View.class);
+        return view.value();
+    }
+
+    private String getCountSQL(SQLBuilder sqlQuery) {
+        String result = String.format("select count(*) from %s", getViewName());
+        if (whereList.size() > 0) {
+            result += getWhereSQL(sqlQuery);
+        }
+        return result;
     }
 }
