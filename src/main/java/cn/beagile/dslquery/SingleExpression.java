@@ -22,7 +22,7 @@ class SingleExpression implements FilterExpression {
     }
 
     private void checkFieldName() {
-        Validators.validateField(field);
+        Validators.validateFieldName(field);
     }
 
     private void checkOperator() {

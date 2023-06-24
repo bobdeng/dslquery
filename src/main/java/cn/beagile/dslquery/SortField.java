@@ -9,7 +9,7 @@ class SortField {
     public SortField(String sort) {
         String[] tokens = sort.split("\\s+");
         this.field = tokens[0];
-        Validators.validateField(field);
+        Validators.validateFieldName(field);
         if (tokens.length == 2) {
             this.direction = tokens[1];
             validateDirection();

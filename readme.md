@@ -30,9 +30,9 @@ notnull
 
 ```java
 public interface QueryExecutor {
-    <T> List<T> list(SQLQuery sqlQuery, Function<ResultSet, T> resultSetReader);
+    <T> List<T> list(SQLBuilder sqlBuilder, Function<ResultSet, T> resultSetReader);
 
-    int count(SQLQuery sqlQuery);
+    int count(SQLBuilder sqlBuilder);
 }
 ```
 

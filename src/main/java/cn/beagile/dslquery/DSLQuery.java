@@ -44,18 +44,14 @@ public class DSLQuery<T> {
     }
 
     public Paged<T> pagedQuery() {
-        SQLBuilder sqlQuery = getSqlQuery();
-        List<T> result = queryExecutor.list(sqlQuery, new DefaultResultSetReader<>(queryResultClass));
-        int count = queryExecutor.count(sqlQuery);
+        SQLBuilder sqlBuilder = new SQLBuilder(this);
+        List<T> result = queryExecutor.list(sqlBuilder, new DefaultResultSetReader<>(queryResultClass));
+        int count = queryExecutor.count(sqlBuilder);
         return new Paged<>(result, count, new Paging(this.skip, this.limit));
     }
 
     public List<T> query() {
-        return queryExecutor.list(getSqlQuery(), new DefaultResultSetReader<>(queryResultClass));
-    }
-
-    private SQLBuilder getSqlQuery() {
-        return new SQLBuilder(this);
+        return queryExecutor.list(new SQLBuilder(this), new DefaultResultSetReader<>(queryResultClass));
     }
 
     public Class<T> getQueryResultClass() {

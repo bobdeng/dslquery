@@ -14,14 +14,19 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class SQLBuilder {
+    private static final Map<Class, Function<String, Object>> FIELD_CAST_MAP = new HashMap<>();
+
     private final Map<String, Object> params;
     private final Class queryResultClass;
     private final int timezoneOffset;
-    private static final Map<Class, Function<String, Object>> FIELD_CAST_MAP = new HashMap<>();
+    private final List<ComplexExpression> whereList;
+    private final Sort sort;
+    private final Paging page;
+
     private int index;
     private String sql;
-    private Paging page;
     private String countSql;
+    private String whereCondition;
 
     static {
         FIELD_CAST_MAP.put(Integer.class, Integer::parseInt);
@@ -35,36 +40,18 @@ public class SQLBuilder {
         FIELD_CAST_MAP.put(String.class, s -> s);
     }
 
-    private List<ComplexExpression> whereList;
-    private Sort sort;
-    private String whereCondition;
-
-    public SQLBuilder(Class queryResultBeanClass, int timezoneOffset, List<ComplexExpression> whereList, Sort sort) {
-        this.whereList = whereList;
-        this.sort = sort;
-        this.index = 1;
-        this.queryResultClass = queryResultBeanClass;
-        this.params = new HashMap<>();
-        this.timezoneOffset = timezoneOffset;
-        this.sql = getSQL(this);
-        this.countSql = getCountSQL(this);
-    }
-
-    public <T> SQLBuilder(DSLQuery dslQuery) {
+    public SQLBuilder(DSLQuery dslQuery) {
         this.whereList = dslQuery.getWhereList();
         this.sort = dslQuery.getSort();
-        this.index = 1;
         this.queryResultClass = dslQuery.getQueryResultClass();
         this.params = new HashMap<>();
         this.timezoneOffset = dslQuery.getTimezoneOffset();
-        this.sql = getSQL(this);
-        this.countSql = getCountSQL(this);
         this.page = new Paging(dslQuery.getSkip(), dslQuery.getLimit());
     }
 
 
     int next() {
-        return this.index++;
+        return ++this.index;
     }
 
     void addParam(String paramName, String fieldName, String value) {
@@ -108,10 +95,6 @@ public class SQLBuilder {
         return LocalDateTime.parse(value, formatter).atZone(zoneId).toInstant();
     }
 
-    public String sql() {
-        return sql;
-    }
-
     public Map<String, Object> getParams() {
         return params;
     }
@@ -124,11 +107,6 @@ public class SQLBuilder {
         return this.page.getLimit();
     }
 
-    void setSql(String sql) {
-        this.sql = sql;
-    }
-
-
     String aliasOf(String field) {
         try {
             return this.queryResultClass.getDeclaredField(field).getAnnotation(Column.class).value();
@@ -137,32 +115,34 @@ public class SQLBuilder {
         }
     }
 
-    public void setPaging(Paging page) {
-        this.page = page;
-    }
-
-    public void setCountSql(String countSql) {
-        this.countSql = countSql;
-    }
-
     public String countSql() {
+        if (this.countSql == null) {
+            this.countSql = this.getCountSQL();
+        }
         return this.countSql;
     }
 
-    private String getSQL(SQLBuilder sqlQuery) {
+    public String sql() {
+        if (this.sql == null) {
+            this.sql = this.getSQL();
+        }
+        return this.sql;
+    }
+
+    private String getSQL() {
         String sql = getSelectSQL();
         if (whereList.size() > 0) {
-            sql += getWhereSQL(sqlQuery);
+            sql += getWhereSQL();
         }
         if (this.sort != null) {
-            sql += getSortSQL(sqlQuery);
+            sql += getSortSQL();
         }
         return sql;
     }
 
-    private String getWhereSQL(SQLBuilder sqlQuery) {
+    private String getWhereSQL() {
         if (this.whereCondition == null) {
-            this.whereCondition = String.format(" where %s", whereList.stream().map(where -> where.toSQL(sqlQuery)).collect(Collectors.joining(" and ")));
+            this.whereCondition = String.format(" where %s", whereList.stream().map(where -> where.toSQL(this)).collect(Collectors.joining(" and ")));
         }
         return this.whereCondition;
     }
@@ -176,20 +156,19 @@ public class SQLBuilder {
         return String.format("select %s from %s", fields, getViewName());
     }
 
-    private String getSortSQL(SQLBuilder sqlQuery) {
-        return String.format(" order by %s", sort.toSQL(sqlQuery));
+    private String getSortSQL() {
+        return String.format(" order by %s", sort.toSQL(this));
     }
 
     private String getViewName() {
-        System.out.println(queryResultClass);
         View view = (View) queryResultClass.getAnnotation(View.class);
         return view.value();
     }
 
-    private String getCountSQL(SQLBuilder sqlQuery) {
+    private String getCountSQL() {
         String result = String.format("select count(*) from %s", getViewName());
         if (whereList.size() > 0) {
-            result += getWhereSQL(sqlQuery);
+            result += getWhereSQL();
         }
         return result;
     }
