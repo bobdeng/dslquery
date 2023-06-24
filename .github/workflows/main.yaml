@@ -1,4 +1,24 @@
-- name: Upload coverage reports to Codecov
-  uses: codecov/codecov-action@v3
-  env:
-    CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+# main.workflow
+
+on:
+  push:
+    branches:
+      - '*' # 将 '*' 替换为您希望覆盖的分支名称
+  pull_request:
+    branches:
+      - '*' # 将 '*' 替换为您希望覆盖的分支名称
+
+env:
+  CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build with Maven
+        run: mvn clean package
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        with:
+          codecov_token: ${{ env.CODECOV_TOKEN }}
