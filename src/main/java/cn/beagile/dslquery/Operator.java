@@ -16,10 +16,10 @@ enum Operator {
     IsNull("isnull", "is null", null, false),
     NotNull("notnull", "is not null", null, false);
 
-    private final String operator;
-    private final String keyword;
+    final String operator;
+    final String keyword;
+    final boolean needValue;
     private final Function<String, String> valueTransfer;
-    private final boolean needValue;
 
     Operator(String keyword, String operator, Function<String, String> valueTransfer) {
         this(keyword, operator, valueTransfer, true);
@@ -30,18 +30,6 @@ enum Operator {
         this.operator = operator;
         this.valueTransfer = valueTransfer;
         this.needValue = needValue;
-    }
-
-    public String getOperator() {
-        return this.operator;
-    }
-
-    public String getKeyword() {
-        return keyword;
-    }
-
-    public boolean needValue() {
-        return this.needValue;
     }
 
     public String transferValue(String value) {

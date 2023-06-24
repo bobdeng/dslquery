@@ -33,7 +33,7 @@ public class WhereBuilder {
     }
 
     public WhereBuilder equal(String name, String value) {
-        appendExpression(name, value, Operator.Equal.getKeyword());
+        appendExpression(name, value, Operator.Equal.keyword);
         return this;
     }
 
@@ -42,52 +42,52 @@ public class WhereBuilder {
     }
 
     public WhereBuilder greaterthan(String name, String value) {
-        appendExpression(name, value, Operator.GreaterThan.getKeyword());
+        appendExpression(name, value, Operator.GreaterThan.keyword);
         return this;
     }
 
     public WhereBuilder lessthan(String name, String value) {
-        appendExpression(name, value, Operator.LessThan.getKeyword());
+        appendExpression(name, value, Operator.LessThan.keyword);
         return this;
     }
 
     public WhereBuilder notequal(String name, String value) {
-        appendExpression(name, value, Operator.NotEqual.getKeyword());
+        appendExpression(name, value, Operator.NotEqual.keyword);
         return this;
     }
 
     public WhereBuilder lessthanorequal(String name, String value) {
-        appendExpression(name, value, Operator.LessThanOrEqual.getKeyword());
+        appendExpression(name, value, Operator.LessThanOrEqual.keyword);
         return this;
     }
 
     public WhereBuilder greaterthanorequal(String name, String value) {
-        appendExpression(name, value, Operator.GreaterThanOrEqual.getKeyword());
+        appendExpression(name, value, Operator.GreaterThanOrEqual.keyword);
         return this;
     }
 
     public WhereBuilder startswith(String name, String value) {
-        appendExpression(name, value, Operator.StartWith.getKeyword());
+        appendExpression(name, value, Operator.StartWith.keyword);
         return this;
     }
 
     public WhereBuilder endswith(String name, String value) {
-        appendExpression(name, value, Operator.EndsWith.getKeyword());
+        appendExpression(name, value, Operator.EndsWith.keyword);
         return this;
     }
 
     public WhereBuilder contains(String name, String value) {
-        appendExpression(name, value, Operator.Contains.getKeyword());
+        appendExpression(name, value, Operator.Contains.keyword);
         return this;
     }
 
     public WhereBuilder isnull(String name) {
-        appendExpression(name, null, Operator.IsNull.getKeyword());
+        appendExpression(name, null, Operator.IsNull.keyword);
         return this;
     }
 
     public WhereBuilder notnull(String name) {
-        appendExpression(name, null, Operator.NotNull.getKeyword());
+        appendExpression(name, null, Operator.NotNull.keyword);
         return this;
     }
 

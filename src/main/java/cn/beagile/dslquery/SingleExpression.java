@@ -26,7 +26,7 @@ class SingleExpression implements FilterExpression {
     }
 
     private void checkOperator() {
-        if (Operators.of(this.operator) == null) {
+        if (Operators.byName(this.operator) == null) {
             throw new RuntimeException("invalid operator:" + this.operator);
         }
     }
@@ -39,18 +39,18 @@ class SingleExpression implements FilterExpression {
     }
 
     public String toSQL(SQLBuilder sqlBuilder) {
-        Operator operatorEnum = Operators.of(this.operator);
-        if (operatorEnum.needValue()) {
+        Operator operatorEnum = Operators.byName(this.operator);
+        if (operatorEnum.needValue) {
             String paramName = field + sqlBuilder.nextParamId();
             sqlBuilder.addParam(paramName, field, operatorEnum.transferValue(value));
-            return String.format("(%s %s :%s)", sqlBuilder.aliasOf(field), operatorEnum.getOperator(), paramName);
+            return String.format("(%s %s :%s)", sqlBuilder.aliasOf(field), operatorEnum.operator, paramName);
         }
-        return String.format("(%s %s)", sqlBuilder.aliasOf(field), operatorEnum.getOperator());
+        return String.format("(%s %s)", sqlBuilder.aliasOf(field), operatorEnum.operator);
     }
 
     @Override
     public String toDSL() {
-        if (Operators.of(this.operator).needValue()) {
+        if (Operators.byName(this.operator).needValue) {
             return String.format("(%s %s %s)", field, operator, value);
         }
         return String.format("(%s %s)", field, operator);

@@ -7,9 +7,9 @@ import java.util.stream.Stream;
 
 interface Operators {
     Map<String, Operator> OPERATORS = Stream.of(Operator.values())
-            .collect(Collectors.toMap(Operator::getKeyword, Function.identity()));
+            .collect(Collectors.toMap(operator -> operator.keyword, Function.identity()));
 
-    static Operator of(String operatorName) {
+    static Operator byName(String operatorName) {
         return OPERATORS.get(operatorName);
     }
 }

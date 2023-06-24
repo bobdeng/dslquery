@@ -2,7 +2,7 @@ package cn.beagile.dslquery;
 
 import java.util.Objects;
 
-class SortField {
+class SortField implements FilterExpression {
     private final String field;
     private String direction;
 
@@ -16,6 +16,11 @@ class SortField {
         }
     }
 
+    SortField(String field, String direction) {
+        this.field = field;
+        this.direction = direction;
+    }
+
     private void validateDirection() {
         if (!this.direction.equalsIgnoreCase("asc") && !this.direction.equalsIgnoreCase("desc")) {
             throw new RuntimeException("invalid direction:" + this.direction);
@@ -24,5 +29,10 @@ class SortField {
 
     public String toSQL(SQLBuilder sqlQuery) {
         return sqlQuery.aliasOf(field) + (Objects.isNull(direction) ? "" : " " + direction);
+    }
+
+    @Override
+    public String toDSL() {
+        return this.field + (Objects.isNull(direction) ? "" : " " + direction);
     }
 }
