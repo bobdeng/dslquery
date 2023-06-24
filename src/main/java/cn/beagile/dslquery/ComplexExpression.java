@@ -36,4 +36,12 @@ class ComplexExpression implements FilterExpression {
                 ", toSQLs=" + expressions +
                 '}';
     }
+
+    public void add(FilterExpression expression) {
+        this.expressions.add(expression);
+    }
+
+    public String toDSL() {
+        return expressions.stream().map(FilterExpression::toDSL).collect(Collectors.joining("", "(" + this.condition, ")"));
+    }
 }

@@ -49,7 +49,7 @@ public class IntegrationTest {
 
         @Override
         public int count(SQLQuery sqlQuery) {
-            return (int) jdbcTemplate.query(sqlQuery.getCountSql(), sqlQuery.getParams(), (rs, rowNum) -> rs.getInt(1)).get(0);
+            return jdbcTemplate.query(sqlQuery.getCountSql(), sqlQuery.getParams(), (rs, rowNum) -> rs.getInt(1)).get(0);
         }
     }
 
@@ -77,14 +77,14 @@ public class IntegrationTest {
 
     @Test
     public void should_query_with_order() {
-        DSLQuery query = new DSLQuery(new SpringQueryExecutor(jdbcTemplate), Person.class);
-        List result = query.sort("age desc").skip(0).limit(10).query();
+        DSLQuery<Person> query = new DSLQuery<>(new SpringQueryExecutor(jdbcTemplate), Person.class);
+        List<Person> result = query.sort("age desc").skip(0).limit(10).query();
         assertEquals(2, result.size());
     }
 
     @Test
     public void should_return1_when_add_where() {
-        DSLQuery query = new DSLQuery(new SpringQueryExecutor(jdbcTemplate), Person.class);
+        DSLQuery<Person> query = new DSLQuery<>(new SpringQueryExecutor(jdbcTemplate), Person.class);
         List<Person> result = query
                 .where("(and(name equal bob))")
                 .skip(0).limit(10).query();
@@ -95,8 +95,8 @@ public class IntegrationTest {
 
     @Test
     public void should_return_empty_when_wrong_page() {
-        DSLQuery query = new DSLQuery(new SpringQueryExecutor(jdbcTemplate), Person.class);
-        List result = query.skip(10).limit(10).query();
+        DSLQuery<Person> query = new DSLQuery<>(new SpringQueryExecutor(jdbcTemplate), Person.class);
+        List<Person> result = query.skip(10).limit(10).query();
         assertEquals(0, result.size());
     }
 }

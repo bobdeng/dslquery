@@ -51,6 +51,14 @@ class SingleExpression implements FilterExpression {
     }
 
     @Override
+    public String toDSL() {
+        if (Operators.of(this.operator).needValue()) {
+            return String.format("(%s %s %s)", field, operator, value);
+        }
+        return String.format("(%s %s)", field, operator);
+    }
+
+    @Override
     public String toString() {
         return "Predicate{" +
                 "field='" + field + '\'' +
