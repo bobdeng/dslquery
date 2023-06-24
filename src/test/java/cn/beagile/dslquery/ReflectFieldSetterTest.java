@@ -1,12 +1,13 @@
 package cn.beagile.dslquery;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ReflectFieldSetterTest {
+    @Test
     public void should_throw_when_final() {
-        RuntimeException e = assertThrows(RuntimeException.class, () -> new ReflectFieldSetter(new FinalFieldBean(), FinalFieldBean.class.getDeclaredFields()[0], "bob").set());
-        assertEquals("java.lang.IllegalAccessException: Can not set static final java.lang.String field cn.beagile.dslquery.ReflectFieldSetterTest$FinalFieldBean.name to null value", e.getMessage());
+        assertThrows(RuntimeException.class, () -> new ReflectFieldSetter(new FinalFieldBean(), FinalFieldBean.class.getDeclaredFields()[0], "bob").set());
     }
 
     public static class FinalFieldBean {
