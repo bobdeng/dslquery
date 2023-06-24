@@ -31,21 +31,21 @@ class WhereParser {
     }
 
     private SingleExpression parsePredicate(String subWhere) {
-        Pattern wordPattern = Pattern.compile("\\w+");
-        Matcher matcher = wordPattern.matcher(subWhere);
-        if (!matcher.find()) {
-            throw new RuntimeException("invalid predicate:" + subWhere);
-        }
-        String fieldName = matcher.group();
-        if (!matcher.find()) {
-            throw new RuntimeException("invalid predicate:" + subWhere);
-        }
-        String operator = matcher.group();
-        String value = subWhere.substring(subWhere.indexOf(operator) + operator.length(), subWhere.length() - 1).trim();
+        Matcher matcher = Pattern.compile("\\w+").matcher(subWhere);
+        String fieldName = nextMatch(subWhere, matcher);
+        String operator = nextMatch(subWhere, matcher);
+        String value = subWhere.substring(matcher.end() + 1, Math.max(matcher.end() + 1, subWhere.length() - 1));
         if (value.equals("") && Operators.of(operator).needValue()) {
             throw new RuntimeException("invalid predicate:" + subWhere);
         }
         return new SingleExpression(fieldName, operator, value);
+    }
+
+    private String nextMatch(String subWhere, Matcher matcher) {
+        if (!matcher.find()) {
+            throw new RuntimeException("invalid predicate:" + subWhere);
+        }
+        return matcher.group();
     }
 
     private boolean isSubWhere(String subWhere) {
