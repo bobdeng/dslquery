@@ -33,7 +33,7 @@ public class WhereBuilder {
     }
 
     public WhereBuilder equal(String name, String value) {
-        appendExpression(name, value, "equal");
+        appendExpression(name, value, Operator.Equal.getKeyword());
         return this;
     }
 
