@@ -33,6 +33,6 @@ class SortField implements FilterExpression {
 
     @Override
     public String toDSL() {
-        return this.field + (Objects.isNull(direction) ? "" : " " + direction);
+        return this.field + " " + direction;
     }
 }
