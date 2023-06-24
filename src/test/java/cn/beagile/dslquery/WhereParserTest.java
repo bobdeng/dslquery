@@ -27,13 +27,16 @@ public class WhereParserTest {
 
 
     @Test
-    public void should_parse_where_with_2_predicate() {
+    public void should_parse_where_with_multiple_predicate() {
         WhereParser whereParser = new WhereParser();
-        ComplexExpression where = whereParser.parse("(and(name equal bob)(age greaterthan 18))");
+        ComplexExpression where = whereParser.parse("(and(name equal bob)(age notequal 18)(name notnull)(name isnull))");
         assertNotNull(where);
         assertEquals(where.getCondition(), "and");
-        assertEquals(2, where.getExpressions().size());
+        assertEquals(4, where.getExpressions().size());
         assertEquals(new SingleExpression("name", "equal", "bob"), where.getExpressions().get(0));
+        assertEquals(new SingleExpression("age", "notequal", "18"), where.getExpressions().get(1));
+        assertEquals(new SingleExpression("name", "notnull", null), where.getExpressions().get(2));
+        assertEquals(new SingleExpression("name", "isnull", null), where.getExpressions().get(3));
     }
 
     @Test

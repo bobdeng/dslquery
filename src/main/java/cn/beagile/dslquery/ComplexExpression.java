@@ -29,14 +29,6 @@ class ComplexExpression implements FilterExpression {
                 .collect(Collectors.joining(" " + this.condition + " ", "(", ")"));
     }
 
-    @Override
-    public String toString() {
-        return "Where{" +
-                "condition='" + condition + '\'' +
-                ", toSQLs=" + expressions +
-                '}';
-    }
-
     public void add(FilterExpression expression) {
         this.expressions.add(expression);
     }

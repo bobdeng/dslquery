@@ -129,6 +129,7 @@ public class DSLQueryTest {
             "greaterthan,>,bob",
             "lessthanorequal,<=,bob",
             "lessthan,<,bob",
+            "notequal,!=,bob",
     })
     public void should_execute_query_with_condition(String operator, String condition, String expected) {
         DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultBean.class);

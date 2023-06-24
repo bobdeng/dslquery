@@ -13,8 +13,8 @@ enum Operator {
     StartWith("startswith", "like", (value) -> value + "%"),
     EndsWith("endswith", "like", (value) -> "%" + value),
     Contains("contains", "like", (value) -> "%" + value + "%"),
-    IsNull("isnull", "is null", (value) -> null, false),
-    NotNull("notnull", "is not null", (value) -> null, false);
+    IsNull("isnull", "is null", null, false),
+    NotNull("notnull", "is not null", null, false);
 
     private final String operator;
     private final String keyword;

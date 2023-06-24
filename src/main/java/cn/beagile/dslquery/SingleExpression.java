@@ -55,13 +55,4 @@ class SingleExpression implements FilterExpression {
         }
         return String.format("(%s %s)", field, operator);
     }
-
-    @Override
-    public String toString() {
-        return "Predicate{" +
-                "field='" + field + '\'' +
-                ", operator='" + operator + '\'' +
-                ", value='" + value + '\'' +
-                '}';
-    }
 }
