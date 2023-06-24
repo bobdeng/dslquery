@@ -12,9 +12,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 class DefaultResultSetReader<T> implements Function<ResultSet, T> {
-    private Class<T> queryResultBeanClass;
     private static final Map<Class, ColumnFieldReader> COLUMN_READER_MAP = new HashMap<>();
-
     static {
         COLUMN_READER_MAP.put(Integer.class, ResultSet::getInt);
         COLUMN_READER_MAP.put(int.class, ResultSet::getInt);
@@ -25,6 +23,8 @@ class DefaultResultSetReader<T> implements Function<ResultSet, T> {
         COLUMN_READER_MAP.put(Instant.class, (rs, columnName) -> rs.getTimestamp(columnName).toInstant());
         COLUMN_READER_MAP.put(Timestamp.class, ResultSet::getTimestamp);
     }
+
+    private final Class<T> queryResultBeanClass;
 
     public DefaultResultSetReader(Class<T> queryResultBeanClass) {
 

@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 class Sort {
-    private List<SortField> fields;
+    private final List<SortField> fields;
     public Sort(String sort) {
         this.fields = Stream.of(sort.split(","))
                 .map(SortField::new).collect(Collectors.toList());

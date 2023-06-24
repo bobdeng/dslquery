@@ -3,9 +3,9 @@ package cn.beagile.dslquery;
 import java.lang.reflect.Field;
 
 class ReflectFieldSetter {
-    private Object target;
-    private Field field;
-    private Object value;
+    private final Object target;
+    private final Field field;
+    private final Object value;
 
     public ReflectFieldSetter(Object target, Field field, Object value) {
         this.target = target;

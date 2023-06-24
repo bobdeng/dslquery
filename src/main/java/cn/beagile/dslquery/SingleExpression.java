@@ -5,9 +5,9 @@ import java.util.Objects;
 
 
 class SingleExpression implements FilterExpression {
-    private String field;
-    private String operator;
-    private String value;
+    private final String field;
+    private final String operator;
+    private final String value;
 
     public SingleExpression(String field, String operator, String value) {
         this.field = field;
@@ -40,14 +40,14 @@ class SingleExpression implements FilterExpression {
         return Objects.equals(field, predicate.field) && Objects.equals(operator, predicate.operator) && Objects.equals(value, predicate.value);
     }
 
-    public String toSQL(SQLBuilder sqlQuery) {
+    public String toSQL(SQLBuilder sqlBuilder) {
         Operator operatorEnum = Operators.of(this.operator);
         if (operatorEnum.needValue()) {
-            String paramName = field + sqlQuery.next();
-            sqlQuery.addParam(paramName, field, operatorEnum.transferValue(value));
-            return String.format("(%s %s :%s)", sqlQuery.aliasOf(field), operatorEnum.getOperator(), paramName);
+            String paramName = field + sqlBuilder.nextParamId();
+            sqlBuilder.addParam(paramName, field, operatorEnum.transferValue(value));
+            return String.format("(%s %s :%s)", sqlBuilder.aliasOf(field), operatorEnum.getOperator(), paramName);
         }
-        return String.format("(%s %s)", sqlQuery.aliasOf(field), operatorEnum.getOperator());
+        return String.format("(%s %s)", sqlBuilder.aliasOf(field), operatorEnum.getOperator());
     }
 
     @Override

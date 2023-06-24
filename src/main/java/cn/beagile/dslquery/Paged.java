@@ -3,9 +3,9 @@ package cn.beagile.dslquery;
 import java.util.List;
 
 public class Paged<T> {
-    private List<T> result;
-    private int total;
-    private Paging paging;
+    private final List<T> result;
+    private final int total;
+    private final Paging paging;
 
     public Paged(List<T> result, int total, Paging paging) {
 

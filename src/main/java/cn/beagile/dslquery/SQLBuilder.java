@@ -23,7 +23,7 @@ class SQLBuilder<T> {
     private final Sort sort;
     private final Paging page;
 
-    private int index;
+    private int paramIndex;
     private String sql;
     private String countSql;
     private String whereCondition;
@@ -50,8 +50,8 @@ class SQLBuilder<T> {
     }
 
 
-    int next() {
-        return ++this.index;
+    int nextParamId() {
+        return ++this.paramIndex;
     }
 
     void addParam(String paramName, String fieldName, String value) {
@@ -97,14 +97,6 @@ class SQLBuilder<T> {
 
     public Map<String, Object> getParams() {
         return params;
-    }
-
-    public Integer skip() {
-        return this.page.getSkip();
-    }
-
-    public Integer limit() {
-        return this.page.getLimit();
     }
 
     String aliasOf(String field) {

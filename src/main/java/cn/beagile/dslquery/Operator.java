@@ -16,10 +16,10 @@ enum Operator {
     IsNull("isnull", "is null", (value) -> null, false),
     NotNull("notnull", "is not null", (value) -> null, false);
 
-    private String operator;
-    private String keyword;
-    private Function<String, String> valueTransfer;
-    private boolean needValue;
+    private final String operator;
+    private final String keyword;
+    private final Function<String, String> valueTransfer;
+    private final boolean needValue;
 
     Operator(String keyword, String operator, Function<String, String> valueTransfer) {
         this.keyword = keyword;
