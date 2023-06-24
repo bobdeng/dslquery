@@ -8,7 +8,7 @@ public class WhereParserTest {
     @Test
     public void should_parse_where() {
         WhereParser whereParser = new WhereParser();
-        ComplexExpression where = whereParser.parseSubWhere("(and(name equal bob))");
+        ComplexExpression where = whereParser.parse("(and(name equal bob))");
         assertNotNull(where);
         assertEquals(where.getCondition(), "and");
         assertEquals(1, where.getExpressions().size());
@@ -18,7 +18,7 @@ public class WhereParserTest {
     @Test
     public void should_parse_isnull() {
         WhereParser whereParser = new WhereParser();
-        ComplexExpression where = whereParser.parseSubWhere("(and(name isnull))");
+        ComplexExpression where = whereParser.parse("(and(name isnull))");
         assertNotNull(where);
         assertEquals(where.getCondition(), "and");
         assertEquals(1, where.getExpressions().size());
@@ -28,7 +28,7 @@ public class WhereParserTest {
     @Test
     public void should_parse_where_with_2_predicate() {
         WhereParser whereParser = new WhereParser();
-        ComplexExpression where = whereParser.parseSubWhere("(and(name equal bob)(age greaterthan 18))");
+        ComplexExpression where = whereParser.parse("(and(name equal bob)(age greaterthan 18))");
         assertNotNull(where);
         assertEquals(where.getCondition(), "and");
         assertEquals(2, where.getExpressions().size());
@@ -38,7 +38,7 @@ public class WhereParserTest {
     @Test
     public void should_parse_where_with_inner_predicate() {
         WhereParser whereParser = new WhereParser();
-        ComplexExpression where = whereParser.parseSubWhere("(and(or(name equal bob)(name equal alice))(age greaterthan 18))");
+        ComplexExpression where = whereParser.parse("(and(or(name equal bob)(name equal alice))(age greaterthan 18))");
         assertNotNull(where);
         assertEquals(where.getCondition(), "and");
         assertEquals(2, where.getExpressions().size());
@@ -49,7 +49,7 @@ public class WhereParserTest {
     @Test
     public void should_parse_where_with_inner_predicate_without_and_or() {
         WhereParser whereParser = new WhereParser();
-        ComplexExpression where = whereParser.parseSubWhere("((name equal bob)(age greaterthan 18))");
+        ComplexExpression where = whereParser.parse("((name equal bob)(age greaterthan 18))");
         assertNotNull(where);
         assertEquals(where.getCondition(), "and");
         assertEquals(2, where.getExpressions().size());
@@ -62,7 +62,7 @@ public class WhereParserTest {
     @Test
     public void should_throw_exception_when_wrong_start() {
         WhereParser whereParser = new WhereParser();
-        RuntimeException e = assertThrows(RuntimeException.class, () -> whereParser.parseSubWhere("(ab(name equal bob)))"));
+        RuntimeException e = assertThrows(RuntimeException.class, () -> whereParser.parse("(ab(name equal bob)))"));
         assertEquals("invalid condition:ab", e.getMessage());
     }
 
@@ -71,7 +71,7 @@ public class WhereParserTest {
     public void should_throw_exception_when_wrong_predicate_operator() {
         WhereParser whereParser = new WhereParser();
         RuntimeException e = assertThrows(RuntimeException.class, () -> {
-            System.out.println(whereParser.parseSubWhere("(and(nameequal bob 123)))"));
+            System.out.println(whereParser.parse("(and(nameequal bob 123)))"));
         });
         assertEquals("invalid operator:bob", e.getMessage());
     }
@@ -80,7 +80,7 @@ public class WhereParserTest {
     public void should_throw_exception_when_wrong_predicate() {
         WhereParser whereParser = new WhereParser();
         RuntimeException e = assertThrows(RuntimeException.class, () -> {
-            System.out.println(whereParser.parseSubWhere("(and(nameequalbob)))"));
+            System.out.println(whereParser.parse("(and(nameequalbob)))"));
         });
         assertEquals("invalid predicate:(nameequalbob)", e.getMessage());
     }
@@ -89,7 +89,7 @@ public class WhereParserTest {
     public void should_throw_exception_when_wrong_predicate_empty() {
         WhereParser whereParser = new WhereParser();
         RuntimeException e = assertThrows(RuntimeException.class, () -> {
-            System.out.println(whereParser.parseSubWhere("(and()))"));
+            System.out.println(whereParser.parse("(and()))"));
         });
         assertEquals("invalid predicate:()", e.getMessage());
     }
@@ -98,7 +98,7 @@ public class WhereParserTest {
     public void should_throw_exception_when_wrong_predicate_no_value() {
         WhereParser whereParser = new WhereParser();
         RuntimeException e = assertThrows(RuntimeException.class, () -> {
-            System.out.println(whereParser.parseSubWhere("(and(name equal )))"));
+            System.out.println(whereParser.parse("(and(name equal )))"));
         });
         assertEquals("invalid predicate:(name equal )", e.getMessage());
     }

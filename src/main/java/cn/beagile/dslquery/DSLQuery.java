@@ -19,7 +19,7 @@ public class DSLQuery<T> {
     }
 
     public DSLQuery<T> where(String where) {
-        this.whereList.add(new WhereParser().parseSubWhere(where));
+        this.whereList.add(new WhereParser().parse(where));
         return this;
     }
 

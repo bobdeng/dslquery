@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 class WhereParser {
-    public ComplexExpression parseSubWhere(String whereString) {
+    public ComplexExpression parse(String whereString) {
         return new ComplexExpression(getCondition(whereString), getFilterExpressions(whereString));
     }
 
@@ -27,7 +27,7 @@ class WhereParser {
         if (this.isSingleExpression(sql)) {
             return parsePredicate(sql);
         }
-        return parseSubWhere(sql);
+        return parse(sql);
     }
 
     private SingleExpression parsePredicate(String subWhere) {
