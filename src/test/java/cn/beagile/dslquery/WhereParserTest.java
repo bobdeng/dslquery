@@ -18,9 +18,9 @@ public class WhereParserTest {
     @Test
     public void should_parse_isnull() {
         WhereParser whereParser = new WhereParser();
-        ComplexExpression where = whereParser.parse("(and(name isnull))");
+        ComplexExpression where = whereParser.parse("(or(name isnull))");
         assertNotNull(where);
-        assertEquals(where.getCondition(), "and");
+        assertEquals(where.getCondition(), "or");
         assertEquals(1, where.getExpressions().size());
         assertEquals(new SingleExpression("name", "isnull", ""), where.getExpressions().get(0));
     }

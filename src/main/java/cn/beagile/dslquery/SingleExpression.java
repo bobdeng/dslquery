@@ -34,8 +34,6 @@ class SingleExpression implements FilterExpression {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
         SingleExpression predicate = (SingleExpression) o;
         return Objects.equals(field, predicate.field) && Objects.equals(operator, predicate.operator) && Objects.equals(value, predicate.value);
     }
