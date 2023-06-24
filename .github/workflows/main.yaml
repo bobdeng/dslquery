@@ -16,8 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Build with Maven
-        run: gradle build
+      - name: Build with gradle
+        run: gradle build --stacktrace
       - name: Upload coverage reports
         uses: codecov/codecov-action@v3
         with:

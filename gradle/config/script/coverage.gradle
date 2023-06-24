@@ -11,4 +11,3 @@ jacocoTestReport {
     }
 }
 
-//check.dependsOn(jacocoTestReport)
