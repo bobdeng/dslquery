@@ -22,10 +22,7 @@ enum Operator {
     private final boolean needValue;
 
     Operator(String keyword, String operator, Function<String, String> valueTransfer) {
-        this.keyword = keyword;
-        this.operator = operator;
-        this.valueTransfer = valueTransfer;
-        this.needValue = true;
+        this(keyword, operator, valueTransfer, true);
     }
 
     Operator(String keyword, String operator, Function<String, String> valueTransfer, boolean needValue) {
