@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build with gradle
-        run: gradle build --stacktrace
+        run: ./gradlew build
       - name: Upload coverage reports
         uses: codecov/codecov-action@v3
         with:
