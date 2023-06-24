@@ -22,7 +22,7 @@ public class DSLQuery<T> {
     }
 
     private String getCountSQL(SQLQuery sqlQuery) {
-        String result = "select count(1) from " + getViewName();
+        String result = String.format("select count(*) from %s", getViewName());
         if (whereList.size() > 0) {
             result += getWhereSQL(sqlQuery);
         }
@@ -41,12 +41,12 @@ public class DSLQuery<T> {
     }
 
     private String getSortSQL(SQLQuery sqlQuery) {
-        return " order by " + this.sort.toSQL(sqlQuery);
+        return String.format(" order by %s", sort.toSQL(sqlQuery));
     }
 
     private String getWhereSQL(SQLQuery sqlQuery) {
         if (this.whereCondition == null) {
-            this.whereCondition = " where " + whereList.stream().map(where -> where.toSQL(sqlQuery)).collect(Collectors.joining(" and "));
+            this.whereCondition = String.format(" where %s", whereList.stream().map(where -> where.toSQL(sqlQuery)).collect(Collectors.joining(" and ")));
         }
         return this.whereCondition;
     }
@@ -57,7 +57,7 @@ public class DSLQuery<T> {
                 .map(field -> field.getAnnotation(Column.class))
                 .map(Column::value)
                 .collect(Collectors.joining(","));
-        return "select " + fields + " from " + getViewName();
+        return String.format("select %s from %s", fields, getViewName());
     }
 
     private String getViewName() {

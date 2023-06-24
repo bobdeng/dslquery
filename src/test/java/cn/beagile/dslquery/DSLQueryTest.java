@@ -193,7 +193,7 @@ public class DSLQueryTest {
         dslQuery.query();
         verify(queryExecutor).list(sqlQueryArgumentCaptor.capture(), any());
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
-        assertEquals("select count(1) from view_query", sqlQuery.countSql());
+        assertEquals("select count(*) from view_query", sqlQuery.countSql());
     }
 
     @Test
@@ -202,7 +202,7 @@ public class DSLQueryTest {
         dslQuery.where("(and(name equal bob))").query();
         verify(queryExecutor).list(sqlQueryArgumentCaptor.capture(), any());
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
-        assertEquals("select count(1) from view_query where ((name1 = :name1))", sqlQuery.countSql());
+        assertEquals("select count(*) from view_query where ((name1 = :name1))", sqlQuery.countSql());
         assertEquals(1, sqlQuery.getParams().size());
         assertEquals("bob", sqlQuery.getParams().get("name1"));
     }

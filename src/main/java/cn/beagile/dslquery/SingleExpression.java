@@ -45,9 +45,9 @@ class SingleExpression implements FilterExpression {
         if (operatorEnum.needValue()) {
             String paramName = field + sqlQuery.next();
             sqlQuery.addParam(paramName, field, operatorEnum.transferValue(value));
-            return "(" + sqlQuery.aliasOf(field) + " " + operatorEnum.getOperator() + " :" + paramName + ")";
+            return String.format("(%s %s :%s)", sqlQuery.aliasOf(field), operatorEnum.getOperator(), paramName);
         }
-        return "(" + sqlQuery.aliasOf(field) + " " + operatorEnum.getOperator() + ")";
+        return String.format("(%s %s)", sqlQuery.aliasOf(field), operatorEnum.getOperator());
     }
 
     @Override
