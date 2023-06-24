@@ -46,6 +46,17 @@ public class WhereParserTest {
         assertEquals(new SingleExpression("age", "greaterthan", "18"), where.getExpressions().get(1));
     }
 
+    @Test
+    public void should_parse_where_with_inner_and_predicate() {
+        WhereParser whereParser = new WhereParser();
+        ComplexExpression where = whereParser.parse("(or(and(name equal bob)(name equal alice))(age greaterthan 18))");
+        assertNotNull(where);
+        assertEquals(where.getCondition(), "or");
+        assertEquals(2, where.getExpressions().size());
+        assertEquals("and", ((ComplexExpression) where.getExpressions().get(0)).getCondition());
+        assertEquals(new SingleExpression("age", "greaterthan", "18"), where.getExpressions().get(1));
+    }
+
     //当不是以and或者or开头的时候，会默认以and开头
     @Test
     public void should_parse_where_with_inner_predicate_without_and_or() {
