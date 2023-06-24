@@ -35,7 +35,7 @@ class SingleExpression implements FilterExpression {
     @Override
     public boolean equals(Object o) {
         SingleExpression predicate = (SingleExpression) o;
-        return Objects.equals(field, predicate.field) && Objects.equals(operator, predicate.operator) && Objects.equals(value, predicate.value);
+        return Objects.equals(toDSL(), predicate.toDSL());
     }
 
     public String toSQL(SQLBuilder sqlBuilder) {

@@ -67,7 +67,6 @@ public class WhereParserTest {
         assertEquals(2, where.getExpressions().size());
         assertEquals(new SingleExpression("name", "equal", "bob"), where.getExpressions().get(0));
         assertEquals(new SingleExpression("age", "greaterthan", "18"), where.getExpressions().get(1));
-        System.out.println(where);
     }
 
     //当条件不是and or的时候，抛出异常
