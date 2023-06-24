@@ -10,6 +10,7 @@ public class WhereBuilder {
     public WhereBuilder and() {
         return getWhereBuilderByCondition("and");
     }
+
     public WhereBuilder or() {
         return getWhereBuilderByCondition("or");
     }
@@ -28,9 +29,6 @@ public class WhereBuilder {
     }
 
     public String build() {
-        if (expressionStack.size() == 0) {
-            return currentExpression.toDSL();
-        }
         return expressionStack.firstElement().toDSL();
     }
 
