@@ -42,10 +42,10 @@ class WhereParser {
     }
 
     private String nextMatch(String subWhere, Matcher matcher) {
-        if (!matcher.find()) {
-            throw new RuntimeException("invalid predicate:" + subWhere);
+        if (matcher.find()) {
+            return matcher.group();
         }
-        return matcher.group();
+        throw new RuntimeException("invalid predicate:" + subWhere);
     }
 
     private boolean isSubWhere(String subWhere) {
