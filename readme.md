@@ -1,5 +1,6 @@
 [![](https://jitpack.io/v/bobdeng/dslquery.svg)](https://jitpack.io/#bobdeng/dslquery)
 [![codecov](https://codecov.io/gh/bobdeng/dslquery/branch/main/graph/badge.svg?token=OZW1CQIQQ4)](https://codecov.io/gh/bobdeng/dslquery)
+
 # 这是什么
 
 建立一套规则，让前端通过规则传递查询条件给服务端，在服务端进行解析，生成查询条件，然后查询数据库，返回结果。
@@ -84,3 +85,7 @@ public void listA(){
         .pagedQuery();
         }
 ```
+
+- 生成查询条件 new WhereBuilder().build();
+- 生成排序条件 new SortBuilder().build();
+
