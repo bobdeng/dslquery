@@ -35,8 +35,8 @@ public class WhereParserTest {
         assertEquals(4, where.getExpressions().size());
         assertEquals(new SingleExpression("name", "equal", "bob"), where.getExpressions().get(0));
         assertEquals(new SingleExpression("age", "notequal", "18"), where.getExpressions().get(1));
-        assertEquals(new SingleExpression("name", "notnull", null), where.getExpressions().get(2));
-        assertEquals(new SingleExpression("name", "isnull", null), where.getExpressions().get(3));
+        assertEquals(new SingleExpression("name", "notnull", ""), where.getExpressions().get(2));
+        assertEquals(new SingleExpression("name", "isnull", ""), where.getExpressions().get(3));
     }
 
     @Test
