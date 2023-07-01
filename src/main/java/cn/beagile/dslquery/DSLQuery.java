@@ -19,11 +19,17 @@ public class DSLQuery<T> {
     }
 
     public DSLQuery<T> where(String where) {
+        if (where == null || where.isEmpty()) {
+            return this;
+        }
         this.whereList.add(new WhereParser().parse(where));
         return this;
     }
 
     public DSLQuery<T> sort(String sort) {
+        if (sort == null || sort.isEmpty()) {
+            return this;
+        }
         this.sort = new Sort(sort);
         return this;
     }
@@ -45,7 +51,7 @@ public class DSLQuery<T> {
 
     public Paged<T> pagedQuery() {
         SQLBuilder<T> sqlBuilder = new SQLBuilder<>(this);
-        List<T> result = queryExecutor.list(new DefaultResultSetReader<>(queryResultClass),sqlBuilder.build());
+        List<T> result = queryExecutor.list(new DefaultResultSetReader<>(queryResultClass), sqlBuilder.build());
         int count = queryExecutor.count(sqlBuilder.build());
         return new Paged<>(result, count, new Paging(this.skip, this.limit));
     }

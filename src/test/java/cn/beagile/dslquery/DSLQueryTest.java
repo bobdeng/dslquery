@@ -171,7 +171,7 @@ public class DSLQueryTest {
     @Test
     public void should_execute_query_with_field_alias() {
         DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultWithAlias.class);
-        dslQuery.sort("name asc").query();
+        dslQuery.limit(null).skip(null).sort("name asc").query();
         verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
         assertEquals("select name1,age from view_query order by name1 asc", sqlQuery.getSql());
@@ -190,7 +190,7 @@ public class DSLQueryTest {
     @Test
     public void should_execute_query_with_limit() {
         DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultWithAlias.class);
-        dslQuery.skip(10).limit(10).query();
+        dslQuery.skip(10).limit(10).sort(null).query();
         verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
         assertEquals(10, sqlQuery.getLimit());
@@ -199,7 +199,7 @@ public class DSLQueryTest {
     @Test
     public void should_execute_query_without_limit() {
         DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultWithAlias.class);
-        dslQuery.query();
+        dslQuery.where(null).sort("").query();
         verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
         assertNull(sqlQuery.getLimit());
