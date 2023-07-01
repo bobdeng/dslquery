@@ -45,6 +45,9 @@ enum Operator {
     }
 
     public String whereFormat() {
+        if(!needValue){
+            return "(%s %s)";
+        }
         if (isArray()) {
             return "(%s %s (:%s))";
         }

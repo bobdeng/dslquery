@@ -49,21 +49,19 @@ class SingleExpression implements FilterExpression {
 
     public String toSQL(SQLBuilder sqlBuilder) {
         Operator operatorEnum = Operators.byName(this.operator);
+        String paramName = field + sqlBuilder.nextParamId();
         if (operatorEnum.needValue) {
-            String paramName = field + sqlBuilder.nextParamId();
-            String value = operatorEnum.transferValue(this.value);
-            addParams(sqlBuilder, operatorEnum, paramName, value);
-            return String.format(operatorEnum.whereFormat(), sqlBuilder.aliasOf(field), operatorEnum.operator, paramName);
+            addParams(sqlBuilder, operatorEnum, paramName);
         }
-        return String.format("(%s %s)", sqlBuilder.aliasOf(field), operatorEnum.operator);
+        return String.format(operatorEnum.whereFormat(), sqlBuilder.aliasOf(field), operatorEnum.operator, paramName);
     }
 
-    private void addParams(SQLBuilder sqlBuilder, Operator operatorEnum, String paramName, String value) {
+    private void addParams(SQLBuilder sqlBuilder, Operator operatorEnum, String paramName) {
         if (operatorEnum.isArray()) {
-            sqlBuilder.addParamArray(paramName, field, value);
+            sqlBuilder.addParamArray(paramName, field, operatorEnum.transferValue(this.value));
             return;
         }
-        sqlBuilder.addParam(paramName, field, value);
+        sqlBuilder.addParam(paramName, field, operatorEnum.transferValue(this.value));
     }
 
     @Override
