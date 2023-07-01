@@ -1,5 +1,7 @@
 package cn.beagile.dslquery;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,6 +39,11 @@ class WhereParser {
         String value = subWhere.substring(matcher.end() + 1, Math.max(matcher.end() + 1, subWhere.length() - 1));
         if (value.equals("") && Operators.byName(operator).needValue) {
             throw new RuntimeException("invalid predicate:" + subWhere);
+        }
+        try {
+            value = URLDecoder.decode(value, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
         }
         return new SingleExpression(fieldName, operator, value);
     }

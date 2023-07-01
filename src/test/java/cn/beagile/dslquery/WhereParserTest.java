@@ -16,6 +16,16 @@ public class WhereParserTest {
     }
 
     @Test
+    public void should_parse_where_has_embrace_in_value() {
+        WhereParser whereParser = new WhereParser();
+        ComplexExpression where = whereParser.parse("(and(name equal bob%29))");
+        assertNotNull(where);
+        assertEquals(where.getCondition(), "and");
+        assertEquals(1, where.getExpressions().size());
+        assertEquals(new SingleExpression("name", "equal", "bob)"), where.getExpressions().get(0));
+    }
+
+    @Test
     public void should_parse_isnull() {
         WhereParser whereParser = new WhereParser();
         ComplexExpression where = whereParser.parse("(or(name isnull))");
