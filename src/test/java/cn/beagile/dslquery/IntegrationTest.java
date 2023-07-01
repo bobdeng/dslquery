@@ -83,9 +83,16 @@ public class IntegrationTest {
     }
 
     @Test
-    public void should_query_with_in() {
+    public void should_query_with_int_in() {
         DSLQuery<Person> query = new DSLQuery<>(new SpringQueryExecutor(jdbcTemplate), Person.class);
         List<Person> result = query.where("(and(age in [42,55]))").skip(0).limit(10).query();
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    public void should_query_with_string_in() {
+        DSLQuery<Person> query = new DSLQuery<>(new SpringQueryExecutor(jdbcTemplate), Person.class);
+        List<Person> result = query.where("(and(name in ['bob robert']))").skip(0).limit(10).query();
         assertEquals(1, result.size());
     }
 
@@ -93,11 +100,11 @@ public class IntegrationTest {
     public void should_return1_when_add_where() {
         DSLQuery<Person> query = new DSLQuery<>(new SpringQueryExecutor(jdbcTemplate), Person.class);
         List<Person> result = query
-                .where("(and(name equal bob))")
+                .where("(and(name equal bob robert))")
                 .skip(0).limit(10).query();
         assertEquals(1, result.size());
         Person person = result.get(0);
-        assertEquals("bob", person.name);
+        assertEquals("bob robert", person.name);
     }
 
     @Test
