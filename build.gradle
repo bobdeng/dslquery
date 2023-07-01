@@ -23,6 +23,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test:2.5.6")
     testImplementation("org.springframework.boot:spring-boot-starter-data-jpa:2.5.6")
     testImplementation 'mysql:mysql-connector-java:8.0.33'
+    implementation 'com.google.code.gson:gson:2.10.1'
 
 
 }
@@ -42,7 +43,7 @@ publishing {
     }
 }
 tasks.jar {
-    dependsOn(test,jacocoTestReport)
+    dependsOn(test, jacocoTestReport)
     enabled = true
     archiveClassifier = ''
 }

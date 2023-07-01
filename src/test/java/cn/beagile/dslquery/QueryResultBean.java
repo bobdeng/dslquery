@@ -3,7 +3,8 @@ package cn.beagile.dslquery;
 public class QueryResultBean {
     @Column("name")
     private String name;
-
+    @Column("age")
+    private Integer age;
     public QueryResultBean() {
     }
 

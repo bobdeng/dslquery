@@ -1,5 +1,7 @@
 package cn.beagile.dslquery;
 
+import com.google.gson.Gson;
+
 import java.lang.reflect.Field;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -59,6 +61,17 @@ class SQLBuilder<T> {
             Field field = this.queryResultClass.getDeclaredField(fieldName);
             Object paramValue = castValueByField(value, field);
             params.put(paramName, paramValue);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException("No such field: " + paramName);
+        }
+    }
+
+    void addParamArray(String paramName, String fieldName, String value) {
+        try {
+            Field field = this.queryResultClass.getDeclaredField(fieldName);
+            List values = Stream.of(new Gson().fromJson(value, String[].class))
+                    .map(v -> castValueByField(v, field)).collect(Collectors.toList());
+            params.put(paramName, values);
         } catch (NoSuchFieldException e) {
             throw new RuntimeException("No such field: " + paramName);
         }

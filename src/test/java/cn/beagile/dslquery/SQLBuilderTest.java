@@ -1,5 +1,6 @@
 package cn.beagile.dslquery;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -7,12 +8,15 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class SQLBuilderTest {
     private int timezoneOffset = -8;
+
     @View("test_view")
     public static class QueryResultForTest {
         @Column("weight")
@@ -52,7 +56,7 @@ public class SQLBuilderTest {
     }
 
     private SQLBuilder<QueryResultForTest> getSqlBuilder() {
-        DSLQuery<QueryResultForTest> dslQuery = new DSLQuery<>(null,QueryResultForTest.class)
+        DSLQuery<QueryResultForTest> dslQuery = new DSLQuery<>(null, QueryResultForTest.class)
                 .timezoneOffset(this.timezoneOffset);
         return new SQLBuilder(dslQuery);
     }
@@ -123,5 +127,15 @@ public class SQLBuilderTest {
         });
         assertEquals(runtimeException.getMessage(), "No such field: doubleValue1");
 
+    }
+
+    @Test
+    public void should_add_int_array_params() {
+        SQLBuilder<QueryResultForTest> sqlQuery = getSqlBuilder();
+        sqlQuery.addParamArray("age", "age", "[55,56,57]");
+        List ages = (List) sqlQuery.getParams().get("age");
+        assertEquals(55, ages.get(0));
+        assertEquals(56, ages.get(1));
+        assertEquals(57, ages.get(2));
     }
 }

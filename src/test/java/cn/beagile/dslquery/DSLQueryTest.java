@@ -1,5 +1,6 @@
 package cn.beagile.dslquery;
 
+import com.google.gson.Gson;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -8,6 +9,7 @@ import org.mockito.ArgumentCaptor;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -33,7 +35,7 @@ public class DSLQueryTest {
         dslQuery.query();
         verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
-        assertEquals("select name from view_query", sqlQuery.getSql());
+        assertEquals("select name,age from view_query", sqlQuery.getSql());
     }
 
     //带有查询条件，执行查询
@@ -43,7 +45,7 @@ public class DSLQueryTest {
         dslQuery.where("(and(name equal bob))").query();
         verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
-        assertEquals("select name from view_query where ((name = :name1))", sqlQuery.getSql());
+        assertEquals("select name,age from view_query where ((name = :name1))", sqlQuery.getSql());
         Map<String, Object> params = sqlQuery.getParams();
         assertEquals("bob", params.get("name1"));
         assertEquals(1, params.size());
@@ -107,7 +109,7 @@ public class DSLQueryTest {
         dslQuery.sort("name").query();
         verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
-        assertEquals("select name from view_query order by name", sqlQuery.getSql());
+        assertEquals("select name,age from view_query order by name", sqlQuery.getSql());
     }
 
     @Test
@@ -116,7 +118,7 @@ public class DSLQueryTest {
         dslQuery.where("(and(name notnull))").query();
         verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
-        assertEquals("select name from view_query where ((name is not null))", sqlQuery.getSql());
+        assertEquals("select name,age from view_query where ((name is not null))", sqlQuery.getSql());
         assertEquals(0, sqlQuery.getParams().size());
     }
 
@@ -136,9 +138,25 @@ public class DSLQueryTest {
         dslQuery.where("(and(name " + operator + " bob))").query();
         verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
-        assertEquals("select name from view_query where ((name " + condition + " :name1))", sqlQuery.getSql());
+        assertEquals("select name,age from view_query where ((name " + condition + " :name1))", sqlQuery.getSql());
         assertEquals(1, sqlQuery.getParams().size());
         assertEquals(expected, sqlQuery.getParams().get("name1"));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "in,in",
+            "notin,notin",
+    })
+    public void should_execute_query_with_condition_in_string_array(String operator, String condition) {
+        DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultBean.class);
+        String[] expectedArray = new Gson().fromJson("['bob','alice']", String[].class);
+        dslQuery.where("(and(name " + operator + " ['bob','alice']))").query();
+        verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
+        SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
+        assertEquals("select name,age from view_query where ((name " + condition + " (:name1)))", sqlQuery.getSql());
+        assertEquals(1, sqlQuery.getParams().size());
+        assertArrayEquals(expectedArray, ((List) sqlQuery.getParams().get("name1")).toArray());
     }
 
     @Test
@@ -147,7 +165,7 @@ public class DSLQueryTest {
         dslQuery.sort("name asc").query();
         verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
-        assertEquals("select name from view_query order by name asc", sqlQuery.getSql());
+        assertEquals("select name,age from view_query order by name asc", sqlQuery.getSql());
     }
 
     @Test
