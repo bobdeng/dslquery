@@ -4,8 +4,8 @@ import java.util.function.Function;
 
 enum Operator {
 
-    Equal("equal", "=", (value) -> value),
-    NotEqual("notequal", "!=", (value) -> value),
+    Equals("equal", "=", (value) -> value),
+    NotEquals("notequal", "!=", (value) -> value),
     LessThan("lessthan", "<", (value) -> value),
     LessThanOrEqual("lessthanorequal", "<=", (value) -> value),
     GreaterThan("greaterthan", ">", (value) -> value),
@@ -15,23 +15,24 @@ enum Operator {
     Contains("contains", "like", (value) -> "%" + value + "%"),
     IsNull("isnull", "is null", null, false),
     NotNull("notnull", "is not null", null, false),
-    NotIn("notin", "notin", (value) -> value, true),
+    NotIn("notin", "not in", (value) -> value, true),
+    Between("between", "between", (value) -> value, true),
     In("in", "in", (value) -> value, true);
 
     final String operator;
     final String keyword;
-    final boolean needValue;
+    final boolean requireValue;
     private final Function<String, String> valueTransfer;
 
     Operator(String keyword, String operator, Function<String, String> valueTransfer) {
         this(keyword, operator, valueTransfer, true);
     }
 
-    Operator(String keyword, String operator, Function<String, String> valueTransfer, boolean needValue) {
+    Operator(String keyword, String operator, Function<String, String> valueTransfer, boolean requireValue) {
         this.keyword = keyword;
         this.operator = operator;
         this.valueTransfer = valueTransfer;
-        this.needValue = needValue;
+        this.requireValue = requireValue;
     }
 
     public boolean isArray() {
@@ -43,12 +44,22 @@ enum Operator {
     }
 
     public String whereFormat() {
-        if(!needValue){
+        if (!requireValue) {
             return "(%s %s)";
         }
         if (isArray()) {
             return "(%s %s (:%s))";
         }
+        if (this == Between) {
+            return "(%s %s :%s and :%s)";
+        }
         return "(%s %s :%s)";
+    }
+
+    public String[] params(String field, SQLBuilder sqlBuilder) {
+        if (this == Between) {
+            return new String[]{field + sqlBuilder.nextParamId(), field + sqlBuilder.nextParamId()};
+        }
+        return new String[]{field + sqlBuilder.nextParamId(), ""};
     }
 }

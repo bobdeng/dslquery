@@ -37,7 +37,7 @@ class WhereParser {
         String fieldName = nextMatch(subWhere, matcher);
         String operator = nextMatch(subWhere, matcher);
         String value = subWhere.substring(matcher.end() + 1, Math.max(matcher.end() + 1, subWhere.length() - 1));
-        if (value.equals("") && Operators.byName(operator).needValue) {
+        if (value.equals("") && Operators.byName(operator).requireValue) {
             throw new RuntimeException("invalid predicate:" + subWhere);
         }
         return new SingleExpression(fieldName, operator, urlDecode(value));

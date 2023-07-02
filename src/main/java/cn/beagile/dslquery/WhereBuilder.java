@@ -35,7 +35,7 @@ public class WhereBuilder {
     }
 
     public WhereBuilder equal(String name, String value) {
-        appendExpression(name, value, Operator.Equal.keyword);
+        appendExpression(name, value, Operator.Equals.keyword);
         return this;
     }
 
@@ -54,7 +54,7 @@ public class WhereBuilder {
     }
 
     public WhereBuilder notequal(String name, String value) {
-        appendExpression(name, value, Operator.NotEqual.keyword);
+        appendExpression(name, value, Operator.NotEquals.keyword);
         return this;
     }
 

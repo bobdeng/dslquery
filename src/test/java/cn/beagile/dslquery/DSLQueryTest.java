@@ -146,7 +146,7 @@ public class DSLQueryTest {
     @ParameterizedTest
     @CsvSource({
             "in,in",
-            "notin,notin",
+            "notin,not in",
     })
     public void should_execute_query_with_condition_in_string_array(String operator, String condition) {
         DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultBean.class);
@@ -157,6 +157,18 @@ public class DSLQueryTest {
         assertEquals("select name,age from view_query where ((name " + condition + " (:name1)))", sqlQuery.getSql());
         assertEquals(1, sqlQuery.getParams().size());
         assertArrayEquals(expectedArray, ((List) sqlQuery.getParams().get("name1")).toArray());
+    }
+
+    @Test
+    public void should_execute_query_with_between() {
+        DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultBean.class);
+        dslQuery.where("(and(age between 20,30))").query();
+        verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
+        SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
+        assertEquals("select name,age from view_query where ((age between :age1 and :age2))", sqlQuery.getSql());
+        assertEquals(2, sqlQuery.getParams().size());
+        assertEquals(20, sqlQuery.getParams().get("age1"));
+        assertEquals(30, sqlQuery.getParams().get("age2"));
     }
 
     @Test

@@ -49,24 +49,29 @@ class SingleExpression implements FilterExpression {
 
     public String toSQL(SQLBuilder sqlBuilder) {
         Operator operatorEnum = Operators.byName(this.operator);
-        String paramName = field + sqlBuilder.nextParamId();
-        if (operatorEnum.needValue) {
-            addParams(sqlBuilder, operatorEnum, paramName);
+        String[] paramNames = operatorEnum.params(field, sqlBuilder);
+        if (operatorEnum.requireValue) {
+            addParams(sqlBuilder, operatorEnum, paramNames);
         }
-        return String.format(operatorEnum.whereFormat(), sqlBuilder.aliasOf(field), operatorEnum.operator, paramName);
+        return String.format(operatorEnum.whereFormat(), sqlBuilder.aliasOf(field), operatorEnum.operator, paramNames[0], paramNames[1]);
     }
 
-    private void addParams(SQLBuilder sqlBuilder, Operator operatorEnum, String paramName) {
+    private void addParams(SQLBuilder sqlBuilder, Operator operatorEnum, String[] paramNames) {
         if (operatorEnum.isArray()) {
-            sqlBuilder.addParamArray(paramName, field, operatorEnum.transferValue(this.value));
+            sqlBuilder.addParamArray(paramNames[0], field, operatorEnum.transferValue(this.value));
             return;
         }
-        sqlBuilder.addParam(paramName, field, operatorEnum.transferValue(this.value));
+        if (operatorEnum == Operator.Between) {
+            sqlBuilder.addParam(paramNames[0], field, operatorEnum.transferValue(this.value.split(",")[0]));
+            sqlBuilder.addParam(paramNames[1], field, operatorEnum.transferValue(this.value.split(",")[1]));
+            return;
+        }
+        sqlBuilder.addParam(paramNames[0], field, operatorEnum.transferValue(this.value));
     }
 
     @Override
     public String toDSL() {
-        if (Operators.byName(this.operator).needValue) {
+        if (Operators.byName(this.operator).requireValue) {
             return String.format("(%s %s %s)", field, operator, value);
         }
         return String.format("(%s %s)", field, operator);

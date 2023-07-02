@@ -4,5 +4,5 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 interface ColumnFieldReader {
-    Object readValue(ResultSet resultSet, String columnName)throws SQLException;
+    Object readValue(ResultSet resultSet, String columnName) throws SQLException;
 }
