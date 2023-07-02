@@ -61,6 +61,16 @@ class SQLBuilder<T> {
         setParam(paramName, fieldName, value, this::castValueByField);
     }
 
+    void addParamArray(String paramName, String fieldName, String value) {
+        setParam(paramName, fieldName, value, this::castValueToList);
+    }
+
+    private List<Object> castValueToList(String value, Field field) {
+        return Stream.of(new Gson().fromJson(value, String[].class))
+                .map(v -> castValueByField(v, field))
+                .collect(Collectors.toList());
+    }
+
     private void setParam(String paramName, String fieldName, String value, BiFunction<String, Field, Object> valueConverter) {
         try {
             Field field = this.queryResultClass.getDeclaredField(fieldName);
@@ -69,12 +79,6 @@ class SQLBuilder<T> {
         } catch (NoSuchFieldException e) {
             throw new RuntimeException("No such field: " + paramName);
         }
-    }
-
-    void addParamArray(String paramName, String fieldName, String value) {
-        setParam(paramName, fieldName, value, (value1, field) ->
-                Stream.of(new Gson().fromJson(value1, String[].class))
-                        .map(v -> castValueByField(v, field)).collect(Collectors.toList()));
     }
 
     private Object castValueByField(String value, Field field) {
