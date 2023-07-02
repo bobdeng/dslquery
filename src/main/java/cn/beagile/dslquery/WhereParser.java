@@ -40,12 +40,15 @@ class WhereParser {
         if (value.equals("") && Operators.byName(operator).needValue) {
             throw new RuntimeException("invalid predicate:" + subWhere);
         }
+        return new SingleExpression(fieldName, operator, urlDecode(value));
+    }
+
+    private String urlDecode(String value) {
         try {
-            value = URLDecoder.decode(value, "UTF-8");
+            return URLDecoder.decode(value, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
-        return new SingleExpression(fieldName, operator, value);
     }
 
     private String nextMatch(String subWhere, Matcher matcher) {
