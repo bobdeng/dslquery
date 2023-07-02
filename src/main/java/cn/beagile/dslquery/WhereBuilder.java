@@ -1,5 +1,7 @@
 package cn.beagile.dslquery;
 
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 import java.util.Stack;
 
@@ -95,6 +97,16 @@ public class WhereBuilder {
     public WhereBuilder prev() {
         expressionStack.pop();
         currentExpression = expressionStack.lastElement();
+        return this;
+    }
+
+    public WhereBuilder in(String name, Object[] values) {
+        appendExpression(name, new Gson().toJson(values), Operator.In.keyword);
+        return this;
+    }
+
+    public WhereBuilder notin(String name, Object[] values) {
+        appendExpression(name, new Gson().toJson(values), Operator.NotIn.keyword);
         return this;
     }
 }

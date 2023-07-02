@@ -100,6 +100,22 @@ public class WhereBuilderTest {
         assertEquals("(and(name notnull))", result);
     }
 
+
+    @Test
+    public void build_with_in() {
+        String result = new WhereBuilder().and()
+                .in("name", new String[]{"bob", "alice"})
+                .build();
+        assertEquals("(and(name in [\"bob\",\"alice\"]))", result);
+    }
+    @Test
+    public void build_with_not_in() {
+        String result = new WhereBuilder().and()
+                .notin("name", new String[]{"bob", "alice"})
+                .build();
+        assertEquals("(and(name notin [\"bob\",\"alice\"]))", result);
+    }
+
     @Test
     public void build_with_multiple() {
         String result = new WhereBuilder().and()
@@ -131,6 +147,7 @@ public class WhereBuilderTest {
                 .build();
         assertEquals("(or(name equal bob)(age greaterthan 18)(and(name equal alice)(name contains bob)))", result);
     }
+
     @Test
     public void build_with_prev() {
         String result = new WhereBuilder().or()
