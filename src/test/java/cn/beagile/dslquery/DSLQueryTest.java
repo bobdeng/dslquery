@@ -162,7 +162,7 @@ public class DSLQueryTest {
     @Test
     public void should_execute_query_with_sort_asc() {
         DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultBean.class);
-        dslQuery.sort("name asc").query();
+        dslQuery.where("").sort("name asc").query();
         verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
         assertEquals("select name,age from view_query order by name asc", sqlQuery.getSql());

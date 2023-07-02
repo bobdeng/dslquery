@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -57,9 +58,13 @@ class SQLBuilder<T> {
     }
 
     void addParam(String paramName, String fieldName, String value) {
+        setParam(paramName, fieldName, value, this::castValueByField);
+    }
+
+    private void setParam(String paramName, String fieldName, String value, BiFunction<String, Field, Object> valueConverter) {
         try {
             Field field = this.queryResultClass.getDeclaredField(fieldName);
-            Object paramValue = castValueByField(value, field);
+            Object paramValue = valueConverter.apply(value, field);
             params.put(paramName, paramValue);
         } catch (NoSuchFieldException e) {
             throw new RuntimeException("No such field: " + paramName);
@@ -67,14 +72,9 @@ class SQLBuilder<T> {
     }
 
     void addParamArray(String paramName, String fieldName, String value) {
-        try {
-            Field field = this.queryResultClass.getDeclaredField(fieldName);
-            List values = Stream.of(new Gson().fromJson(value, String[].class))
-                    .map(v -> castValueByField(v, field)).collect(Collectors.toList());
-            params.put(paramName, values);
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException("No such field: " + paramName);
-        }
+        setParam(paramName, fieldName, value, (value1, field) ->
+                Stream.of(new Gson().fromJson(value1, String[].class))
+                        .map(v -> castValueByField(v, field)).collect(Collectors.toList()));
     }
 
     private Object castValueByField(String value, Field field) {
