@@ -34,7 +34,7 @@ public class WhereBuilder {
         return expressionStack.firstElement().toDSL();
     }
 
-    public WhereBuilder equal(String name, String value) {
+    public WhereBuilder equals(String name, String value) {
         appendExpression(name, value, Operator.Equals.keyword);
         return this;
     }
@@ -53,7 +53,7 @@ public class WhereBuilder {
         return this;
     }
 
-    public WhereBuilder notequal(String name, String value) {
+    public WhereBuilder notequals(String name, String value) {
         appendExpression(name, value, Operator.NotEquals.keyword);
         return this;
     }
@@ -107,6 +107,11 @@ public class WhereBuilder {
 
     public WhereBuilder notin(String name, Object[] values) {
         appendExpression(name, new Gson().toJson(values), Operator.NotIn.keyword);
+        return this;
+    }
+
+    public WhereBuilder between(String name, Object valueStart, Object valueEnd) {
+        appendExpression(name, valueStart + "," + valueEnd, Operator.Between.keyword);
         return this;
     }
 }

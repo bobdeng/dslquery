@@ -4,8 +4,8 @@ import java.util.function.Function;
 
 enum Operator {
 
-    Equals("equal", "=", (value) -> value),
-    NotEquals("notequal", "!=", (value) -> value),
+    Equals("equals", "=", (value) -> value),
+    NotEquals("notequals", "!=", (value) -> value),
     LessThan("lessthan", "<", (value) -> value),
     LessThanOrEqual("lessthanorequal", "<=", (value) -> value),
     GreaterThan("greaterthan", ">", (value) -> value),

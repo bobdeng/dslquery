@@ -100,7 +100,7 @@ public class IntegrationTest {
     public void should_return1_when_add_where() {
         DSLQuery<Person> query = new DSLQuery<>(new SpringQueryExecutor(jdbcTemplate), Person.class);
         List<Person> result = query
-                .where("(and(name equal bob robert))")
+                .where("(and(name equals bob robert))")
                 .skip(0).limit(10).query();
         assertEquals(1, result.size());
         Person person = result.get(0);

@@ -8,21 +8,21 @@ public class WhereParserTest {
     @Test
     public void should_parse_where() {
         WhereParser whereParser = new WhereParser();
-        ComplexExpression where = whereParser.parse("(and(name equal bob))");
+        ComplexExpression where = whereParser.parse("(and(name equals bob))");
         assertNotNull(where);
         assertEquals(where.getCondition(), "and");
         assertEquals(1, where.getExpressions().size());
-        assertEquals(new SingleExpression("name", "equal", "bob"), where.getExpressions().get(0));
+        assertEquals(new SingleExpression("name", "equals", "bob"), where.getExpressions().get(0));
     }
 
     @Test
     public void should_parse_where_has_embrace_in_value() {
         WhereParser whereParser = new WhereParser();
-        ComplexExpression where = whereParser.parse("(and(name equal bob%29))");
+        ComplexExpression where = whereParser.parse("(and(name equals bob%29))");
         assertNotNull(where);
         assertEquals(where.getCondition(), "and");
         assertEquals(1, where.getExpressions().size());
-        assertEquals(new SingleExpression("name", "equal", "bob)"), where.getExpressions().get(0));
+        assertEquals(new SingleExpression("name", "equals", "bob)"), where.getExpressions().get(0));
     }
 
     @Test
@@ -39,12 +39,12 @@ public class WhereParserTest {
     @Test
     public void should_parse_where_with_multiple_predicate() {
         WhereParser whereParser = new WhereParser();
-        ComplexExpression where = whereParser.parse("(and(name equal bob)(age notequal 18)(name notnull)(name isnull))");
+        ComplexExpression where = whereParser.parse("(and(name equals bob)(age notequals 18)(name notnull)(name isnull))");
         assertNotNull(where);
         assertEquals(where.getCondition(), "and");
         assertEquals(4, where.getExpressions().size());
-        assertEquals(new SingleExpression("name", "equal", "bob"), where.getExpressions().get(0));
-        assertEquals(new SingleExpression("age", "notequal", "18"), where.getExpressions().get(1));
+        assertEquals(new SingleExpression("name", "equals", "bob"), where.getExpressions().get(0));
+        assertEquals(new SingleExpression("age", "notequals", "18"), where.getExpressions().get(1));
         assertEquals(new SingleExpression("name", "notnull", ""), where.getExpressions().get(2));
         assertEquals(new SingleExpression("name", "isnull", ""), where.getExpressions().get(3));
     }
@@ -52,7 +52,7 @@ public class WhereParserTest {
     @Test
     public void should_parse_where_with_inner_predicate() {
         WhereParser whereParser = new WhereParser();
-        ComplexExpression where = whereParser.parse("(and(or(name equal bob)(name equal alice))(age greaterthan 18))");
+        ComplexExpression where = whereParser.parse("(and(or(name equals bob)(name equals alice))(age greaterthan 18))");
         assertNotNull(where);
         assertEquals(where.getCondition(), "and");
         assertEquals(2, where.getExpressions().size());
@@ -62,7 +62,7 @@ public class WhereParserTest {
     @Test
     public void should_parse_where_with_inner_and_predicate() {
         WhereParser whereParser = new WhereParser();
-        ComplexExpression where = whereParser.parse("(or(and(name equal bob)(name equal alice))(age greaterthan 18))");
+        ComplexExpression where = whereParser.parse("(or(and(name equals bob)(name equals alice))(age greaterthan 18))");
         assertNotNull(where);
         assertEquals(where.getCondition(), "or");
         assertEquals(2, where.getExpressions().size());
@@ -74,11 +74,11 @@ public class WhereParserTest {
     @Test
     public void should_parse_where_with_inner_predicate_without_and_or() {
         WhereParser whereParser = new WhereParser();
-        ComplexExpression where = whereParser.parse("((name equal bob)(age greaterthan 18))");
+        ComplexExpression where = whereParser.parse("((name equals bob)(age greaterthan 18))");
         assertNotNull(where);
         assertEquals(where.getCondition(), "and");
         assertEquals(2, where.getExpressions().size());
-        assertEquals(new SingleExpression("name", "equal", "bob"), where.getExpressions().get(0));
+        assertEquals(new SingleExpression("name", "equals", "bob"), where.getExpressions().get(0));
         assertEquals(new SingleExpression("age", "greaterthan", "18"), where.getExpressions().get(1));
     }
 
@@ -86,7 +86,7 @@ public class WhereParserTest {
     @Test
     public void should_throw_exception_when_wrong_start() {
         WhereParser whereParser = new WhereParser();
-        RuntimeException e = assertThrows(RuntimeException.class, () -> whereParser.parse("(ab(name equal bob)))"));
+        RuntimeException e = assertThrows(RuntimeException.class, () -> whereParser.parse("(ab(name equals bob)))"));
         assertEquals("invalid condition:ab", e.getMessage());
     }
 
@@ -122,8 +122,8 @@ public class WhereParserTest {
     public void should_throw_exception_when_wrong_predicate_no_value() {
         WhereParser whereParser = new WhereParser();
         RuntimeException e = assertThrows(RuntimeException.class, () -> {
-            System.out.println(whereParser.parse("(and(name equal )))"));
+            System.out.println(whereParser.parse("(and(name equals )))"));
         });
-        assertEquals("invalid predicate:(name equal )", e.getMessage());
+        assertEquals("invalid predicate:(name equals )", e.getMessage());
     }
 }

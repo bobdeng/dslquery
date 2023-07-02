@@ -42,7 +42,7 @@ public class DSLQueryTest {
     @Test
     public void should_execute_query_with_where() {
         DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultBean.class);
-        dslQuery.where("(and(name equal bob))").query();
+        dslQuery.where("(and(name equals bob))").query();
         verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
         assertEquals("select name,age from view_query where ((name = :name1))", sqlQuery.getSql());
@@ -62,7 +62,7 @@ public class DSLQueryTest {
     @Test
     public void should_execute_query_with_complex_where() {
         DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultForComplexSearch.class);
-        dslQuery.where("(and(or(name equal bob)(name equal alice))(age greaterthan 20))").query();
+        dslQuery.where("(and(or(name equals bob)(name equals alice))(age greaterthan 20))").query();
         verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
         assertEquals("select name,age from view_query where (((name = :name1) or (name = :name2)) and (age > :age3))", sqlQuery.getSql());
@@ -83,7 +83,7 @@ public class DSLQueryTest {
     @Test
     public void should_execute_query_with_actual_field_name() {
         DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultWithAlias.class);
-        dslQuery.where("(and(or(name equal bob)(name equal alice))(age greaterthan 20))").query();
+        dslQuery.where("(and(or(name equals bob)(name equals alice))(age greaterthan 20))").query();
         verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
         assertEquals("select name1,age from view_query where (((name1 = :name1) or (name1 = :name2)) and (age > :age3))", sqlQuery.getSql());
@@ -96,7 +96,7 @@ public class DSLQueryTest {
     public void should_execute_with_2_where() {
         DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultWithAlias.class);
         dslQuery.where("(and(age greaterthan 20))")
-                .where("(and(name equal bob))").query();
+                .where("(and(name equals bob))").query();
         verify(queryExecutor, times(1)).list(any(), sqlQueryArgumentCaptor.capture());
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
         assertEquals("select name1,age from view_query where ((age > :age1)) and ((name1 = :name2))", sqlQuery.getSql());
@@ -131,7 +131,8 @@ public class DSLQueryTest {
             "greaterthan,>,bob",
             "lessthanorequal,<=,bob",
             "lessthan,<,bob",
-            "notequal,!=,bob",
+            "notequals,!=,bob",
+            "equals,=,bob",
     })
     public void should_execute_query_with_condition(String operator, String condition, String expected) {
         DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultBean.class);
@@ -230,7 +231,7 @@ public class DSLQueryTest {
     @Test
     public void should_get_total_count_with_where() {
         DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultWithAlias.class);
-        dslQuery.where("(and(name equal bob))").query();
+        dslQuery.where("(and(name equals bob))").query();
         verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
         assertEquals("select count(*) from view_query where ((name1 = :name1))", sqlQuery.getCountSql());
@@ -242,7 +243,7 @@ public class DSLQueryTest {
     public void should_get_paged_result() {
         DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultWithAlias.class);
         when(queryExecutor.count(any())).thenReturn(100);
-        Paged<QueryResultBean> pagedResult = dslQuery.skip(10).limit(20).where("(and(name equal bob))").pagedQuery();
+        Paged<QueryResultBean> pagedResult = dslQuery.skip(10).limit(20).where("(and(name equals bob))").pagedQuery();
         assertNotNull(pagedResult);
         assertEquals(1, pagedResult.getResult().size());
         assertEquals(100, pagedResult.total());
