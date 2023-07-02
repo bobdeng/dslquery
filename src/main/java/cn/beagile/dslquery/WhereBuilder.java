@@ -69,7 +69,7 @@ public class WhereBuilder {
     }
 
     public WhereBuilder startswith(String name, String value) {
-        appendExpression(name, value, Operator.StartWith.keyword);
+        appendExpression(name, value, Operator.StartsWith.keyword);
         return this;
     }
 

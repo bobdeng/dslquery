@@ -1,7 +1,5 @@
 package cn.beagile.dslquery;
 
-import com.google.gson.Gson;
-
 import java.util.function.Function;
 
 enum Operator {
@@ -12,7 +10,7 @@ enum Operator {
     LessThanOrEqual("lessthanorequal", "<=", (value) -> value),
     GreaterThan("greaterthan", ">", (value) -> value),
     GreaterThanOrEqual("greaterthanorequal", ">=", (value) -> value),
-    StartWith("startswith", "like", (value) -> value + "%"),
+    StartsWith("startswith", "like", (value) -> value + "%"),
     EndsWith("endswith", "like", (value) -> "%" + value),
     Contains("contains", "like", (value) -> "%" + value + "%"),
     IsNull("isnull", "is null", null, false),
