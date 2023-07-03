@@ -49,7 +49,7 @@ public class WhereBuilderTest {
         String result = new WhereBuilder().and()
                 .lessthanorequal("name", "bob")
                 .build();
-        assertEquals("(and(name lessthanorequal bob))", result);
+        assertEquals("(and(name lessthanorequals bob))", result);
     }
 
     @Test
@@ -57,7 +57,7 @@ public class WhereBuilderTest {
         String result = new WhereBuilder().and()
                 .greaterthanorequal("name", "bob")
                 .build();
-        assertEquals("(and(name greaterthanorequal bob))", result);
+        assertEquals("(and(name greaterthanorequals bob))", result);
     }
 
     @Test
