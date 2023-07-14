@@ -55,6 +55,7 @@ public class IntegrationTest {
 
     @Test
     public void should_query() {
+
         DSLQuery<Person> query = new DSLQuery<>(new SpringQueryExecutor(jdbcTemplate), Person.class);
         List<Person> result = query.skip(0).limit(10).query();
         assertEquals(2, result.size());

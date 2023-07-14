@@ -1,5 +1,9 @@
 package cn.beagile.dslquery;
 
+import com.google.gson.Gson;
+
+import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
@@ -13,6 +17,7 @@ import java.util.stream.Stream;
 
 class DefaultResultSetReader<T> implements Function<ResultSet, T> {
     private static final Map<Class, ColumnFieldReader> COLUMN_READER_MAP = new HashMap<>();
+
     static {
         COLUMN_READER_MAP.put(Integer.class, ResultSet::getInt);
         COLUMN_READER_MAP.put(int.class, ResultSet::getInt);
@@ -33,13 +38,8 @@ class DefaultResultSetReader<T> implements Function<ResultSet, T> {
 
     @Override
     public T apply(ResultSet resultSet) {
-        final T result;
         try {
-            result = this.queryResultBeanClass.newInstance();
-            Stream.of(this.queryResultBeanClass.getDeclaredFields())
-                    .filter(field -> field.isAnnotationPresent(Column.class))
-                    .forEach(field -> setFieldValue(resultSet, result, field));
-            return result;
+            return (T) newInstance(resultSet, this.queryResultBeanClass);
         } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException("Can not create instance of " + this.queryResultBeanClass.getName() + "");
         }
@@ -47,12 +47,48 @@ class DefaultResultSetReader<T> implements Function<ResultSet, T> {
 
     }
 
-    private void setFieldValue(ResultSet resultSet, T result, Field field) {
+    private Object newInstance(ResultSet resultSet, Class clz) throws InstantiationException, IllegalAccessException {
+        final Object result;
+        result = clz.newInstance();
+        Stream.of(clz.getDeclaredFields())
+                .filter(field -> field.isAnnotationPresent(Column.class))
+                .forEach(field -> setFieldValue(resultSet, result, field));
+        Stream.of(clz.getDeclaredFields())
+                .filter(field -> field.isAnnotationPresent(Embedded.class))
+                .forEach(field -> setEmbeddedFieldValue(resultSet, result, field));
+        return result;
+    }
+
+    private void setFieldValue(ResultSet resultSet, Object result, Field field) {
         Column column = field.getAnnotation(Column.class);
         try {
-            Object value = COLUMN_READER_MAP.get(field.getType()).readValue(resultSet, column.value());
-            new ReflectFieldSetter(result, field, value).set();
+            ColumnFieldReader columnFieldReader = COLUMN_READER_MAP.get(field.getType());
+            if (columnFieldReader != null) {
+                readPrimitive(resultSet, result, field, column, columnFieldReader);
+                return;
+            }
+            readJson(resultSet, result, field, column);
         } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void readJson(ResultSet resultSet, Object result, Field field, Column column) throws SQLException {
+        String fieldValue = resultSet.getString(column.value());
+        if (fieldValue != null) {
+            new ReflectFieldSetter(result, field, new Gson().fromJson(fieldValue, field.getType())).set();
+        }
+    }
+
+    private void readPrimitive(ResultSet resultSet, Object result, Field field, Column column, ColumnFieldReader columnFieldReader) throws SQLException {
+        Object value = columnFieldReader.readValue(resultSet, column.value());
+        new ReflectFieldSetter(result, field, value).set();
+    }
+
+    private void setEmbeddedFieldValue(ResultSet resultSet, Object result, Field field) {
+        try {
+            new ReflectFieldSetter(result, field, newInstance(resultSet, field.getType())).set();
+        } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }

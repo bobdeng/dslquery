@@ -24,6 +24,36 @@ public class DefaultResultSetReaderTest {
     }
 
     @Test
+    public void should_read_json_field() throws SQLException {
+        DefaultResultSetReader<QueryResultBean> defaultResultSetReader = new DefaultResultSetReader(QueryResultBean.class);
+        ResultSet rs = mock(ResultSet.class);
+        when(rs.getString("json")).thenReturn("[{\"name\":\"bob\"}]");
+        QueryResultBean result = defaultResultSetReader.apply(rs);
+        assertNotNull(result.getJson());
+        assertEquals("bob", result.getJson()[0].getName());
+        assertNull(result.getJson()[0].getCode());
+    }
+
+    @Test
+    public void should_read_embedding_field() throws SQLException {
+        DefaultResultSetReader<QueryResultBean> defaultResultSetReader = new DefaultResultSetReader(QueryResultBean.class);
+        ResultSet rs = mock(ResultSet.class);
+        when(rs.getString("another_name")).thenReturn("alice");
+        QueryResultBean result = defaultResultSetReader.apply(rs);
+        assertNotNull(result.getEmbeddingField());
+        assertEquals("alice", result.getEmbeddingField().getName());
+    }
+
+    @Test
+    public void should_read_null_json_field() throws SQLException {
+        DefaultResultSetReader<QueryResultBean> defaultResultSetReader = new DefaultResultSetReader(QueryResultBean.class);
+        ResultSet rs = mock(ResultSet.class);
+        when(rs.getString("json")).thenReturn(null);
+        QueryResultBean result = defaultResultSetReader.apply(rs);
+        assertNull(result.getJson());
+    }
+
+    @Test
     public void should_throw_when_sql_fail() throws SQLException {
         DefaultResultSetReader<QueryResultBean> defaultResultSetReader = new DefaultResultSetReader(QueryResultBean.class);
         ResultSet rs = mock(ResultSet.class);
