@@ -2,6 +2,7 @@ package cn.beagile.dslquery;
 
 import com.google.gson.Gson;
 
+import javax.persistence.Embedded;
 import java.lang.reflect.Field;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -161,12 +162,21 @@ class SQLBuilder<T> {
     }
 
     private String getSelectSQL() {
-        String fields = Stream.of(queryResultClass.getDeclaredFields())
+        List<String> stringStream = getClassFields(queryResultClass);
+        String fields = String.join(",", stringStream);
+        return String.format("select %s from %s", fields, getViewName());
+    }
+
+    private List<String> getClassFields(Class clz) {
+        List<String> primitiveFields = Stream.of(clz.getDeclaredFields())
                 .filter(field -> field.isAnnotationPresent(Column.class))
                 .map(field -> field.getAnnotation(Column.class))
-                .map(Column::value)
-                .collect(Collectors.joining(","));
-        return String.format("select %s from %s", fields, getViewName());
+                .map(Column::value).collect(Collectors.toList());
+        List<String> embeddedFields = Stream.of(clz.getDeclaredFields())
+                .filter(field -> field.isAnnotationPresent(Embedded.class))
+                .flatMap(field -> getClassFields(field.getType()).stream())
+                .collect(Collectors.toList());
+        return Stream.concat(primitiveFields.stream(), embeddedFields.stream()).collect(Collectors.toList());
     }
 
     private String getSortSQL() {
