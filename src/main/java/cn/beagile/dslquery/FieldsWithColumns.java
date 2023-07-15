@@ -14,12 +14,9 @@ public class FieldsWithColumns {
     private final HashMap<String, FieldWithColumn> columnHashMapByColumnName = new HashMap<>();
     private final HashMap<Field, FieldWithColumn> columnHashMapByField = new HashMap<>();
     private final Stack<Field> embeddedFields = new Stack<>();
+    private final Stack<Class> classStack = new Stack<>();
     private AttributeOverrides firstAttributeOverrides;
-    private final Class rootClass;
-    private Class currentClass;
-
     FieldsWithColumns(Class rootClass) {
-        this.rootClass = rootClass;
         findFields(rootClass);
     }
 
@@ -28,17 +25,17 @@ public class FieldsWithColumns {
     }
 
     private void findFields(Class clz) {
-        this.currentClass = clz;
+        classStack.push(clz);
         if (isRoot()) {
             addColumnsWithColumn(clz);
         }
         addColumnsOverride(clz);
         addEmbeddedFields(clz);
-        this.currentClass = this.rootClass;
+        classStack.pop();
     }
 
     private boolean isRoot() {
-        return this.rootClass.equals(this.currentClass);
+        return this.classStack.size() == 1;
     }
 
     private void addEmbeddedFields(Class clz) {
