@@ -2,19 +2,17 @@ package cn.beagile.dslquery;
 
 import com.google.gson.Gson;
 
-import javax.persistence.Column;
-import javax.persistence.Embedded;
+import javax.persistence.*;
 import java.lang.reflect.Field;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -163,21 +161,53 @@ class SQLBuilder<T> {
     }
 
     private String getSelectSQL() {
-        List<String> stringStream = getClassFields(queryResultClass);
+        List<String> stringStream = getClassFields(queryResultClass, null);
         String fields = String.join(",", stringStream);
         return String.format("select %s from %s", fields, getViewName());
     }
 
-    private List<String> getClassFields(Class clz) {
-        List<String> primitiveFields = Stream.of(clz.getDeclaredFields())
-                .filter(field -> field.isAnnotationPresent(Column.class))
-                .map(field -> field.getAnnotation(Column.class))
-                .map(Column::name).collect(Collectors.toList());
+    private List<String> getClassFields(Class clz, Field parentField) {
+        Predicate<Field> isOverride = getFieldOverridePredicate(parentField);
+        List<String> primitiveFields = getPrimitiveFields(clz, isOverride);
+        List<String> embeddedFields = getEmbeddedFields(clz);
+        List<String> attributeOverrideFields = getAttributeOverrideFields(clz);
+        return Stream.of(primitiveFields, embeddedFields, attributeOverrideFields)
+                .flatMap(Collection::stream)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    private static List<String> getAttributeOverrideFields(Class clz) {
+        List<String> attributeOverrideFields = Stream.of(clz.getDeclaredFields())
+                .filter(field -> field.isAnnotationPresent(Embedded.class))
+                .filter(field -> field.isAnnotationPresent(AttributeOverrides.class))
+                .flatMap(field -> Arrays.stream(field.getAnnotation(AttributeOverrides.class).value()).map(it -> it.column().name()))
+                .collect(Collectors.toList());
+        return attributeOverrideFields;
+    }
+
+    private List<String> getEmbeddedFields(Class clz) {
         List<String> embeddedFields = Stream.of(clz.getDeclaredFields())
                 .filter(field -> field.isAnnotationPresent(Embedded.class))
-                .flatMap(field -> getClassFields(field.getType()).stream())
+                .flatMap(field -> getClassFields(field.getType(), field).stream())
                 .collect(Collectors.toList());
-        return Stream.concat(primitiveFields.stream(), embeddedFields.stream()).collect(Collectors.toList());
+        return embeddedFields;
+    }
+
+    private static List<String> getPrimitiveFields(Class clz, Predicate<Field> isOverride) {
+        List<String> primitiveFields = Stream.of(clz.getDeclaredFields())
+                .filter(field -> field.isAnnotationPresent(Column.class))
+                .filter(field -> !isOverride.test(field))
+                .map(field -> field.getAnnotation(Column.class))
+                .map(Column::name).collect(Collectors.toList());
+        return primitiveFields;
+    }
+
+    private static Predicate<Field> getFieldOverridePredicate(Field parentField) {
+        AttributeOverride[] attributeOverrides = Optional.ofNullable(parentField).map(it -> it.getAnnotation(AttributeOverrides.class))
+                .map(AttributeOverrides::value)
+                .orElseGet(() -> new AttributeOverride[0]);
+        return (f) -> Stream.of(attributeOverrides).anyMatch(it -> it.name().equals(f.getName()));
     }
 
     private String getSortSQL() {

@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import javax.persistence.Column;
+import javax.persistence.*;
 import java.sql.ResultSet;
 import java.time.Instant;
 import java.util.List;
@@ -30,6 +30,19 @@ public class IntegrationTest {
         @Column(name = "born_at")
         @DateFormat("yyyy-MM-dd HH:mm:ss")
         private Instant bornAt;
+        @Embedded
+        @AttributeOverrides({
+                @AttributeOverride(name = "address", column = @Column(name = "address")),
+                @AttributeOverride(name = "phone", column = @Column(name = "phone"))
+        })
+        private Contact contact;
+
+        @Embeddable
+        public static class Contact {
+            private String address;
+            @Column(name = "phone_number")
+            private String phone;
+        }
     }
 
     public static class SpringQueryExecutor implements QueryExecutor {
@@ -60,6 +73,8 @@ public class IntegrationTest {
         DSLQuery<Person> query = new DSLQuery<>(new SpringQueryExecutor(jdbcTemplate), Person.class);
         List<Person> result = query.skip(0).limit(10).query();
         assertEquals(2, result.size());
+        assertEquals("123 main st", result.get(0).contact.address);
+        assertEquals("123456789", result.get(0).contact.phone);
     }
 
     @Test
