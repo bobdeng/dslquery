@@ -1,5 +1,6 @@
 package cn.beagile.dslquery;
 
+import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import java.lang.reflect.Field;
@@ -21,25 +22,13 @@ public class FieldWithColumn {
     }
 
     public String columnName() {
-        if (attributeOverrides != null) {
-            return Stream.of(attributeOverrides.value()).filter(it -> it.name().equals(field.getName()))
-                    .map(it -> it.column().name())
-                    .findFirst()
-                    .orElseGet(() -> field.getAnnotation(Column.class).name());
+        AttributeOverride[] attributeOverrides = new AttributeOverride[0];
+        if (this.attributeOverrides != null) {
+            attributeOverrides = this.attributeOverrides.value();
         }
-        return field.getAnnotation(Column.class).name();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        FieldWithColumn that = (FieldWithColumn) o;
-        return Objects.equals(field, that.field);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(field);
+        return Stream.of(attributeOverrides).filter(it -> it.name().equals(field.getName()))
+                .map(it -> it.column().name())
+                .findFirst()
+                .orElseGet(() -> field.getAnnotation(Column.class).name());
     }
 }

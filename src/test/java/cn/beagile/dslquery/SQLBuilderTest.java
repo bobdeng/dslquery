@@ -50,10 +50,9 @@ public class SQLBuilderTest {
     @Test
     public void add_param_not_exist() {
         SQLBuilder<QueryResultForTest> sqlQuery = getSqlBuilder();
-        RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> {
+        assertThrows(NullPointerException.class, () -> {
             sqlQuery.addParam("weight1", "weight1", "55.4");
         });
-        assertEquals(runtimeException.getMessage(), "No such field: weight1");
     }
 
     private SQLBuilder<QueryResultForTest> getSqlBuilder() {

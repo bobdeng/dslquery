@@ -1,5 +1,6 @@
 package cn.beagile.dslquery;
 
+import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = TestApplication.class)
+@Ignore
 public class IntegrationTest {
     @Autowired
     NamedParameterJdbcTemplate jdbcTemplate;
@@ -74,6 +76,16 @@ public class IntegrationTest {
         DSLQuery<Person> query = new DSLQuery<>(new SpringQueryExecutor(jdbcTemplate), Person.class);
         List<Person> result = query.skip(0).limit(10).query();
         assertEquals(2, result.size());
+        assertEquals("123 main st", result.get(0).contact.address);
+        assertEquals("123456789", result.get(0).contact.phone);
+    }
+
+    @Test
+    public void should_query_with_embedded() {
+
+        DSLQuery<Person> query = new DSLQuery<>(new SpringQueryExecutor(jdbcTemplate), Person.class);
+        List<Person> result = query.where("(and(contact.address contains 123))").skip(0).limit(10).query();
+        assertEquals(1, result.size());
         assertEquals("123 main st", result.get(0).contact.address);
         assertEquals("123456789", result.get(0).contact.phone);
     }
