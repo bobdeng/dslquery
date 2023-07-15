@@ -2,6 +2,7 @@ package cn.beagile.dslquery;
 
 import org.junit.jupiter.api.Test;
 
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -63,7 +64,7 @@ public class DefaultResultSetReaderTest {
     }
 
     public static class QueryResultWithoutDefaultConstructorBean {
-        @Column("name1")
+        @Column(name = "name1")
         private String name;
 
         public String getName() {
@@ -84,7 +85,7 @@ public class DefaultResultSetReaderTest {
     }
 
     public static class QueryResultWithAliasBean {
-        @Column("name1")
+        @Column(name = "name1")
         private String name;
 
         public String getName() {
@@ -113,7 +114,7 @@ public class DefaultResultSetReaderTest {
     }
 
     public static class QueryResultWithDecimalFieldBean {
-        @Column("weight")
+        @Column(name = "weight")
         private BigDecimal weight;
 
         public BigDecimal getWeight() {
@@ -132,7 +133,7 @@ public class DefaultResultSetReaderTest {
     }
 
     public static class QueryResultWithLongFieldBean {
-        @Column("weight")
+        @Column(name = "weight")
         private Long weight;
 
         public Long getWeight() {
@@ -151,7 +152,7 @@ public class DefaultResultSetReaderTest {
     }
 
     public static class QueryResultWithInstantFieldBean {
-        @Column("created_at")
+        @Column(name = "created_at")
         private Instant createdAt;
 
     }
@@ -168,7 +169,7 @@ public class DefaultResultSetReaderTest {
     }
 
     public static class QueryResultWithTimestampFieldBean {
-        @Column("created_at")
+        @Column(name = "created_at")
         private Timestamp createdAt;
 
     }
@@ -182,5 +183,41 @@ public class DefaultResultSetReaderTest {
         QueryResultWithTimestampFieldBean result = defaultResultSetReader.apply(rs);
         assertNotNull(result);
         assertEquals(18L, result.createdAt.getTime());
+    }
+
+    public static class QueryBeanWithEmbeddedFieldAndOverride {
+
+        @Embedded
+        @AttributeOverrides({
+                @AttributeOverride(name = "name", column = @Column(name = "embedded_field_name"))
+        })
+        private EmbeddingField embeddingField;
+
+        public EmbeddingField getEmbeddingField() {
+            return embeddingField;
+        }
+
+        public void setEmbeddingField(EmbeddingField embeddingField) {
+            this.embeddingField = embeddingField;
+        }
+
+        @Embeddable
+        public static class EmbeddingField {
+            private String name;
+            @Column(name = "code")
+            private String code;
+        }
+    }
+
+    @Test
+    public void should_read_embedding_field_override_field() throws SQLException {
+        DefaultResultSetReader<QueryBeanWithEmbeddedFieldAndOverride> defaultResultSetReader = new DefaultResultSetReader(QueryBeanWithEmbeddedFieldAndOverride.class);
+        ResultSet rs = mock(ResultSet.class);
+        when(rs.getString("embedded_field_name")).thenReturn("alice");
+        when(rs.getString("code")).thenReturn("123456");
+        QueryBeanWithEmbeddedFieldAndOverride result = defaultResultSetReader.apply(rs);
+        assertNotNull(result.getEmbeddingField());
+        assertEquals("alice", result.getEmbeddingField().name);
+        assertEquals("123456", result.getEmbeddingField().code);
     }
 }

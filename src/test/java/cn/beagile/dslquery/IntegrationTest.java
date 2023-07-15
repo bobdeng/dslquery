@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.persistence.Column;
 import java.sql.ResultSet;
 import java.time.Instant;
 import java.util.List;
@@ -22,11 +23,11 @@ public class IntegrationTest {
 
     @View("person")
     public static class Person {
-        @Column("name1")
+        @Column(name = "name1")
         private String name;
-        @Column("age")
+        @Column(name = "age")
         private Integer age;
-        @Column("born_at")
+        @Column(name = "born_at")
         @DateFormat("yyyy-MM-dd HH:mm:ss")
         private Instant bornAt;
     }

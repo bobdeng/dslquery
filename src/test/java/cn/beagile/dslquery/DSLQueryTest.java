@@ -7,6 +7,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.ArgumentCaptor;
 
+import javax.persistence.Column;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -53,9 +54,9 @@ public class DSLQueryTest {
 
     @View("view_query")
     public static class QueryResultForComplexSearch {
-        @Column("name")
+        @Column(name = "name")
         private String name;
-        @Column("age")
+        @Column(name = "age")
         private Integer age;
     }
 
@@ -74,9 +75,9 @@ public class DSLQueryTest {
 
     @View("view_query")
     public static class QueryResultWithAlias {
-        @Column("name1")
+        @Column(name = "name1")
         private String name;
-        @Column("age")
+        @Column(name = "age")
         private Integer age;
     }
 

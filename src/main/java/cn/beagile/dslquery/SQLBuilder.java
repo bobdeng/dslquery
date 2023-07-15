@@ -2,6 +2,7 @@ package cn.beagile.dslquery;
 
 import com.google.gson.Gson;
 
+import javax.persistence.Column;
 import javax.persistence.Embedded;
 import java.lang.reflect.Field;
 import java.time.Instant;
@@ -119,7 +120,7 @@ class SQLBuilder<T> {
 
     String aliasOf(String field) {
         try {
-            return this.queryResultClass.getDeclaredField(field).getAnnotation(Column.class).value();
+            return this.queryResultClass.getDeclaredField(field).getAnnotation(Column.class).name();
         } catch (NoSuchFieldException e) {
             throw new RuntimeException("No such field: " + field);
         }
@@ -171,7 +172,7 @@ class SQLBuilder<T> {
         List<String> primitiveFields = Stream.of(clz.getDeclaredFields())
                 .filter(field -> field.isAnnotationPresent(Column.class))
                 .map(field -> field.getAnnotation(Column.class))
-                .map(Column::value).collect(Collectors.toList());
+                .map(Column::name).collect(Collectors.toList());
         List<String> embeddedFields = Stream.of(clz.getDeclaredFields())
                 .filter(field -> field.isAnnotationPresent(Embedded.class))
                 .flatMap(field -> getClassFields(field.getType()).stream())

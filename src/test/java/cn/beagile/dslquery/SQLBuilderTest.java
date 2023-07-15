@@ -3,6 +3,7 @@ package cn.beagile.dslquery;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import javax.persistence.Column;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -19,23 +20,23 @@ public class SQLBuilderTest {
 
     @View("test_view")
     public static class QueryResultForTest {
-        @Column("weight")
+        @Column(name = "weight")
         private Float weight;
-        @Column("age")
+        @Column(name = "age")
         private Integer age;
-        @Column("name")
+        @Column(name = "name")
         private String name;
-        @Column("double_value")
+        @Column(name = "double_value")
         private double doubleValue;
-        @Column("instant")
+        @Column(name = "instant")
         @DateFormat("yyyy-MM-dd HH:mm:ss")
         private Instant instant;
-        @Column("longTimestamp")
+        @Column(name = "longTimestamp")
         @DateFormat("yyyy-MM-dd HH:mm:ss")
         private Long longTimestamp;
-        @Column("normalLong")
+        @Column(name = "normalLong")
         private Long normalLong;
-        @Column("normalLongPrimitive")
+        @Column(name = "normalLongPrimitive")
         private long normalLongPrimitive;
     }
 
