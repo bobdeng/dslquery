@@ -51,10 +51,8 @@ public class FieldsWithColumns {
     }
 
     private void addColumnsNotOverride(Class clz, AttributeOverrides attributeOverrides, String prefix) {
-        Predicate<Field> isOverride = getIsOverridePredicate(attributeOverrides);
         Arrays.stream(clz.getDeclaredFields())
                 .filter(field -> field.isAnnotationPresent(Column.class))
-                .filter(field -> !isOverride.test(field))
                 .forEach(field -> addColumnField(attributeOverrides, prefix, field));
     }
 
