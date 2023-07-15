@@ -9,15 +9,12 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public class FieldsWithColumns {
-    private final Class clz;
-    private List<FieldWithColumn> listFields;
+    private List<FieldWithColumn> listFields = new ArrayList<>();
     private HashMap<String, FieldWithColumn> columnHashMapByColumnName = new HashMap<>();
     private HashMap<Field, FieldWithColumn> columnHashMapByField = new HashMap<>();
 
     public FieldsWithColumns(Class clz) {
-        this.clz = clz;
-        this.listFields = new ArrayList<>();
-        findFields(this.clz, null, "");
+        findFields(clz, null, "");
     }
 
     public List<FieldWithColumn> getListFields() {
