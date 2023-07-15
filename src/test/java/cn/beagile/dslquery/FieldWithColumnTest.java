@@ -52,17 +52,15 @@ class FieldWithColumnTest {
     }
 
     @Test
-    public void should_return_embedded_column_field() {
+    public void should_not_return_embedded_and_not_override_column_field() {
         FieldWithColumn nameField = fieldsWithColumns.getFieldColumn("address.name");
-        assertNotNull(nameField);
-        assertEquals("name", nameField.getField().getName());
-        assertEquals("address_name", nameField.columnName());
+        assertNull(nameField);
+
     }
 
     @Test
-    public void should_return_embedded_and_override_column_field() {
+    public void  should_return_embedded_column_field() {
         FieldWithColumn nameField = fieldsWithColumns.getFieldColumn("address.phone");
-        assertNotNull(nameField);
         assertEquals("phone", nameField.getField().getName());
         assertEquals("address_phone", nameField.columnName());
     }

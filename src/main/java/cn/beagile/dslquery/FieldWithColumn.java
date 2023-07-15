@@ -31,4 +31,12 @@ public class FieldWithColumn {
                 .findFirst()
                 .orElseGet(() -> field.getAnnotation(Column.class).name());
     }
+
+    @Override
+    public String toString() {
+        return "FieldWithColumn{" +
+                "field=" + field +
+                ", attributeOverrides=" + attributeOverrides +
+                '}';
+    }
 }

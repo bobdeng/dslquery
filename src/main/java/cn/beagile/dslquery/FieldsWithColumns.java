@@ -16,20 +16,18 @@ public class FieldsWithColumns {
     public FieldsWithColumns(Class clz) {
         this.clz = clz;
         this.listFields = new ArrayList<>();
-        all();
+        columnHashMap = new HashMap<>();
+        findFields(this.clz, null, "");
     }
 
     public List<FieldWithColumn> getListFields() {
         return listFields;
     }
 
-    public void all() {
-        columnHashMap = new HashMap<>();
-        findFields(clz, null, "");
-    }
-
     private void findFields(Class clz, AttributeOverrides attributeOverrides, String prefix) {
-        addColumnsNotOverride(clz, attributeOverrides, prefix);
+        if ("".equals(prefix)) {
+            addColumnsNotOverride(clz, attributeOverrides, prefix);
+        }
         addColumnsOverride(clz, attributeOverrides, prefix);
         addEmbeddedFields(clz);
     }
