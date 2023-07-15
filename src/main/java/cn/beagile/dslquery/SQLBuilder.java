@@ -74,7 +74,8 @@ class SQLBuilder<T> {
     }
 
     private void setParam(String paramName, String fieldName, String value, BiFunction<String, Field, Object> valueConverter) {
-        Field field = columns.getFieldColumn(fieldName).getField();
+        FieldWithColumn fieldColumn = columns.getFieldColumn(fieldName);
+        Field field = fieldColumn.getField();
         Object paramValue = valueConverter.apply(value, field);
         params.put(paramName, paramValue);
     }

@@ -34,24 +34,17 @@ public class FieldsWithColumns {
     }
 
     private void addEmbeddedFields(Class clz) {
-        Arrays.stream(clz.getDeclaredFields())
-                .filter(field -> field.isAnnotationPresent(Embedded.class))
-                .forEach(field -> findFields(field.getType(), field.getAnnotation(AttributeOverrides.class), field.getName() + "."));
+        Arrays.stream(clz.getDeclaredFields()).filter(field -> field.isAnnotationPresent(Embedded.class)).forEach(field -> findFields(field.getType(), field.getAnnotation(AttributeOverrides.class), field.getName() + "."));
     }
 
     private void addColumnsOverride(Class clz, AttributeOverrides attributeOverrides, String prefix) {
         Predicate<Field> isOverride = (field -> attributeOverrides != null && Stream.of(attributeOverrides.value()).anyMatch(it -> it.name().equals(field.getName())));
-        Arrays.stream(clz.getDeclaredFields())
-                .filter(isOverride)
-                .forEach(field -> addColumnField(attributeOverrides, prefix, field));
+        Arrays.stream(clz.getDeclaredFields()).filter(isOverride).forEach(field -> addColumnField(attributeOverrides, prefix, field));
     }
 
     private void addColumnsNotOverride(Class clz, AttributeOverrides attributeOverrides, String prefix) {
         Predicate<Field> isOverride = (field -> attributeOverrides != null && Stream.of(attributeOverrides.value()).anyMatch(it -> it.name().equals(field.getName())));
-        Arrays.stream(clz.getDeclaredFields())
-                .filter(field -> field.isAnnotationPresent(Column.class))
-                .filter(field -> !isOverride.test(field))
-                .forEach(field -> addColumnField(attributeOverrides, prefix, field));
+        Arrays.stream(clz.getDeclaredFields()).filter(field -> field.isAnnotationPresent(Column.class)).filter(field -> !isOverride.test(field)).forEach(field -> addColumnField(attributeOverrides, prefix, field));
     }
 
     private void addColumnField(AttributeOverrides attributeOverrides, String prefix, Field field) {
@@ -62,7 +55,11 @@ public class FieldsWithColumns {
     }
 
     public FieldWithColumn getFieldColumn(String field) {
-        return columnHashMapByColumnName.get(field);
+        FieldWithColumn result = columnHashMapByColumnName.get(field);
+        if (result == null) {
+            throw new RuntimeException("field not found: " + field);
+        }
+        return result;
     }
 
     public FieldWithColumn getFieldColumnByField(Field field) {
