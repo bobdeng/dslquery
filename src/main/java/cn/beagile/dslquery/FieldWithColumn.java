@@ -31,6 +31,16 @@ public class FieldWithColumn {
                 .findFirst()
                 .orElseGet(() -> field.getAnnotation(Column.class).name());
     }
+    public Column column() {
+        AttributeOverride[] attributeOverrides = new AttributeOverride[0];
+        if (this.attributeOverrides != null) {
+            attributeOverrides = this.attributeOverrides.value();
+        }
+        return Stream.of(attributeOverrides).filter(it -> it.name().equals(field.getName()))
+                .map(AttributeOverride::column)
+                .findFirst()
+                .orElseGet(() -> field.getAnnotation(Column.class));
+    }
 
     @Override
     public String toString() {

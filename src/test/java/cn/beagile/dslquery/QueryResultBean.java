@@ -1,8 +1,6 @@
 package cn.beagile.dslquery;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
+import javax.persistence.*;
 
 @View("view_query")
 public class QueryResultBean {
@@ -13,6 +11,9 @@ public class QueryResultBean {
     @Column(name = "json")
     private JsonField[] json;
     @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "name", column = @Column(name = "another_name"))
+    })
     private EmbeddingField embeddingField;
 
     public EmbeddingField getEmbeddingField() {

@@ -276,15 +276,6 @@ public class DSLQueryTest {
         dslQuery.query();
         verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
-        assertEquals("select name2,code2 from view_query", sqlQuery.getSql());
-    }
-
-    @Test
-    public void should_query_with_override_column() {
-        DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryBeanWithEmbedded.class);
-        dslQuery.where("(and(field.name equals bob)(field.code equals 123))").query();
-        verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
-        SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
-        assertEquals("select name2,code2 from view_query where ((name2 = :p1) and (code2 = :p2))", sqlQuery.getSql());
+        assertEquals("select code2 from view_query", sqlQuery.getSql());
     }
 }

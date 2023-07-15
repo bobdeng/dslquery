@@ -12,6 +12,7 @@ public class FieldsWithColumns {
     private final Class clz;
     private List<FieldWithColumn> listFields;
     private HashMap<String, FieldWithColumn> columnHashMap;
+    private HashMap<Field, FieldWithColumn> columnHashMapWithField = new HashMap<>();
 
     public FieldsWithColumns(Class clz) {
         this.clz = clz;
@@ -57,9 +58,16 @@ public class FieldsWithColumns {
         FieldWithColumn column = new FieldWithColumn(field, attributeOverrides);
         listFields.add(column);
         columnHashMap.put(prefix + field.getName(), column);
+        columnHashMapWithField.put(field, column);
     }
 
     public FieldWithColumn getFieldColumn(String field) {
         return columnHashMap.get(field);
+    }
+    public FieldWithColumn getFieldColumnByField(Field field) {
+        return columnHashMapWithField.get(field);
+    }
+    boolean hasField(Field field){
+        return columnHashMapWithField.containsKey(field);
     }
 }

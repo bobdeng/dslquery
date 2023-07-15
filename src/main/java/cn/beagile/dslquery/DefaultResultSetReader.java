@@ -2,9 +2,7 @@ package cn.beagile.dslquery;
 
 import com.google.gson.Gson;
 
-import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
 import javax.persistence.Embedded;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -32,83 +30,71 @@ class DefaultResultSetReader<T> implements Function<ResultSet, T> {
     }
 
     private final Class<T> queryResultBeanClass;
+    private final FieldsWithColumns columns;
 
     public DefaultResultSetReader(Class<T> queryResultBeanClass) {
-
         this.queryResultBeanClass = queryResultBeanClass;
+        this.columns = new FieldsWithColumns(queryResultBeanClass);
     }
 
     @Override
     public T apply(ResultSet resultSet) {
-        try {
-            return (T) newInstance(resultSet, this.queryResultBeanClass, null);
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException("Can not create instance of " + this.queryResultBeanClass.getName() + "");
-        }
-
-
+        return (T) newInstance(resultSet, this.queryResultBeanClass);
     }
 
-    private Object newInstance(ResultSet resultSet, Class clz, AttributeOverrides attributeOverrides) throws InstantiationException, IllegalAccessException {
-        final Object result;
-        result = clz.newInstance();
-        Stream.of(clz.getDeclaredFields())
-                .filter(field -> field.isAnnotationPresent(Column.class) || isFieldOverride(attributeOverrides, field))
-                .forEach(field -> setFieldValue(resultSet, result, field, getFieldColumn(attributeOverrides, field)));
+    private Object newInstance(ResultSet resultSet, Class clz) {
+        try {
+            final Object result = clz.newInstance();
+            setPrimitiveFields(resultSet, clz, result);
+            setEmbeddedFields(resultSet, clz, result);
+            return result;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void setEmbeddedFields(ResultSet resultSet, Class clz, Object result) {
         Stream.of(clz.getDeclaredFields())
                 .filter(field -> field.isAnnotationPresent(Embedded.class))
                 .forEach(field -> setEmbeddedFieldValue(resultSet, result, field));
-        return result;
     }
 
-    private Column getFieldColumn(AttributeOverrides attributeOverrides, Field field) {
-        if (attributeOverrides == null) {
-            return field.getAnnotation(Column.class);
-        }
-        return Stream.of(attributeOverrides.value()).filter(it -> it.name().equals(field.getName()))
-                .map(AttributeOverride::column)
-                .findFirst()
-                .orElseGet(() -> field.getAnnotation(Column.class));
+    private void setPrimitiveFields(ResultSet resultSet, Class clz, Object result) {
+        Stream.of(clz.getDeclaredFields())
+                .filter(columns::hasField)
+                .forEach(field -> setFieldValue(resultSet, result, field));
     }
 
-    private boolean isFieldOverride(AttributeOverrides attributeOverrides, Field field) {
-        if (attributeOverrides != null) {
-            return Stream.of(attributeOverrides.value()).anyMatch(it -> it.name().equals(field.getName()));
-        }
-        return false;
-    }
-
-    private void setFieldValue(ResultSet resultSet, Object result, Field field, Column column) {
+    private void setFieldValue(ResultSet resultSet, Object result, Field field) {
         try {
             ColumnFieldReader columnFieldReader = COLUMN_READER_MAP.get(field.getType());
             if (columnFieldReader != null) {
-                readPrimitive(resultSet, result, field, column, columnFieldReader);
+                readPrimitive(resultSet, result, field, columnFieldReader);
                 return;
             }
-            readJson(resultSet, result, field, column);
+            readJson(resultSet, result, field);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void readJson(ResultSet resultSet, Object result, Field field, Column column) throws SQLException {
-        String fieldValue = resultSet.getString(column.name());
+    private void readJson(ResultSet resultSet, Object result, Field field) throws SQLException {
+        String fieldValue = resultSet.getString(getFieldColumnName(field));
         if (fieldValue != null) {
             new ReflectFieldSetter(result, field, new Gson().fromJson(fieldValue, field.getType())).set();
         }
     }
 
-    private void readPrimitive(ResultSet resultSet, Object result, Field field, Column column, ColumnFieldReader columnFieldReader) throws SQLException {
-        Object value = columnFieldReader.readValue(resultSet, column.name());
+    private void readPrimitive(ResultSet resultSet, Object result, Field field, ColumnFieldReader columnFieldReader) throws SQLException {
+        Object value = columnFieldReader.readValue(resultSet, getFieldColumnName(field));
         new ReflectFieldSetter(result, field, value).set();
     }
 
+    private String getFieldColumnName(Field field) {
+        return columns.getFieldColumnByField(field).columnName();
+    }
+
     private void setEmbeddedFieldValue(ResultSet resultSet, Object result, Field field) {
-        try {
-            AttributeOverrides attributeOverrides = field.getAnnotation(AttributeOverrides.class);
-            new ReflectFieldSetter(result, field, newInstance(resultSet, field.getType(), attributeOverrides)).set();
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+        new ReflectFieldSetter(result, field, newInstance(resultSet, field.getType())).set();
     }
 }
