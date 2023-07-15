@@ -11,22 +11,13 @@ public class FieldWithColumn {
     private final Field field;
     private final Column column;
 
-    public FieldWithColumn(Field field, AttributeOverride ao) {
+    public FieldWithColumn(Field field, AttributeOverride attributeOverride) {
         this.field = field;
-        if (ao == null) {
-            this.column = field.getAnnotation(Column.class);
-        } else {
-            this.column = ao.column();
-        }
+        this.column = attributeOverride == null ? field.getAnnotation(Column.class) : attributeOverride.column();
     }
 
     public Field getField() {
         return field;
-    }
-
-    public FieldWithColumn(Field field, AttributeOverrides attributeOverrides) {
-        this.field = field;
-        this.column = column(attributeOverrides);
     }
 
     public String columnName() {
