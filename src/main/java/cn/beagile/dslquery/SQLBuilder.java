@@ -25,6 +25,7 @@ class SQLBuilder<T> {
     private final List<ComplexExpression> whereList;
     private final Sort sort;
     private final Paging page;
+    private final FieldsWithColumns columns;
 
     private int paramIndex;
     private String sql;
@@ -50,6 +51,7 @@ class SQLBuilder<T> {
         this.params = new HashMap<>();
         this.timezoneOffset = dslQuery.getTimezoneOffset();
         this.page = new Paging(dslQuery.getSkip(), dslQuery.getLimit());
+        columns = new FieldsWithColumns(queryResultClass);
     }
 
 
@@ -73,12 +75,23 @@ class SQLBuilder<T> {
 
     private void setParam(String paramName, String fieldName, String value, BiFunction<String, Field, Object> valueConverter) {
         try {
-            Field field = this.queryResultClass.getDeclaredField(fieldName);
+            Field field = getDeclaredField(fieldName);
             Object paramValue = valueConverter.apply(value, field);
             params.put(paramName, paramValue);
         } catch (NoSuchFieldException e) {
-            throw new RuntimeException("No such field: " + paramName);
+            throw new RuntimeException("No such field: " + fieldName);
         }
+    }
+
+    private Field getDeclaredField(String fieldName) throws NoSuchFieldException {
+        String[] fields = fieldName.split("\\.");
+        Field result = null;
+        Class clz = this.queryResultClass;
+        for (String field : fields) {
+            result = clz.getDeclaredField(field);
+            clz = result.getType();
+        }
+        return result;
     }
 
     private Object castValueByField(String value, Field field) {
@@ -117,11 +130,7 @@ class SQLBuilder<T> {
     }
 
     String aliasOf(String field) {
-        try {
-            return this.queryResultClass.getDeclaredField(field).getAnnotation(Column.class).name();
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException("No such field: " + field);
-        }
+        return columns.getFieldColumn(field).columnName();
     }
 
     public String countSql() {
@@ -161,8 +170,7 @@ class SQLBuilder<T> {
     }
 
     private String getSelectSQL() {
-        List<String> stringStream = getClassFields(queryResultClass, null);
-        String fields = String.join(",", stringStream);
+        String fields = columns.getListFields().stream().map(FieldWithColumn::columnName).collect(Collectors.joining(","));
         return String.format("select %s from %s", fields, getViewName());
     }
 

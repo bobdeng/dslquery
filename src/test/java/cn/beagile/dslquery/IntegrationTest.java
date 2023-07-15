@@ -58,6 +58,7 @@ public class IntegrationTest {
             if (sqlQuery.getLimit() != null) {
                 sql += " limit " + sqlQuery.getSkip() + "," + sqlQuery.getLimit();
             }
+            System.out.println(sql);
             return jdbcTemplate.query(sql, sqlQuery.getParams(), (rs, rowNum) -> resultSetReader.apply(rs));
         }
 

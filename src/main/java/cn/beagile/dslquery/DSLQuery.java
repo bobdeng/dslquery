@@ -2,6 +2,7 @@ package cn.beagile.dslquery;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class DSLQuery<T> {
     private final QueryExecutor queryExecutor;

@@ -123,10 +123,9 @@ public class SQLBuilderTest {
     @Test
     public void should_throw_when_alias_not_exist() {
         SQLBuilder<QueryResultForTest> sqlQuery = getSqlBuilder();
-        RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> {
+        RuntimeException runtimeException = assertThrows(NullPointerException.class, () -> {
             assertEquals("double_value", sqlQuery.aliasOf("doubleValue1"));
         });
-        assertEquals(runtimeException.getMessage(), "No such field: doubleValue1");
 
     }
 

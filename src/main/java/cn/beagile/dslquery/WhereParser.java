@@ -33,7 +33,7 @@ class WhereParser {
     }
 
     private SingleExpression parsePredicate(String subWhere) {
-        Matcher matcher = Pattern.compile("\\w+").matcher(subWhere);
+        Matcher matcher = Pattern.compile("[\\w\\.]+").matcher(subWhere);
         String fieldName = nextMatch(subWhere, matcher);
         String operator = nextMatch(subWhere, matcher);
         String value = subWhere.substring(matcher.end() + 1, Math.max(matcher.end() + 1, subWhere.length() - 1));
