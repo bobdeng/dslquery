@@ -78,9 +78,7 @@ public class FieldsWithColumns {
     }
 
     private FieldWithColumn getFieldWithColumn(Field field) {
-        Optional<AttributeOverride> fieldOverride = getFieldAttributeOverride(field);
-        AttributeOverride attributeOverride = fieldOverride.orElse(null);
-        return new FieldWithColumn(field, attributeOverride);
+        return new FieldWithColumn(field, getFieldAttributeOverride(field));
     }
 
     private Optional<AttributeOverride> getFieldAttributeOverride(Field field) {
