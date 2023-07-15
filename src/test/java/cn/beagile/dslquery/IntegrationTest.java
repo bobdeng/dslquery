@@ -1,6 +1,5 @@
 package cn.beagile.dslquery;
 
-import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = TestApplication.class)
-@Ignore
 public class IntegrationTest {
     @Autowired
     NamedParameterJdbcTemplate jdbcTemplate;

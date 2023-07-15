@@ -53,13 +53,12 @@ class FieldWithColumnTest {
 
     @Test
     public void should_not_return_embedded_and_not_override_column_field() {
-        FieldWithColumn nameField = fieldsWithColumns.getFieldColumn("address.name");
-        assertNull(nameField);
-
+        RuntimeException e = assertThrows(RuntimeException.class, () -> fieldsWithColumns.getFieldColumn("address.name"));
+        assertEquals("field not found: address.name", e.getMessage());
     }
 
     @Test
-    public void  should_return_embedded_column_field() {
+    public void should_return_embedded_column_field() {
         FieldWithColumn nameField = fieldsWithColumns.getFieldColumn("address.phone");
         assertEquals("phone", nameField.getField().getName());
         assertEquals("address_phone", nameField.columnName());

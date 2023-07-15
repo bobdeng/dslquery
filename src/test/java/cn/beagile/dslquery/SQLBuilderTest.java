@@ -50,9 +50,10 @@ public class SQLBuilderTest {
     @Test
     public void add_param_not_exist() {
         SQLBuilder<QueryResultForTest> sqlQuery = getSqlBuilder();
-        assertThrows(NullPointerException.class, () -> {
+        RuntimeException e = assertThrows(RuntimeException.class, () -> {
             sqlQuery.addParam("weight1", "weight1", "55.4");
         });
+        assertEquals("field not found: weight1", e.getMessage());
     }
 
     private SQLBuilder<QueryResultForTest> getSqlBuilder() {
@@ -122,10 +123,10 @@ public class SQLBuilderTest {
     @Test
     public void should_throw_when_alias_not_exist() {
         SQLBuilder<QueryResultForTest> sqlQuery = getSqlBuilder();
-        RuntimeException runtimeException = assertThrows(NullPointerException.class, () -> {
+        RuntimeException runtimeException = assertThrows(RuntimeException.class, () -> {
             assertEquals("double_value", sqlQuery.aliasOf("doubleValue1"));
         });
-
+        assertEquals("field not found: doubleValue1", runtimeException.getMessage());
     }
 
     @Test

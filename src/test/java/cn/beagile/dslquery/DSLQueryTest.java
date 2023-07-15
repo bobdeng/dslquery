@@ -278,4 +278,11 @@ public class DSLQueryTest {
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
         assertEquals("select code2 from view_query", sqlQuery.getSql());
     }
+
+    @Test
+    public void field_not_found() {
+        DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryBeanWithEmbedded.class);
+        RuntimeException e = assertThrows(RuntimeException.class, () -> dslQuery.where("(and(fieldNotExist equals 123))").query());
+        assertEquals("field not found: fieldNotExist", e.getMessage());
+    }
 }
