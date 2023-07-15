@@ -26,6 +26,9 @@ class FieldWithColumnTest {
         })
         private Address address;
         @Embedded
+        @AttributeOverrides({
+                @AttributeOverride(name = "name", column = @Column(name = "another_name"))
+        })
         private Another another;
 
         public static class Address {
@@ -74,16 +77,25 @@ class FieldWithColumnTest {
         assertEquals("phone", nameField.getField().getName());
         assertEquals("address_phone", nameField.columnName());
     }
+
     @Test
-    public void should_return_embedded2_column_field_with_column(){
+    public void should_return_embedded2_column_field_with_column() {
         FieldWithColumn nameField = fieldsWithColumns.getFieldColumn("address.another2.name2");
         assertEquals("name2", nameField.getField().getName());
         assertEquals("another_name2", nameField.columnName());
     }
+
     @Test
-    public void should_return_embedded2_column_field_without_column(){
+    public void should_return_embedded2_column_field_without_column() {
         FieldWithColumn nameField = fieldsWithColumns.getFieldColumn("address.another2.name3");
         assertEquals("name3", nameField.getField().getName());
         assertEquals("another_name3", nameField.columnName());
+    }
+
+    @Test
+    public void should_return_next_embedded_column_field() {
+        FieldWithColumn nameField = fieldsWithColumns.getFieldColumn("another.name");
+        assertEquals("name", nameField.getField().getName());
+        assertEquals("another_name", nameField.columnName());
     }
 }

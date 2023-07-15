@@ -34,6 +34,7 @@ public class FieldsWithColumns {
         }
         addColumnsOverride(clz);
         addEmbeddedFields(clz);
+        this.currentClass = this.rootClass;
     }
 
     private boolean isRoot() {
