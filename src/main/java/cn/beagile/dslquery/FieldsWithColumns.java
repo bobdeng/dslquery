@@ -27,11 +27,10 @@ public class FieldsWithColumns {
     private void findFields(Class clz, AttributeOverrides attributeOverrides, String prefix) {
         if ("".equals(prefix)) {
             addColumnsNotOverride(clz, attributeOverrides, prefix);
+            addEmbeddedFields(clz);
+            return;
         }
-        if (!"".equals(prefix)) {
-            addColumnsOverride(clz, attributeOverrides, prefix);
-        }
-        addEmbeddedFields(clz);
+        addColumnsOverride(clz, attributeOverrides, prefix);
     }
 
     private void addEmbeddedFields(Class clz) {
