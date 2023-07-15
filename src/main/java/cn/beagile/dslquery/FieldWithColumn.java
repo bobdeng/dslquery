@@ -4,49 +4,34 @@ import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import java.lang.reflect.Field;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public class FieldWithColumn {
     private final Field field;
-    private final AttributeOverrides attributeOverrides;
+    private final Column column;
 
     public Field getField() {
         return field;
     }
 
     public FieldWithColumn(Field field, AttributeOverrides attributeOverrides) {
-
         this.field = field;
-        this.attributeOverrides = attributeOverrides;
+        this.column = column(attributeOverrides);
     }
 
     public String columnName() {
-        AttributeOverride[] attributeOverrides = new AttributeOverride[0];
-        if (this.attributeOverrides != null) {
-            attributeOverrides = this.attributeOverrides.value();
-        }
-        return Stream.of(attributeOverrides).filter(it -> it.name().equals(field.getName()))
-                .map(it -> it.column().name())
-                .findFirst()
-                .orElseGet(() -> field.getAnnotation(Column.class).name());
+        return this.column.name();
     }
-    public Column column() {
-        AttributeOverride[] attributeOverrides = new AttributeOverride[0];
-        if (this.attributeOverrides != null) {
-            attributeOverrides = this.attributeOverrides.value();
-        }
+
+    public Column column(AttributeOverrides parentOverrides) {
+        AttributeOverride[] attributeOverrides = Optional.ofNullable(parentOverrides)
+                .map(AttributeOverrides::value)
+                .orElseGet(() -> new AttributeOverride[0]);
         return Stream.of(attributeOverrides).filter(it -> it.name().equals(field.getName()))
                 .map(AttributeOverride::column)
                 .findFirst()
                 .orElseGet(() -> field.getAnnotation(Column.class));
     }
 
-    @Override
-    public String toString() {
-        return "FieldWithColumn{" +
-                "field=" + field +
-                ", attributeOverrides=" + attributeOverrides +
-                '}';
-    }
 }
