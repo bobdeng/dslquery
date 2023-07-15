@@ -11,13 +11,12 @@ import java.util.stream.Stream;
 public class FieldsWithColumns {
     private final Class clz;
     private List<FieldWithColumn> listFields;
-    private HashMap<String, FieldWithColumn> columnHashMap;
-    private HashMap<Field, FieldWithColumn> columnHashMapWithField = new HashMap<>();
+    private HashMap<String, FieldWithColumn> columnHashMapByColumnName = new HashMap<>();
+    private HashMap<Field, FieldWithColumn> columnHashMapByField = new HashMap<>();
 
     public FieldsWithColumns(Class clz) {
         this.clz = clz;
         this.listFields = new ArrayList<>();
-        columnHashMap = new HashMap<>();
         findFields(this.clz, null, "");
     }
 
@@ -29,7 +28,9 @@ public class FieldsWithColumns {
         if ("".equals(prefix)) {
             addColumnsNotOverride(clz, attributeOverrides, prefix);
         }
-        addColumnsOverride(clz, attributeOverrides, prefix);
+        if (!"".equals(prefix)) {
+            addColumnsOverride(clz, attributeOverrides, prefix);
+        }
         addEmbeddedFields(clz);
     }
 
@@ -57,17 +58,19 @@ public class FieldsWithColumns {
     private void addColumnField(AttributeOverrides attributeOverrides, String prefix, Field field) {
         FieldWithColumn column = new FieldWithColumn(field, attributeOverrides);
         listFields.add(column);
-        columnHashMap.put(prefix + field.getName(), column);
-        columnHashMapWithField.put(field, column);
+        columnHashMapByColumnName.put(prefix + field.getName(), column);
+        columnHashMapByField.put(field, column);
     }
 
     public FieldWithColumn getFieldColumn(String field) {
-        return columnHashMap.get(field);
+        return columnHashMapByColumnName.get(field);
     }
+
     public FieldWithColumn getFieldColumnByField(Field field) {
-        return columnHashMapWithField.get(field);
+        return columnHashMapByField.get(field);
     }
-    boolean hasField(Field field){
-        return columnHashMapWithField.containsKey(field);
+
+    boolean hasField(Field field) {
+        return columnHashMapByField.containsKey(field);
     }
 }
