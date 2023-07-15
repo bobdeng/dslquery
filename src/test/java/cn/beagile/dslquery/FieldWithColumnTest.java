@@ -23,12 +23,18 @@ class FieldWithColumnTest {
                 @AttributeOverride(name = "phone", column = @Column(name = "address_phone"))
         })
         private Address address;
+        @Embedded
+        private Another another;
 
         public static class Address {
             @Column(name = "address_name")
             private String name;
             @Column(name = "phone")
             private String phone;
+        }
+
+        public static class Another {
+            private String name;
         }
     }
 

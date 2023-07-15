@@ -13,12 +13,12 @@ public class FieldsWithColumns {
     private HashMap<String, FieldWithColumn> columnHashMapByColumnName = new HashMap<>();
     private HashMap<Field, FieldWithColumn> columnHashMapByField = new HashMap<>();
 
-    public FieldsWithColumns(Class clz) {
+    FieldsWithColumns(Class clz) {
         findFields(clz, null, "");
     }
 
-    public List<FieldWithColumn> getListFields() {
-        return listFields;
+    List<FieldWithColumn> getListFields() {
+        return new ArrayList<>(listFields);
     }
 
     private void findFields(Class clz, AttributeOverrides attributeOverrides, String prefix) {
@@ -37,14 +37,21 @@ public class FieldsWithColumns {
     }
 
     private void addColumnsOverride(Class clz, AttributeOverrides attributeOverrides, String prefix) {
-        Predicate<Field> isOverride = (field -> attributeOverrides != null && Stream.of(attributeOverrides.value()).anyMatch(it -> it.name().equals(field.getName())));
+        Predicate<Field> isOverride = getIsOverridePredicate(attributeOverrides);
         Arrays.stream(clz.getDeclaredFields())
                 .filter(isOverride)
                 .forEach(field -> addColumnField(attributeOverrides, prefix, field));
     }
 
+    private static Predicate<Field> getIsOverridePredicate(AttributeOverrides attributeOverrides) {
+        if (attributeOverrides == null) {
+            return field -> false;
+        }
+        return field -> Stream.of(attributeOverrides.value()).anyMatch(it -> it.name().equals(field.getName()));
+    }
+
     private void addColumnsNotOverride(Class clz, AttributeOverrides attributeOverrides, String prefix) {
-        Predicate<Field> isOverride = (field -> attributeOverrides != null && Stream.of(attributeOverrides.value()).anyMatch(it -> it.name().equals(field.getName())));
+        Predicate<Field> isOverride = getIsOverridePredicate(attributeOverrides);
         Arrays.stream(clz.getDeclaredFields())
                 .filter(field -> field.isAnnotationPresent(Column.class))
                 .filter(field -> !isOverride.test(field))
@@ -58,7 +65,7 @@ public class FieldsWithColumns {
         columnHashMapByField.put(field, column);
     }
 
-    public FieldWithColumn getFieldColumn(String field) {
+    FieldWithColumn getFieldColumn(String field) {
         FieldWithColumn result = columnHashMapByColumnName.get(field);
         if (result == null) {
             throw new RuntimeException("field not found: " + field);
@@ -66,7 +73,7 @@ public class FieldsWithColumns {
         return result;
     }
 
-    public FieldWithColumn getFieldColumnByField(Field field) {
+    FieldWithColumn getFieldColumnByField(Field field) {
         return columnHashMapByField.get(field);
     }
 
