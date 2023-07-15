@@ -115,4 +115,27 @@ public void listA(){
         private String fieldB;
     }
     ```
-考虑到多层内嵌可能存在问题，目前只支持一层内嵌。内嵌类字段的查询，使用 field.name这样处理。比如上面的embeddedClass.fieldA
+- 多层嵌套
+  多层嵌套需要在第一个嵌套的地方，使用@AttributeOveride override下层嵌套的字段。
+  ```java
+    @Embedded
+    @AttributeOverrides({
+          @AttributeOverride(name = "fieldA", column = @Column(name = "field_a")),
+          @AttributeOverride(name = "fieldB", column = @Column(name = "field_b")),
+          @AttributeOverride(name = "next.fieldA", column = @Column(name = "next_field_a"))
+        }
+  )
+    private EmbeddedClass embeddedClass;
+    
+    public class EmbeddedClass{
+        private String fieldA;
+        @Column("field_b")
+        private String fieldB;
+        private NextEmbeddedClass next;
+    }
+    public class NextEmbeddedClass{
+        private String fieldA;
+        @Column("field_b")
+        private String fieldB;
+    }
+    ```
