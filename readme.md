@@ -115,4 +115,4 @@ public void listA(){
         private String fieldB;
     }
     ```
-
+考虑到多层内嵌可能存在问题，目前只支持一层内嵌。内嵌类字段的查询，使用 field.name这样处理。比如上面的embeddedClass.fieldA
