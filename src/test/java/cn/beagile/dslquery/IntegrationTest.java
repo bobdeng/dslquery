@@ -33,7 +33,8 @@ public class IntegrationTest {
         @Embedded
         @AttributeOverrides({
                 @AttributeOverride(name = "address", column = @Column(name = "address")),
-                @AttributeOverride(name = "phone", column = @Column(name = "phone"))
+                @AttributeOverride(name = "phone", column = @Column(name = "phone")),
+                @AttributeOverride(name = "zipCode.code", column = @Column(name = "zip_code"))
         })
         private Contact contact;
 
@@ -42,6 +43,14 @@ public class IntegrationTest {
             private String address;
             @Column(name = "phone_number")
             private String phone;
+            @Embedded
+            private ZipCode zipCode;
+        }
+
+        @Embeddable
+        public static class ZipCode {
+            @Column(name = "zip_code1")
+            private String code;
         }
     }
 
@@ -86,6 +95,7 @@ public class IntegrationTest {
         assertEquals(1, result.size());
         assertEquals("123 main st", result.get(0).contact.address);
         assertEquals("123456789", result.get(0).contact.phone);
+        assertEquals("12345", result.get(0).contact.zipCode.code);
     }
 
     @Test

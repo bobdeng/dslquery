@@ -11,6 +11,11 @@ public class FieldWithColumn {
     private final Field field;
     private final Column column;
 
+    public FieldWithColumn(Field field, AttributeOverride ao) {
+        this.field = field;
+        this.column = ao.column();
+    }
+
     public Field getField() {
         return field;
     }

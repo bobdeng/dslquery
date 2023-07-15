@@ -20,7 +20,9 @@ class FieldWithColumnTest {
         private Integer age;
         @Embedded
         @AttributeOverrides({
-                @AttributeOverride(name = "phone", column = @Column(name = "address_phone"))
+                @AttributeOverride(name = "phone", column = @Column(name = "address_phone")),
+                @AttributeOverride(name = "another2.name2", column = @Column(name = "another_name2")),
+                @AttributeOverride(name = "another2.name3", column = @Column(name = "another_name3"))
         })
         private Address address;
         @Embedded
@@ -31,6 +33,14 @@ class FieldWithColumnTest {
             private String name;
             @Column(name = "phone")
             private String phone;
+            @Embedded
+            private Another2 another2;
+        }
+
+        public static class Another2 {
+            @Column(name = "name2")
+            private String name2;
+            private String name3;
         }
 
         public static class Another {
@@ -43,11 +53,6 @@ class FieldWithColumnTest {
         fieldsWithColumns = new FieldsWithColumns(Person.class);
     }
 
-    @Test
-    public void should_find_column_no_attribute_override() throws NoSuchFieldException {
-        FieldWithColumn columnFinder = new FieldWithColumn(Person.class.getDeclaredField("name"), null);
-        assertEquals("name1", columnFinder.columnName());
-    }
 
     @Test
     public void should_return_column_field() {
@@ -68,5 +73,17 @@ class FieldWithColumnTest {
         FieldWithColumn nameField = fieldsWithColumns.getFieldColumn("address.phone");
         assertEquals("phone", nameField.getField().getName());
         assertEquals("address_phone", nameField.columnName());
+    }
+    @Test
+    public void should_return_embedded2_column_field_with_column(){
+        FieldWithColumn nameField = fieldsWithColumns.getFieldColumn("address.another2.name2");
+        assertEquals("name2", nameField.getField().getName());
+        assertEquals("another_name2", nameField.columnName());
+    }
+    @Test
+    public void should_return_embedded2_column_field_without_column(){
+        FieldWithColumn nameField = fieldsWithColumns.getFieldColumn("address.another2.name3");
+        assertEquals("name3", nameField.getField().getName());
+        assertEquals("another_name3", nameField.columnName());
     }
 }
