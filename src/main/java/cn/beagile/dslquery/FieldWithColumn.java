@@ -13,7 +13,11 @@ public class FieldWithColumn {
 
     public FieldWithColumn(Field field, AttributeOverride ao) {
         this.field = field;
-        this.column = ao.column();
+        if (ao == null) {
+            this.column = field.getAnnotation(Column.class);
+        } else {
+            this.column = ao.column();
+        }
     }
 
     public Field getField() {

@@ -6,75 +6,59 @@ import javax.persistence.Column;
 import javax.persistence.Embedded;
 import java.lang.reflect.Field;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class FieldsWithColumns {
-    private List<FieldWithColumn> listFields = new ArrayList<>();
-    private HashMap<String, FieldWithColumn> columnHashMapByColumnName = new HashMap<>();
-    private HashMap<Field, FieldWithColumn> columnHashMapByField = new HashMap<>();
-    int deep = 0;
+    private final List<FieldWithColumn> listFields = new ArrayList<>();
+    private final HashMap<String, FieldWithColumn> columnHashMapByColumnName = new HashMap<>();
+    private final HashMap<Field, FieldWithColumn> columnHashMapByField = new HashMap<>();
+    private final Stack<Field> embeddedFields = new Stack<>();
     private AttributeOverrides firstAttributeOverrides;
-    private Stack<Field> embeddedFields = new Stack<>();
+    private final Class rootClass;
+    private Class currentClass;
 
-    FieldsWithColumns(Class clz) {
-        findFields(clz, null, "");
+    FieldsWithColumns(Class rootClass) {
+        this.rootClass = rootClass;
+        findFields(rootClass);
     }
 
     List<FieldWithColumn> getListFields() {
         return new ArrayList<>(listFields);
     }
 
-    private void findFields(Class clz, AttributeOverrides attributeOverrides, String prefix) {
-        deep++;
-        if ("".equals(prefix)) {
-            addColumnsNotOverride(clz, attributeOverrides);
+    private void findFields(Class clz) {
+        this.currentClass = clz;
+        if (isRoot()) {
+            addColumnsWithColumn(clz);
         }
-        addColumnsOverride(clz, attributeOverrides, prefix);
+        addColumnsOverride(clz);
         addEmbeddedFields(clz);
-        deep--;
+    }
+
+    private boolean isRoot() {
+        return this.rootClass.equals(this.currentClass);
     }
 
     private void addEmbeddedFields(Class clz) {
         Arrays.stream(clz.getDeclaredFields())
                 .filter(field -> field.isAnnotationPresent(Embedded.class))
-                .forEach(field -> {
-                    getEmbeddedFields(field);
-                });
+                .forEach(this::getEmbeddedFields);
     }
 
     private void getEmbeddedFields(Field field) {
-        if (deep == 1) {
+        if (isRoot()) {
             this.firstAttributeOverrides = field.getAnnotation(AttributeOverrides.class);
         }
         embeddedFields.push(field);
-        findFields(field.getType(), field.getAnnotation(AttributeOverrides.class), field.getName() + ".");
+        findFields(field.getType());
         embeddedFields.pop();
     }
 
-    private void addColumnsOverride(Class clz, AttributeOverrides attributeOverrides, String prefix) {
-        Predicate<Field> isOverride = getIsOverridePredicate(attributeOverrides);
+    private void addColumnsOverride(Class clz) {
         Arrays.stream(clz.getDeclaredFields())
-                .filter(isOverride)
-                .forEach(field -> addColumnField(attributeOverrides, field));
-    }
-
-    private Predicate<Field> getIsOverridePredicate(AttributeOverrides attributeOverrides) {
-        if (this.firstAttributeOverrides != null) {
-            return getFirstOverride();
-        }
-        if (attributeOverrides == null) {
-            return field -> false;
-        }
-        return field -> Stream.of(attributeOverrides.value()).anyMatch(it -> it.name().equals(field.getName()));
-    }
-
-    private Predicate<Field> getFirstOverride() {
-        return field -> {
-            String fullPathInFirstOverride = getFullPathInFirstOverride(field);
-            return Stream.of(firstAttributeOverrides.value()).anyMatch(it -> it.name().equals(fullPathInFirstOverride));
-        };
+                .filter(field -> this.getFieldAttributeOverride(field).isPresent())
+                .forEach(this::addColumnField);
     }
 
     private String getFullPathInFirstOverride(Field field) {
@@ -82,29 +66,33 @@ public class FieldsWithColumns {
         return Stream.concat(parentNames, Stream.of(field.getName())).collect(Collectors.joining("."));
     }
 
-    private void addColumnsNotOverride(Class clz, AttributeOverrides attributeOverrides) {
+    private void addColumnsWithColumn(Class clz) {
         Arrays.stream(clz.getDeclaredFields())
                 .filter(field -> field.isAnnotationPresent(Column.class))
-                .forEach(field -> addColumnField(attributeOverrides, field));
+                .forEach(this::addColumnField);
     }
 
-    private void addColumnField(AttributeOverrides attributeOverrides, Field field) {
-        FieldWithColumn column = getFieldWithColumn(attributeOverrides, field);
+    private void addColumnField(Field field) {
+        FieldWithColumn column = getFieldWithColumn(field);
         listFields.add(column);
         columnHashMapByColumnName.put(getFieldFullName(field), column);
         columnHashMapByField.put(field, column);
     }
 
-    private FieldWithColumn getFieldWithColumn(AttributeOverrides attributeOverrides, Field field) {
-        if(this.firstAttributeOverrides!=null){
-            String fullPathInFirstOverride = getFullPathInFirstOverride(field);
-            AttributeOverride ao = Stream.of(firstAttributeOverrides.value()).filter(it -> it.name().equals(fullPathInFirstOverride))
-                    .findFirst().get();
-            return new FieldWithColumn(field, ao);
+    private FieldWithColumn getFieldWithColumn(Field field) {
+        Optional<AttributeOverride> fieldOverride = getFieldAttributeOverride(field);
+        AttributeOverride attributeOverride = fieldOverride.orElse(null);
+        return new FieldWithColumn(field, attributeOverride);
+    }
 
-        }
-        FieldWithColumn column = new FieldWithColumn(field, attributeOverrides);
-        return column;
+    private Optional<AttributeOverride> getFieldAttributeOverride(Field field) {
+        String fullPathInFirstOverride = getFullPathInFirstOverride(field);
+        AttributeOverride[] overrides = Optional.ofNullable(firstAttributeOverrides)
+                .map(AttributeOverrides::value)
+                .orElseGet(() -> new AttributeOverride[0]);
+        return Stream.of(overrides)
+                .filter(it -> it.name().equals(fullPathInFirstOverride))
+                .findFirst();
     }
 
     private String getFieldFullName(Field field) {
