@@ -15,7 +15,8 @@
 (or(and(field equal value)(fieldb greaterthan value))(or(fieldc lessthanorequal value)(fieldd notequal value)))
 ```
 
-支持的运算符有 equal notequal greaterthan greaterthanorequal lessthan lessthanorequal startswith endswith contains isnull
+支持的运算符有 equal notequal greaterthan greaterthanorequal lessthan lessthanorequal startswith endswith contains
+isnull
 notnull
 
 - 分页条件
@@ -88,4 +89,30 @@ public void listA(){
 
 - 生成查询条件 new WhereBuilder().build();
 - 生成排序条件 new SortBuilder().build();
+
+# 内嵌类使用
+
+- Json内嵌类
+  如果是Json类型，以字符串读取并转换。如：
+    ```java
+  @Column(name="json_field")
+  private JsonField jsonField;
+  ```
+- 其他内嵌类
+  其他类型需要映射字段到新的类，需要Embedded注解,并加上AttributeOverrides注解，
+ 没有AttributeOverrides注解的字段将被忽略，内嵌类里面Column将被忽略
+ 如：
+  ```java
+    @Embedded
+    @AttributeOverrides({
+          @AttributeOverride(name = "fieldA", column = @Column(name = "field_a")),
+          @AttributeOverride(name = "fieldB", column = @Column(name = "field_b"))})
+    private EmbeddedClass embeddedClass;
+    
+    public class EmbeddedClass{
+        private String fieldA;
+        @Column("field_b")
+        private String fieldB;
+    }
+    ```
 
