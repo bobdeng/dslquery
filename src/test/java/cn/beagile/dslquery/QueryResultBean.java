@@ -52,7 +52,6 @@ public class QueryResultBean {
         }
     }
 
-    @Embeddable
     public static class EmbeddingField {
         @Column(name = "another_name")
         private String name;

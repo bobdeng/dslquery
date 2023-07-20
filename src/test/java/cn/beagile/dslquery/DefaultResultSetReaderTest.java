@@ -61,6 +61,19 @@ public class DefaultResultSetReaderTest {
         when(rs.getString("name")).thenThrow(new SQLException("sql error"));
         RuntimeException e = assertThrows(RuntimeException.class, () -> defaultResultSetReader.apply(rs));
     }
+    public static class QueryWithBoolean{
+        @Column(name = "flag")
+        private boolean flag;
+    }
+
+    @Test
+    public void should_read_boolean_json_field() throws SQLException {
+        DefaultResultSetReader<QueryWithBoolean> defaultResultSetReader = new DefaultResultSetReader(QueryWithBoolean.class);
+        ResultSet rs = mock(ResultSet.class);
+        when(rs.getBoolean("flag")).thenReturn(true);
+        QueryWithBoolean result = defaultResultSetReader.apply(rs);
+        assertTrue(result.flag);
+    }
 
     public static class QueryResultWithoutDefaultConstructorBean {
         @Column(name = "name1")

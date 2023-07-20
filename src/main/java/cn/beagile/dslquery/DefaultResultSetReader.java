@@ -21,6 +21,8 @@ class DefaultResultSetReader<T> implements Function<ResultSet, T> {
     static {
         COLUMN_READER_MAP.put(Integer.class, ResultSet::getInt);
         COLUMN_READER_MAP.put(int.class, ResultSet::getInt);
+        COLUMN_READER_MAP.put(Boolean.class, ResultSet::getBoolean);
+        COLUMN_READER_MAP.put(boolean.class, ResultSet::getBoolean);
         COLUMN_READER_MAP.put(String.class, ResultSet::getString);
         COLUMN_READER_MAP.put(BigDecimal.class, ResultSet::getBigDecimal);
         COLUMN_READER_MAP.put(Long.class, ResultSet::getLong);
