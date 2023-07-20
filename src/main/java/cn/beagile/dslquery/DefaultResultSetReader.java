@@ -35,6 +35,7 @@ class DefaultResultSetReader<T> implements Function<ResultSet, T> {
     private final FieldsWithColumns columns;
 
     public DefaultResultSetReader(Class<T> queryResultBeanClass) {
+
         this.queryResultBeanClass = queryResultBeanClass;
         this.columns = new FieldsWithColumns(queryResultBeanClass);
     }
