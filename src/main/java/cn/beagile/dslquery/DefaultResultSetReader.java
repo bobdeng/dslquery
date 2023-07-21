@@ -90,6 +90,9 @@ class DefaultResultSetReader<T> implements Function<ResultSet, T> {
 
     private void readPrimitive(ResultSet resultSet, Object result, Field field, ColumnFieldReader columnFieldReader) throws SQLException {
         Object value = columnFieldReader.readValue(resultSet, getFieldColumnName(field));
+        if (resultSet.wasNull()) {
+            return;
+        }
         new ReflectFieldSetter(result, field, value).set();
     }
 

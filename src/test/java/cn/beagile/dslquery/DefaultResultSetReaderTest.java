@@ -63,7 +63,7 @@ public class DefaultResultSetReaderTest {
     }
     public static class QueryWithBoolean{
         @Column(name = "flag")
-        private boolean flag;
+        private Boolean flag;
     }
 
     @Test
@@ -73,6 +73,15 @@ public class DefaultResultSetReaderTest {
         when(rs.getBoolean("flag")).thenReturn(true);
         QueryWithBoolean result = defaultResultSetReader.apply(rs);
         assertTrue(result.flag);
+    }
+    @Test
+    public void should_read_boolean_null_field() throws SQLException {
+        DefaultResultSetReader<QueryWithBoolean> defaultResultSetReader = new DefaultResultSetReader(QueryWithBoolean.class);
+        ResultSet rs = mock(ResultSet.class);
+        when(rs.wasNull()).thenReturn(true);
+        when(rs.getBoolean("flag")).thenReturn(true);
+        QueryWithBoolean result = defaultResultSetReader.apply(rs);
+        assertNull(result.flag);
     }
 
     public static class QueryResultWithoutDefaultConstructorBean {
