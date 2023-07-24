@@ -38,6 +38,8 @@ public class SQLBuilderTest {
         private Long normalLong;
         @Column(name = "normalLongPrimitive")
         private long normalLongPrimitive;
+        @Column(name = "passed")
+        private Boolean passed;
     }
 
     @Test
@@ -81,6 +83,25 @@ public class SQLBuilderTest {
         SQLBuilder<QueryResultForTest> sqlQuery = getSqlBuilder();
         sqlQuery.addParam("doubleValue", "doubleValue", "5564000.00");
         assertEquals(5564000.00, sqlQuery.getParams().get("doubleValue"));
+    }
+
+    @Test
+    public void add_boolean_param() {
+        SQLBuilder<QueryResultForTest> sqlQuery = getSqlBuilder();
+        sqlQuery.addParam("passed", "passed", "true");
+        assertEquals(true, sqlQuery.getParams().get("passed"));
+    }
+    @Test
+    public void add_boolean_param_with_1() {
+        SQLBuilder<QueryResultForTest> sqlQuery = getSqlBuilder();
+        sqlQuery.addParam("passed", "passed", "1");
+        assertEquals(true, sqlQuery.getParams().get("passed"));
+    }
+    @Test
+    public void add_boolean_param_with_0() {
+        SQLBuilder<QueryResultForTest> sqlQuery = getSqlBuilder();
+        sqlQuery.addParam("passed", "passed", "0");
+        assertEquals(false, sqlQuery.getParams().get("passed"));
     }
 
     @Test

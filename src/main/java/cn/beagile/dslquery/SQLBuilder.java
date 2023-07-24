@@ -41,6 +41,8 @@ class SQLBuilder<T> {
         FIELD_CAST_MAP.put(float.class, Float::parseFloat);
         FIELD_CAST_MAP.put(Double.class, Double::parseDouble);
         FIELD_CAST_MAP.put(double.class, Double::parseDouble);
+        FIELD_CAST_MAP.put(Boolean.class, v -> "true".equalsIgnoreCase(v) || "1".equals(v));
+        FIELD_CAST_MAP.put(boolean.class, v -> "true".equalsIgnoreCase(v) || "1".equals(v));
         FIELD_CAST_MAP.put(String.class, s -> s);
     }
 
