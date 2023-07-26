@@ -2,6 +2,7 @@ package cn.beagile.dslquery;
 
 import org.junit.jupiter.api.Test;
 
+import static cn.beagile.dslquery.WhereBuilder.where;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class WhereBuilderTest {
@@ -94,7 +95,7 @@ public class WhereBuilderTest {
 
     @Test
     public void build_notnull() {
-        String result = new WhereBuilder().and()
+        String result = where().and()
                 .notnull("name")
                 .build();
         assertEquals("(and(name notnull))", result);

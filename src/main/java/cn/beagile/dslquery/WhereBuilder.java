@@ -114,4 +114,7 @@ public class WhereBuilder {
         appendExpression(name, valueStart + "," + valueEnd, Operator.Between.keyword);
         return this;
     }
+    public static WhereBuilder where(){
+        return new WhereBuilder();
+    }
 }
