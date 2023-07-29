@@ -266,6 +266,11 @@ public class DSLQueryTest {
                 @AttributeOverride(name = "field2.code", column = @Column(name = "code3"))
         })
         private EmbeddedField field;
+        @Embedded
+        @AttributeOverrides({
+                @AttributeOverride(name = "name", column = @Column(name = "name1")),
+        })
+        EmbeddedField2 field2;
 
         @View("view_query2")
         public static class EmbeddedField {
@@ -273,8 +278,7 @@ public class DSLQueryTest {
             private String name;
             @Column(name = "code")
             public String code;
-            @Embedded
-            EmbeddedField2 field2;
+
         }
         @View("view_query3")
         public static class EmbeddedField2 {
@@ -291,7 +295,7 @@ public class DSLQueryTest {
         dslQuery.query();
         verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
-        expectSqlWithoudEnter("select view_query.code2 code2,view_query.code3 code3 from view_query", sqlQuery.getSql());
+        expectSqlWithoudEnter("select view_query.code2 code2,view_query.name1 name1 from view_query", sqlQuery.getSql());
     }
 
     @Test

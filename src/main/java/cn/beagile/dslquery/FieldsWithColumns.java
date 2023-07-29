@@ -47,14 +47,12 @@ public class FieldsWithColumns {
     }
 
     private void addEmbeddedFields(Class clz) {
-        embedded = true;
         Arrays.stream(clz.getDeclaredFields())
                 .filter(field -> field.isAnnotationPresent(Embedded.class))
                 .forEach(this::getEmbeddedFields);
     }
 
     private void addJoinFields(Class clz) {
-        embedded = false;
         Arrays.stream(clz.getDeclaredFields())
                 .filter(field -> !field.isAnnotationPresent(Embedded.class))
                 .filter(field -> field.isAnnotationPresent(JoinColumn.class))
@@ -77,6 +75,7 @@ public class FieldsWithColumns {
             this.firstAttributeOverrides = field.getAnnotation(AttributeOverrides.class);
         }
         embeddedFields.push(field);
+        embedded = field.isAnnotationPresent(Embedded.class);
         findFields(field.getType());
         embeddedFields.pop();
     }
