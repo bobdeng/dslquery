@@ -2,7 +2,6 @@ plugins {
     id 'java-library'
     id 'maven-publish'
 }
-sourceCompatibility = 16
 group 'cn.beagile.lib'
 version '1.0-SNAPSHOT'
 
