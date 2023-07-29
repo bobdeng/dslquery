@@ -62,10 +62,11 @@ class DefaultResultSetReader<T> implements Function<ResultSet, T> {
                 .filter(field -> field.isAnnotationPresent(Embedded.class))
                 .forEach(field -> setEmbeddedFieldValue(resultSet, result, field));
     }
+
     private void setJoinedFields(ResultSet resultSet, Class clz, Object result) {
         Stream.of(clz.getDeclaredFields())
                 .filter(field -> field.isAnnotationPresent(JoinColumn.class))
-                .forEach(field -> setJoinedFieldValue(resultSet, result, field));
+                .forEach(field -> setEmbeddedFieldValue(resultSet, result, field));
     }
 
     private void setPrimitiveFields(ResultSet resultSet, Class clz, Object result) {
@@ -107,9 +108,6 @@ class DefaultResultSetReader<T> implements Function<ResultSet, T> {
     }
 
     private void setEmbeddedFieldValue(ResultSet resultSet, Object result, Field field) {
-        new ReflectFieldSetter(result, field, newInstance(resultSet, field.getType())).set();
-    }
-    private void setJoinedFieldValue(ResultSet resultSet, Object result, Field field) {
         new ReflectFieldSetter(result, field, newInstance(resultSet, field.getType())).set();
     }
 }

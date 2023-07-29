@@ -102,7 +102,7 @@ public class FieldsWithColumns {
     }
 
     private FieldWithColumn getFieldWithColumn(Field field) {
-        return new FieldWithColumn(field, getFieldAttributeOverride(field),prefix);
+        return new FieldWithColumn(field, getFieldAttributeOverride(field),prefix,classStack);
     }
 
     private Optional<AttributeOverride> getFieldAttributeOverride(Field field) {
