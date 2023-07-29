@@ -8,11 +8,11 @@ public class WhereParserTest {
     @Test
     public void should_parse_where() {
         WhereParser whereParser = new WhereParser();
-        ComplexExpression where = whereParser.parse("(and(name equals bob))");
+        ComplexExpression where = whereParser.parse("(and(org.name equals bob))");
         assertNotNull(where);
         assertEquals(where.getCondition(), "and");
         assertEquals(1, where.getExpressions().size());
-        assertEquals(new SingleExpression("name", "equals", "bob"), where.getExpressions().get(0));
+        assertEquals(new SingleExpression("org.name", "equals", "bob"), where.getExpressions().get(0));
     }
 
     @Test

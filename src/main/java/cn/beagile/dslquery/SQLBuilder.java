@@ -2,12 +2,15 @@ package cn.beagile.dslquery;
 
 import com.google.gson.Gson;
 
+import javax.persistence.JoinColumn;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -158,8 +161,23 @@ class SQLBuilder<T> {
     }
 
     private String getSelectSQL() {
-        String fields = columns.getListFields().stream().map(FieldWithColumn::columnName).collect(Collectors.joining(","));
-        return String.format("select %s from %s", fields, getViewName());
+        String fields = columns.getListFields().stream().map(FieldWithColumn::selectName).collect(Collectors.joining(","));
+        String result = String.format("select %s from %s", fields, getViewName());
+        result += getJoinTables(this.queryResultClass);
+        return result;
+    }
+
+    private String getJoinTables(Class clz) {
+        String result = Arrays.stream(clz.getDeclaredFields())
+                .filter(field -> field.isAnnotationPresent(JoinColumn.class))
+                .map(field -> {
+                    JoinColumn joinColumn = field.getAnnotation(JoinColumn.class);
+                    String myTable = getViewName(clz);
+                    String joinTable = field.getType().getAnnotation(View.class).value();
+                    return "left join " + joinTable + " on " + joinTable + "." + joinColumn.referencedColumnName() + " = " + myTable + "." + joinColumn.name() + getJoinTables(field.getType());
+                })
+                .collect(Collectors.joining("\n", "\n", ""));
+        return result;
     }
 
 
@@ -170,6 +188,11 @@ class SQLBuilder<T> {
     private String getViewName() {
         View view = queryResultClass.getAnnotation(View.class);
         return view.value();
+    }
+
+    private String getViewName(Class clz) {
+        View annotation = (View) clz.getAnnotation(View.class);
+        return annotation.value();
     }
 
     private String getCountSQL() {

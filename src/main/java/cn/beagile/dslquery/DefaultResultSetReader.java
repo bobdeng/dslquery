@@ -2,8 +2,8 @@ package cn.beagile.dslquery;
 
 import com.google.gson.Gson;
 
-import javax.persistence.AttributeOverrides;
 import javax.persistence.Embedded;
+import javax.persistence.JoinColumn;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
@@ -50,6 +50,7 @@ class DefaultResultSetReader<T> implements Function<ResultSet, T> {
             final Object result = clz.newInstance();
             setPrimitiveFields(resultSet, clz, result);
             setEmbeddedFields(resultSet, clz, result);
+            setJoinedFields(resultSet, clz, result);
             return result;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -60,6 +61,11 @@ class DefaultResultSetReader<T> implements Function<ResultSet, T> {
         Stream.of(clz.getDeclaredFields())
                 .filter(field -> field.isAnnotationPresent(Embedded.class))
                 .forEach(field -> setEmbeddedFieldValue(resultSet, result, field));
+    }
+    private void setJoinedFields(ResultSet resultSet, Class clz, Object result) {
+        Stream.of(clz.getDeclaredFields())
+                .filter(field -> field.isAnnotationPresent(JoinColumn.class))
+                .forEach(field -> setJoinedFieldValue(resultSet, result, field));
     }
 
     private void setPrimitiveFields(ResultSet resultSet, Class clz, Object result) {
@@ -101,6 +107,9 @@ class DefaultResultSetReader<T> implements Function<ResultSet, T> {
     }
 
     private void setEmbeddedFieldValue(ResultSet resultSet, Object result, Field field) {
+        new ReflectFieldSetter(result, field, newInstance(resultSet, field.getType())).set();
+    }
+    private void setJoinedFieldValue(ResultSet resultSet, Object result, Field field) {
         new ReflectFieldSetter(result, field, newInstance(resultSet, field.getType())).set();
     }
 }

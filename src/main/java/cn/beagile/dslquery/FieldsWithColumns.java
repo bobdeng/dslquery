@@ -1,9 +1,6 @@
 package cn.beagile.dslquery;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
+import javax.persistence.*;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -15,7 +12,9 @@ public class FieldsWithColumns {
     private final HashMap<Field, FieldWithColumn> columnHashMapByField = new HashMap<>();
     private final Stack<Field> embeddedFields = new Stack<>();
     private final Stack<Class> classStack = new Stack<>();
+    private final Stack<String> prefix = new Stack<>();
     private AttributeOverrides firstAttributeOverrides;
+
     FieldsWithColumns(Class rootClass) {
         findFields(rootClass);
     }
@@ -31,6 +30,14 @@ public class FieldsWithColumns {
         }
         addColumnsOverride(clz);
         addEmbeddedFields(clz);
+        addJoinFields(clz);
+        classStack.pop();
+    }
+
+    private void findJoinedFields(Class clz) {
+        classStack.push(clz);
+        addColumnsWithColumn(clz);
+        addJoinFields(clz);
         classStack.pop();
     }
 
@@ -42,6 +49,23 @@ public class FieldsWithColumns {
         Arrays.stream(clz.getDeclaredFields())
                 .filter(field -> field.isAnnotationPresent(Embedded.class))
                 .forEach(this::getEmbeddedFields);
+    }
+
+    private void addJoinFields(Class clz) {
+        Arrays.stream(clz.getDeclaredFields())
+                .filter(field -> field.isAnnotationPresent(JoinColumn.class))
+                .forEach(this::getJoinedFields);
+    }
+
+    private void getJoinedFields(Field field) {
+        if (isRoot()) {
+            this.firstAttributeOverrides = field.getAnnotation(AttributeOverrides.class);
+        }
+        prefix.push(field.getName());
+        embeddedFields.push(field);
+        findJoinedFields(field.getType());
+        prefix.pop();
+        embeddedFields.pop();
     }
 
     private void getEmbeddedFields(Field field) {
@@ -78,7 +102,7 @@ public class FieldsWithColumns {
     }
 
     private FieldWithColumn getFieldWithColumn(Field field) {
-        return new FieldWithColumn(field, getFieldAttributeOverride(field));
+        return new FieldWithColumn(field, getFieldAttributeOverride(field),prefix);
     }
 
     private Optional<AttributeOverride> getFieldAttributeOverride(Field field) {

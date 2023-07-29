@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class WhereListTest {
     @Test
     public void should_return_1() {
-        WhereList whereList = new WhereList("(name equal bob)");
+        WhereList whereList = new WhereList("(a.name equal bob)");
         List<String> list = whereList.list();
         assertEquals(1, list.size());
     }

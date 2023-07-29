@@ -20,7 +20,7 @@ public class TestDataSourceConfig {
     public DataSource dataSource() {
         DockerImageName dockerImageName = DockerImageName.parse("mysql:5.7.28");
         MySQLContainer mySQLContainer = new MySQLContainer(dockerImageName);
-        mySQLContainer.withReuse(true).start();
+        mySQLContainer.withReuse(false).start();
         return DataSourceBuilder.create()
                 .driverClassName(mySQLContainer.getDriverClassName())
                 .username(mySQLContainer.getUsername())

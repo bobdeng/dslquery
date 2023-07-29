@@ -59,7 +59,7 @@ class WhereParser {
     }
 
     private boolean isSubWhere(String subWhere) {
-        return subWhere.startsWith("(and") || subWhere.startsWith("(or");
+        return subWhere.startsWith("(and(") || subWhere.startsWith("(or(");
     }
 
     private boolean isSingleExpression(String subWhere) {

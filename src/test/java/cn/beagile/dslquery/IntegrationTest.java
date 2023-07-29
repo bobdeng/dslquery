@@ -52,6 +52,23 @@ public class IntegrationTest {
             @Column(name = "zip_code1")
             private String code;
         }
+
+        @JoinColumn(name = "org_id", referencedColumnName = "id")
+        private Org org;
+    }
+
+    @View("org")
+    public static class Org {
+        @Column(name = "name")
+        private String name;
+        @JoinColumn(name = "area_id", referencedColumnName = "id")
+        private Area area;
+    }
+
+    @View("area")
+    public static class Area {
+        @Column(name = "name")
+        private String name;
     }
 
     public static class SpringQueryExecutor implements QueryExecutor {
@@ -83,8 +100,11 @@ public class IntegrationTest {
         DSLQuery<Person> query = new DSLQuery<>(new SpringQueryExecutor(jdbcTemplate), Person.class);
         List<Person> result = query.skip(0).limit(10).query();
         assertEquals(2, result.size());
-        assertEquals("123 main st", result.get(0).contact.address);
-        assertEquals("123456789", result.get(0).contact.phone);
+        Person person = result.get(0);
+        assertEquals("123 main st", person.contact.address);
+        assertEquals("123456789", person.contact.phone);
+        assertEquals("ms", person.org.name);
+        assertEquals("cn", person.org.area.name);
     }
 
     @Test
