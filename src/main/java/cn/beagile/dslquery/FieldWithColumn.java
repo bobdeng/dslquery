@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 public class FieldWithColumn {
     private final Field field;
-    private final Stack<Class> classStack;
     private final boolean embedded;
     private final Column column;
     private final String prefix;
@@ -18,7 +17,6 @@ public class FieldWithColumn {
 
     public FieldWithColumn(Field field, Optional<AttributeOverride> attributeOverride, Stack<String> prefix, Stack<Class> classStack, boolean embedded) {
         this.field = field;
-        this.classStack = classStack;
         this.embedded = embedded;
         this.column = attributeOverride.map(AttributeOverride::column)
                 .orElseGet(() -> field.getAnnotation(Column.class));
