@@ -271,7 +271,6 @@ public class DSLQueryTest {
                 @AttributeOverride(name = "name", column = @Column(name = "name1")),
         })
         EmbeddedField2 field2;
-
         @View("view_query2")
         public static class EmbeddedField {
             @Column(name = "name2")
@@ -282,6 +281,13 @@ public class DSLQueryTest {
         }
         @View("view_query3")
         public static class EmbeddedField2 {
+            @Column(name = "name2")
+            private String name;
+            @Column(name = "code")
+            public String code;
+        }
+        @View("t_join")
+        public static class EmbeddedField3 {
             @Column(name = "name2")
             private String name;
             @Column(name = "code")

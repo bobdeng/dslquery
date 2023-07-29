@@ -30,7 +30,13 @@ public class FieldsWithColumns {
             addColumnsWithColumn(clz);
         }
         addColumnsOverride(clz);
+        if (isRoot()) {
+            embedded = true;
+        }
         addEmbeddedFields(clz);
+        if (isRoot()) {
+            embedded = false;
+        }
         addJoinFields(clz);
         classStack.pop();
     }
@@ -75,7 +81,6 @@ public class FieldsWithColumns {
             this.firstAttributeOverrides = field.getAnnotation(AttributeOverrides.class);
         }
         embeddedFields.push(field);
-        embedded = field.isAnnotationPresent(Embedded.class);
         findFields(field.getType());
         embeddedFields.pop();
     }
