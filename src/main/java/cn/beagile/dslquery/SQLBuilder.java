@@ -3,7 +3,7 @@ package cn.beagile.dslquery;
 import com.google.gson.Gson;
 
 import javax.persistence.JoinColumn;
-import java.lang.annotation.Annotation;
+import javax.persistence.JoinColumns;
 import java.lang.reflect.Field;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -155,7 +155,7 @@ class SQLBuilder<T> {
 
     private String getWhereSQL() {
         if (this.whereCondition == null) {
-            this.whereCondition = String.format(" where %s", whereList.stream().map(where -> where.toSQL(this)).collect(Collectors.joining(" and ")));
+            this.whereCondition = String.format("\n where %s", whereList.stream().map(where -> where.toSQL(this)).collect(Collectors.joining(" and ")));
         }
         return this.whereCondition;
     }
@@ -163,21 +163,35 @@ class SQLBuilder<T> {
     private String getSelectSQL() {
         String fields = columns.getListFields().stream().map(FieldWithColumn::selectName).collect(Collectors.joining(","));
         String result = String.format("select %s from %s", fields, getViewName());
-        result += getJoinTables(this.queryResultClass);
+        result += "\n";
+        result += getJoinTables(this.queryResultClass).trim();
+        result += getJoinsTables(this.queryResultClass).trim();
         return result;
     }
 
     private String getJoinTables(Class clz) {
-        String result = Arrays.stream(clz.getDeclaredFields())
+        return Arrays.stream(clz.getDeclaredFields())
                 .filter(field -> field.isAnnotationPresent(JoinColumn.class))
-                .map(field -> {
-                    JoinColumn joinColumn = field.getAnnotation(JoinColumn.class);
-                    String myTable = getViewName(clz);
-                    String joinTable = field.getType().getAnnotation(View.class).value();
-                    return "left join " + joinTable + " on " + joinTable + "." + joinColumn.referencedColumnName() + " = " + myTable + "." + joinColumn.name() + getJoinTables(field.getType());
-                })
+                .map(field -> getJoin(clz, field, new JoinColumn[]{field.getAnnotation(JoinColumn.class)}))
                 .collect(Collectors.joining("\n", "\n", ""));
-        return result;
+    }
+
+    private String getJoinsTables(Class clz) {
+        return Arrays.stream(clz.getDeclaredFields())
+                .filter(field -> field.isAnnotationPresent(JoinColumns.class))
+                .map(field -> getJoin(clz, field, field.getAnnotation(JoinColumns.class).value()))
+                .collect(Collectors.joining("", "\n", ""));
+    }
+
+    private String getJoin(Class clz, Field field, JoinColumn[] joinColumns) {
+        String myTable = getViewName(clz);
+        String result = "";
+        for (int i = 0; i < joinColumns.length; i++) {
+            String joinTable = i == joinColumns.length - 1 ? field.getType().getAnnotation(View.class).value() : joinColumns[i].table();
+            String onTable = i == 0 ? myTable : joinColumns[i - 1].table();
+            result += "left join " + joinTable + " on " + joinTable + "." + joinColumns[i].referencedColumnName() + " = " + onTable + "." + joinColumns[i].name() + getJoinTables(field.getType());
+        }
+        return result.trim();
     }
 
 
@@ -196,7 +210,7 @@ class SQLBuilder<T> {
     }
 
     private String getCountSQL() {
-        String result = String.format("select count(*) from %s", getViewName()+getJoinTables(this.queryResultClass));
+        String result = String.format("select count(*) from %s", getViewName() + getJoinTables(this.queryResultClass));
         if (whereList.size() > 0) {
             result += getWhereSQL();
         }

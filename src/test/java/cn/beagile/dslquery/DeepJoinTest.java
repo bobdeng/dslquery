@@ -41,7 +41,7 @@ public class DeepJoinTest {
         SQLBuilder<User> sqlBuilder = new SQLBuilder<>(dslQuery);
         assertEquals("select t_user.name name,t_org.name org_name,t_area.name org_area_name from t_user\n" +
                 "left join t_org on t_org.id = t_user.org_id\n" +
-                "left join t_area on t_area.id = t_org.area_id\n", sqlBuilder.sql());
+                "left join t_area on t_area.id = t_org.area_id", sqlBuilder.sql());
     }
 
     @Test

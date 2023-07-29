@@ -63,7 +63,7 @@ public class FieldsWithColumns {
     private void addJoinFields(Class clz) {
         Arrays.stream(clz.getDeclaredFields())
                 .filter(field -> !field.isAnnotationPresent(Embedded.class))
-                .filter(field -> field.isAnnotationPresent(JoinColumn.class))
+                .filter(field -> field.isAnnotationPresent(JoinColumn.class)||field.isAnnotationPresent(JoinColumns.class))
                 .forEach(this::getJoinedFields);
     }
 
