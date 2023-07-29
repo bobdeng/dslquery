@@ -20,18 +20,32 @@ public class FieldWithColumn {
         this.classStack = classStack;
         this.column = attributeOverride.map(AttributeOverride::column)
                 .orElseGet(() -> field.getAnnotation(Column.class));
-        this.view = field.getDeclaringClass().getAnnotation(View.class);
-        if (this.view == null) {
-            List<View> views = classStack.stream().filter(clz -> clz.isAnnotationPresent(View.class))
-                    .map(clz -> (View) clz.getAnnotation(View.class)).collect(Collectors.toList());
-            if (views.size() > 0) {
-                this.view = views.get(views.size() - 1);
-            }
+        setView(field, classStack);
+        this.prefix = setPrefix(prefix);
+    }
+
+    private String setPrefix(Stack<String> prefixStack) {
+        if (prefixStack.size() > 0) {
+            return prefixStack.stream().collect(Collectors.joining("_", "", "_"));
         }
-        if (prefix.size() > 0) {
-            this.prefix = prefix.stream().collect(Collectors.joining("_", "", "_"));
-        } else {
-            this.prefix = "";
+        return "";
+    }
+
+    private void setView(Field field, Stack<Class> classStack) {
+        this.view = field.getDeclaringClass().getAnnotation(View.class);
+        if (this.view != null) {
+            return;
+        }
+        tryFindLastClassHasViewInStack(classStack);
+    }
+
+    private void tryFindLastClassHasViewInStack(Stack<Class> classStack) {
+        List<View> views = classStack.stream()
+                .filter(clz -> clz.isAnnotationPresent(View.class))
+                .map(clz -> (View) clz.getAnnotation(View.class))
+                .collect(Collectors.toList());
+        if (views.size() > 0) {
+            this.view = views.get(views.size() - 1);
         }
     }
 

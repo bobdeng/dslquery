@@ -2,15 +2,15 @@ plugins {
     id 'java-library'
     id 'maven-publish'
 }
-
+sourceCompatibility = 16
 group 'cn.beagile.lib'
 version '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
 }
-
 apply from: "$rootDir/gradle/config/script/coverage.gradle"
+
 
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
@@ -46,3 +46,4 @@ tasks.jar {
     enabled = true
     archiveClassifier = ''
 }
+
