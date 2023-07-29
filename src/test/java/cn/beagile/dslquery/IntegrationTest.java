@@ -93,7 +93,12 @@ public class IntegrationTest {
             return jdbcTemplate.query(sqlQuery.getCountSql(), sqlQuery.getParams(), (rs, rowNum) -> rs.getInt(1)).get(0);
         }
     }
-
+    @Test
+    public void should_query_by_area() {
+        DSLQuery<Person> query = new DSLQuery<>(new SpringQueryExecutor(jdbcTemplate), Person.class);
+        List<Person> result = query.timezoneOffset(-8).where("(and(org.area.name equals cn))").skip(0).limit(10).query();
+        assertEquals(1, result.size());
+    }
     @Test
     public void should_query() {
 

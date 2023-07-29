@@ -66,7 +66,7 @@ public class DeepJoinTest {
         String expect = "select t_user.name name,t_org.name org_name,t_area.name org_area_name from t_user\n" +
                 "left join t_org on t_org.id = t_user.org_id\n" +
                 "left join t_area on t_area.id = t_org.area_id\n" +
-                " where ((org_area_name = :p1))";
+                " where ((t_area.name = :p1))";
         assertEquals(expect, sqlBuilder.sql());
     }
 

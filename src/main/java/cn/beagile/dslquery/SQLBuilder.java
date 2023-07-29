@@ -121,7 +121,7 @@ class SQLBuilder<T> {
     }
 
     String aliasOf(String field) {
-        return columns.getFieldColumn(field).columnName();
+        return columns.getFieldColumn(field).whereName();
     }
 
     public String countSql() {

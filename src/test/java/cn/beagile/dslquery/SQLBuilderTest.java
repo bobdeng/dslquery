@@ -138,7 +138,7 @@ public class SQLBuilderTest {
     @Test
     public void should_return_alias() {
         SQLBuilder<QueryResultForTest> sqlQuery = getSqlBuilder();
-        assertEquals("double_value", sqlQuery.aliasOf("doubleValue"));
+        assertEquals("test_view.double_value", sqlQuery.aliasOf("doubleValue"));
     }
 
     @Test

@@ -61,7 +61,7 @@ public class JoinTest {
         sqlBuilder = new SQLBuilder<>(dslQuery);
         String expect = "select t_user.name name,t_org.name org_name from t_user\n" +
                 "left join t_org on t_org.id = t_user.org_id\n" +
-                " where ((name = :p1))";
+                " where ((t_user.name = :p1))";
         assertEquals(expect, sqlBuilder.sql());
     }
     @Test
@@ -70,7 +70,7 @@ public class JoinTest {
         sqlBuilder = new SQLBuilder<>(dslQuery);
         String expect = "select t_user.name name,t_org.name org_name from t_user\n" +
                 "left join t_org on t_org.id = t_user.org_id\n" +
-                " where ((org_name = :p1))";
+                " where ((t_org.name = :p1))";
         assertEquals(expect, sqlBuilder.sql());
     }
 }

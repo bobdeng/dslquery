@@ -3,10 +3,7 @@ package cn.beagile.dslquery;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
+import javax.persistence.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -30,6 +27,8 @@ class FieldWithColumnTest {
                 @AttributeOverride(name = "name", column = @Column(name = "another_name"))
         })
         private Another another;
+        @JoinColumn(name = "join_id", referencedColumnName = "id")
+        public Join joinField;
 
         @View("t_address")
         public static class Address {
@@ -39,6 +38,7 @@ class FieldWithColumnTest {
             private String phone;
             @Embedded
             private Another2 another2;
+
         }
 
         @View("t_another2")
@@ -49,6 +49,12 @@ class FieldWithColumnTest {
         }
 
         public static class Another {
+            private String name;
+        }
+
+        @View("t_join")
+        public static class Join {
+            @Column(name = "join_name")
             private String name;
         }
     }
@@ -65,6 +71,15 @@ class FieldWithColumnTest {
         assertNotNull(nameField);
         assertEquals("name", nameField.getField().getName());
         assertEquals("name1", nameField.columnName());
+    }
+
+    @Test
+    public void should_return_join_column_field() {
+        FieldWithColumn nameField = fieldsWithColumns.getFieldColumn("joinField.name");
+        assertNotNull(nameField);
+        assertEquals("name", nameField.getField().getName());
+        assertEquals("t_join.join_name", nameField.whereName());
+        assertEquals("joinField_join_name", nameField.columnName());
     }
 
     @Test

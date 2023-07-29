@@ -59,12 +59,18 @@ public class FieldWithColumn {
         return field;
     }
 
+    public String whereName() {
+        if (view == null) {
+            return column.name();
+        }
+        return view.value() + "." + this.column.name();
+    }
     public String columnName() {
-        return prefix + this.column.name();
+        return (prefix + this.column.name());
     }
 
     public String selectName() {
-        return view.value() + "." + this.column.name() + " " + columnName();
+        return view.value() + "." + this.column.name() + " " + (prefix + this.column.name());
     }
 
 }
