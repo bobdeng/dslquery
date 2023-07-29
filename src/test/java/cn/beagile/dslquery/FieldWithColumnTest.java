@@ -31,6 +31,7 @@ class FieldWithColumnTest {
         })
         private Another another;
 
+        @View("t_address")
         public static class Address {
             @Column(name = "address_name")
             private String name;
@@ -40,6 +41,7 @@ class FieldWithColumnTest {
             private Another2 another2;
         }
 
+        @View("t_another2")
         public static class Another2 {
             @Column(name = "name2")
             private String name2;

@@ -11,18 +11,21 @@ import java.util.stream.Collectors;
 public class FieldWithColumn {
     private final Field field;
     private final Stack<Class> classStack;
+    private final boolean embedded;
     private final Column column;
     private final String prefix;
     private View view;
 
-    public FieldWithColumn(Field field, Optional<AttributeOverride> attributeOverride, Stack<String> prefix, Stack<Class> classStack) {
+    public FieldWithColumn(Field field, Optional<AttributeOverride> attributeOverride, Stack<String> prefix, Stack<Class> classStack, boolean embedded) {
         this.field = field;
         this.classStack = classStack;
+        this.embedded = embedded;
         this.column = attributeOverride.map(AttributeOverride::column)
                 .orElseGet(() -> field.getAnnotation(Column.class));
         setView(field, classStack);
         this.prefix = setPrefix(prefix);
     }
+
 
     private String setPrefix(Stack<String> prefixStack) {
         if (prefixStack.size() > 0) {
@@ -32,15 +35,18 @@ public class FieldWithColumn {
     }
 
     private void setView(Field field, Stack<Class> classStack) {
-        this.view = field.getDeclaringClass().getAnnotation(View.class);
-        if (this.view != null) {
-            return;
+        if (!embedded) {
+            this.view = field.getDeclaringClass().getAnnotation(View.class);
+            if (this.view != null) {
+                return;
+            }
         }
         tryFindLastClassHasViewInStack(classStack);
     }
 
     private void tryFindLastClassHasViewInStack(Stack<Class> classStack) {
         List<View> views = classStack.stream()
+                .limit(1)
                 .filter(clz -> clz.isAnnotationPresent(View.class))
                 .map(clz -> (View) clz.getAnnotation(View.class))
                 .collect(Collectors.toList());

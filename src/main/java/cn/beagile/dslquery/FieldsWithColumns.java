@@ -14,6 +14,7 @@ public class FieldsWithColumns {
     private final Stack<Class> classStack = new Stack<>();
     private final Stack<String> prefix = new Stack<>();
     private AttributeOverrides firstAttributeOverrides;
+    private boolean embedded;
 
     FieldsWithColumns(Class rootClass) {
         findFields(rootClass);
@@ -46,13 +47,16 @@ public class FieldsWithColumns {
     }
 
     private void addEmbeddedFields(Class clz) {
+        embedded = true;
         Arrays.stream(clz.getDeclaredFields())
                 .filter(field -> field.isAnnotationPresent(Embedded.class))
                 .forEach(this::getEmbeddedFields);
     }
 
     private void addJoinFields(Class clz) {
+        embedded = false;
         Arrays.stream(clz.getDeclaredFields())
+                .filter(field -> !field.isAnnotationPresent(Embedded.class))
                 .filter(field -> field.isAnnotationPresent(JoinColumn.class))
                 .forEach(this::getJoinedFields);
     }
@@ -102,7 +106,7 @@ public class FieldsWithColumns {
     }
 
     private FieldWithColumn getFieldWithColumn(Field field) {
-        return new FieldWithColumn(field, getFieldAttributeOverride(field),prefix,classStack);
+        return new FieldWithColumn(field, getFieldAttributeOverride(field), prefix, classStack, embedded);
     }
 
     private Optional<AttributeOverride> getFieldAttributeOverride(Field field) {
