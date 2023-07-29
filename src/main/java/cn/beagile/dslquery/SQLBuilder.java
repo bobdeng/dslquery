@@ -10,10 +10,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -34,6 +31,7 @@ class SQLBuilder<T> {
     private String sql;
     private String countSql;
     private String whereCondition;
+    private Set<Class> ignoreJoinClasses = new HashSet<>();
 
     static {
         FIELD_CAST_MAP.put(Integer.class, Integer::parseInt);
@@ -143,34 +141,39 @@ class SQLBuilder<T> {
     }
 
     private String getSQL() {
-        String sql = getSelectSQL();
+        List<String> lines = new ArrayList<>();
+        lines.add(getSelectSQL());
         if (whereList.size() > 0) {
-            sql += getWhereSQL();
+            lines.add(getWhereSQL());
         }
         if (this.sort != null) {
-            sql += getSortSQL();
+            lines.add(getSortSQL());
         }
-        return sql;
+        return lines.stream().collect(Collectors.joining("\n"));
     }
 
     private String getWhereSQL() {
         if (this.whereCondition == null) {
-            this.whereCondition = String.format("\n where %s", whereList.stream().map(where -> where.toSQL(this)).collect(Collectors.joining(" and ")));
+            this.whereCondition = String.format(" where %s", whereList.stream().map(where -> where.toSQL(this)).collect(Collectors.joining(" and ")));
         }
         return this.whereCondition;
     }
 
     private String getSelectSQL() {
+        List<String> lines = new ArrayList<>();
         String fields = columns.getListFields().stream().map(FieldWithColumn::selectName).collect(Collectors.joining(","));
-        String result = String.format("select %s from %s", fields, getViewName());
-        result += "\n";
-        result += getJoinTables(this.queryResultClass).trim();
-        result += getJoinsTables(this.queryResultClass).trim();
-        return result;
+        lines.add(String.format("select %s from %s", fields, getViewName()));
+        lines.add(getAllJoinTables(this.queryResultClass));
+        return lines.stream().map(String::trim).collect(Collectors.joining("\n"));
+    }
+
+    private String getAllJoinTables(Class queryResultClass) {
+        return String.join("\n", getJoinTables(queryResultClass).trim(), getJoinsTables(queryResultClass).trim());
     }
 
     private String getJoinTables(Class clz) {
         return Arrays.stream(clz.getDeclaredFields())
+                .filter(field -> !ignoreJoinClasses.contains(field.getType()))
                 .filter(field -> field.isAnnotationPresent(JoinColumn.class))
                 .map(field -> getJoin(clz, field, new JoinColumn[]{field.getAnnotation(JoinColumn.class)}))
                 .collect(Collectors.joining("\n", "\n", ""));
@@ -178,25 +181,31 @@ class SQLBuilder<T> {
 
     private String getJoinsTables(Class clz) {
         return Arrays.stream(clz.getDeclaredFields())
+                .filter(field -> !ignoreJoinClasses.contains(field.getType()))
                 .filter(field -> field.isAnnotationPresent(JoinColumns.class))
                 .map(field -> getJoin(clz, field, field.getAnnotation(JoinColumns.class).value()))
                 .collect(Collectors.joining("", "\n", ""));
     }
 
     private String getJoin(Class clz, Field field, JoinColumn[] joinColumns) {
+        if (field.isAnnotationPresent(Ignores.class)) {
+            ignoreJoinClasses.addAll(Arrays.asList(field.getAnnotation(Ignores.class).value()));
+        }
         String myTable = getViewName(clz);
-        String result = "";
+        List<String> lines = new ArrayList<>();
         for (int i = 0; i < joinColumns.length; i++) {
             String joinTable = i == joinColumns.length - 1 ? field.getType().getAnnotation(View.class).value() : joinColumns[i].table();
             String onTable = i == 0 ? myTable : joinColumns[i - 1].table();
-            result += "left join " + joinTable + " on " + joinTable + "." + joinColumns[i].referencedColumnName() + " = " + onTable + "." + joinColumns[i].name() + getJoinTables(field.getType());
+            String leftJoin = "left join " + joinTable + " on " + joinTable + "." + joinColumns[i].referencedColumnName() + " = " + onTable + "." + joinColumns[i].name();
+            lines.add(leftJoin);
+            lines.add(getAllJoinTables(field.getType()));
         }
-        return result.trim();
+        return lines.stream().map(String::trim).filter(line -> !line.isEmpty()).collect(Collectors.joining("\n"));
     }
 
 
     private String getSortSQL() {
-        return String.format(" order by %s", sort.toSQL(this));
+        return String.format("order by %s", sort.toSQL(this));
     }
 
     private String getViewName() {
@@ -210,10 +219,11 @@ class SQLBuilder<T> {
     }
 
     private String getCountSQL() {
-        String result = String.format("select count(*) from %s", getViewName() + getJoinTables(this.queryResultClass));
+        List<String> lines = new ArrayList<>();
+        lines.add(String.format("select count(*) from %s", getViewName() + getJoinTables(this.queryResultClass)));
         if (whereList.size() > 0) {
-            result += getWhereSQL();
+            lines.add(getWhereSQL());
         }
-        return result;
+        return lines.stream().map(String::trim).collect(Collectors.joining("\n"));
     }
 }

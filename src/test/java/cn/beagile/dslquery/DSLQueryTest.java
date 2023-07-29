@@ -116,7 +116,7 @@ public class DSLQueryTest {
         dslQuery.sort("name").query();
         verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
-        expectSqlWithoudEnter("select " + fields + " from view_query order by view_query.name", sqlQuery.getSql());
+        expectSqlWithoudEnter("select " + fields + " from view_queryorder by view_query.name", sqlQuery.getSql());
     }
 
     @Test
@@ -185,7 +185,7 @@ public class DSLQueryTest {
         dslQuery.where("").sort("name asc").query();
         verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
-        expectSqlWithoudEnter("select " + fields + " from view_query order by view_query.name asc", sqlQuery.getSql());
+        expectSqlWithoudEnter("select " + fields + " from view_queryorder by view_query.name asc", sqlQuery.getSql());
     }
 
     @Test
@@ -194,7 +194,7 @@ public class DSLQueryTest {
         dslQuery.limit(null).skip(null).sort("name asc").query();
         verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
-        expectSqlWithoudEnter("select view_query.name1 name1,view_query.age age from view_query order by view_query.name1 asc", sqlQuery.getSql());
+        expectSqlWithoudEnter("select view_query.name1 name1,view_query.age age from view_queryorder by view_query.name1 asc", sqlQuery.getSql());
     }
 
     @Test
@@ -203,7 +203,7 @@ public class DSLQueryTest {
         dslQuery.sort("name asc,age desc").query();
         verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
-        expectSqlWithoudEnter("select view_query.name1 name1,view_query.age age from view_query order by view_query.name1 asc,view_query.age desc", sqlQuery.getSql());
+        expectSqlWithoudEnter("select view_query.name1 name1,view_query.age age from view_queryorder by view_query.name1 asc,view_query.age desc", sqlQuery.getSql());
     }
 
     //带有分页条件，执行查询
@@ -241,7 +241,7 @@ public class DSLQueryTest {
         dslQuery.where("(and(name equals bob))").query();
         verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
-        expectSqlWithoudEnter("select count(*) from view_query where ((view_query.name1 = :p1))", sqlQuery.getCountSql());
+        expectSqlWithoudEnter("select count(*) from view_querywhere ((view_query.name1 = :p1))", sqlQuery.getCountSql());
         assertEquals(1, sqlQuery.getParams().size());
         assertEquals("bob", sqlQuery.getParams().get("p1"));
     }

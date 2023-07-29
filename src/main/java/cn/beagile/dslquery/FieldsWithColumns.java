@@ -15,6 +15,7 @@ public class FieldsWithColumns {
     private final Stack<String> prefix = new Stack<>();
     private AttributeOverrides firstAttributeOverrides;
     private boolean embedded;
+    private Set<Class> ignoreJoinClasses = new HashSet<>();
 
     FieldsWithColumns(Class rootClass) {
         findFields(rootClass);
@@ -62,12 +63,16 @@ public class FieldsWithColumns {
 
     private void addJoinFields(Class clz) {
         Arrays.stream(clz.getDeclaredFields())
+                .filter(field -> !ignoreJoinClasses.contains(field.getType()))
                 .filter(field -> !field.isAnnotationPresent(Embedded.class))
-                .filter(field -> field.isAnnotationPresent(JoinColumn.class)||field.isAnnotationPresent(JoinColumns.class))
+                .filter(field -> field.isAnnotationPresent(JoinColumn.class) || field.isAnnotationPresent(JoinColumns.class))
                 .forEach(this::getJoinedFields);
     }
 
     private void getJoinedFields(Field field) {
+        if (field.getAnnotation(Ignores.class) != null) {
+            ignoreJoinClasses.addAll(Arrays.asList(field.getAnnotation(Ignores.class).value()));
+        }
         if (isRoot()) {
             this.firstAttributeOverrides = field.getAnnotation(AttributeOverrides.class);
         }

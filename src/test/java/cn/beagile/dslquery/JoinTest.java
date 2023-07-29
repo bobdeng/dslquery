@@ -82,7 +82,7 @@ public class JoinTest {
         sqlBuilder = new SQLBuilder<>(dslQuery);
         String expect = "select count(*) from t_user\n" +
                 "left join t_org on t_org.id = t_user.org_id\n" +
-                " where ((t_org.name = :p1))";
+                "where ((t_org.name = :p1))";
         assertEquals(expect, sqlBuilder.countSql());
     }
 }
