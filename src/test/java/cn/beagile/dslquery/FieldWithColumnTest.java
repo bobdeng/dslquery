@@ -39,6 +39,9 @@ class FieldWithColumnTest {
             @Embedded
             private Another2 another2;
 
+            @JoinColumn(name = "", referencedColumnName = "id")
+            public AnotherJoin another;
+
         }
 
         @View("t_another2")
@@ -50,10 +53,18 @@ class FieldWithColumnTest {
 
         public static class Another {
             private String name;
+
         }
 
         @View("t_join")
         public static class Join {
+            @Column(name = "join_name")
+            private String name;
+
+        }
+
+        @View("t_another_join")
+        public static class AnotherJoin {
             @Column(name = "join_name")
             private String name;
         }
@@ -80,6 +91,11 @@ class FieldWithColumnTest {
         assertEquals("name", nameField.getField().getName());
         assertEquals("t_join.join_name", nameField.whereName());
         assertEquals("joinField_join_name", nameField.columnName());
+    }
+
+    @Test
+    public void should_not_return_embedded_join_column_field() {
+        assertThrows(RuntimeException.class, () -> fieldsWithColumns.getFieldColumn("address.another.name"));
     }
 
     @Test

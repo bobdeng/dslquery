@@ -37,7 +37,9 @@ public class FieldsWithColumns {
         if (isRoot()) {
             embedded = false;
         }
-        addJoinFields(clz);
+        if (!embedded) {
+            addJoinFields(clz);
+        }
         classStack.pop();
     }
 
