@@ -73,4 +73,13 @@ public class JoinTest {
                 " where ((t_org.name = :p1))";
         assertEquals(expect, sqlBuilder.sql());
     }
+    @Test
+    public void should_get_count_with_join_column(){
+        dslQuery=dslQuery.where("(and(org.name equals 123))");
+        sqlBuilder = new SQLBuilder<>(dslQuery);
+        String expect = "select count(*) from t_user\n" +
+                "left join t_org on t_org.id = t_user.org_id\n" +
+                " where ((t_org.name = :p1))";
+        assertEquals(expect, sqlBuilder.countSql());
+    }
 }

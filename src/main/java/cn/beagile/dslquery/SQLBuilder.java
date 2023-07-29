@@ -196,7 +196,7 @@ class SQLBuilder<T> {
     }
 
     private String getCountSQL() {
-        String result = String.format("select count(*) from %s", getViewName());
+        String result = String.format("select count(*) from %s", getViewName()+getJoinTables(this.queryResultClass));
         if (whereList.size() > 0) {
             result += getWhereSQL();
         }
