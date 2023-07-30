@@ -20,9 +20,17 @@ public class ColumnFields {
             this.ignores = Arrays.asList(ignores.value());
         }
         this.clz = clz;
+        readPrimitiveFields(clz);
+        readJoins(clz, new ArrayList<>());
+        readEmbeddedFields(clz);
+    }
+
+    private void readPrimitiveFields(Class clz) {
         this.fields = Arrays.stream(clz.getDeclaredFields()).filter(field -> field.isAnnotationPresent(Column.class))
                 .map(field1 -> new ColumnField(field1, clz)).collect(Collectors.toList());
-        readJoins(clz, new ArrayList<>());
+    }
+
+    private void readEmbeddedFields(Class clz) {
         Arrays.stream(clz.getDeclaredFields())
                 .filter(field -> field.isAnnotationPresent(Embedded.class))
                 .forEach(field -> {
@@ -42,22 +50,36 @@ public class ColumnFields {
         Arrays.stream(clz.getDeclaredFields())
                 .filter(field -> field.isAnnotationPresent(annotation))
                 .forEach(field -> {
-                    List<Field> newParents = newParents(parents, field);
-                    String fieldName = newParents.stream().map(Field::getName).collect(Collectors.joining("."));
-                    if (ignores.contains(fieldName)) {
-                        return;
-                    }
-                    joinFields.add(new JoinField(field, newParents));
-                    Arrays.stream(field.getType().getDeclaredFields())
-                            .filter(f -> f.isAnnotationPresent(Column.class))
-                            .forEach(it -> {
-                                fields.add(new ColumnField(it, field.getType(), newParents, it.getAnnotation(Column.class), true));
-                            });
-                    Arrays.stream(field.getType().getDeclaredFields())
-                            .filter(f -> f.isAnnotationPresent(annotation))
-                            .forEach(it -> {
-                                readJoins(field.getType(), newParents);
-                            });
+                    readJoinFieldsFromField(parents, annotation, field);
+                });
+    }
+
+    private void readJoinFieldsFromField(List<Field> parents, Class<? extends Annotation> annotation, Field field) {
+        List<Field> newParents = newParents(parents, field);
+        if (isFieldIgnored(newParents)) return;
+        joinFields.add(new JoinField(field, newParents));
+        readJoinColumnFields(field, newParents);
+        readJoinTables(annotation, field, newParents);
+    }
+
+    private boolean isFieldIgnored(List<Field> newParents) {
+        String fieldName = newParents.stream().map(Field::getName).collect(Collectors.joining("."));
+        return ignores.contains(fieldName);
+    }
+
+    private void readJoinColumnFields(Field field, List<Field> newParents) {
+        Arrays.stream(field.getType().getDeclaredFields())
+                .filter(f -> f.isAnnotationPresent(Column.class))
+                .forEach(it -> {
+                    fields.add(new ColumnField(it, field.getType(), newParents, it.getAnnotation(Column.class), true));
+                });
+    }
+
+    private void readJoinTables(Class<? extends Annotation> annotation, Field field, List<Field> newParents) {
+        Arrays.stream(field.getType().getDeclaredFields())
+                .filter(f -> f.isAnnotationPresent(annotation))
+                .forEach(it -> {
+                    readJoins(field.getType(), newParents);
                 });
     }
 
@@ -74,19 +96,23 @@ public class ColumnFields {
                 String[] names = attributeOverride.name().split("\\.");
                 List<Field> newParents = new ArrayList<>();
                 newParents.addAll(parents);
-                Field result = field;
-                for (int i = 0; i < names.length; i++) {
-                    result = result.getType().getDeclaredField(names[i]);
-                    if (i < names.length - 1) {
-                        newParents.add(result);
-                    }
-                }
-                Field embeddedField = result;
+                Field embeddedField = getFieldByName(field, names, newParents);
                 fields.add(new ColumnField(embeddedField, clz, newParents, attributeOverride.column(), false));
             } catch (NoSuchFieldException e) {
                 e.printStackTrace();
             }
         });
+    }
+
+    private static Field getFieldByName(Field field, String[] names, List<Field> newParents) throws NoSuchFieldException {
+        Field result = field;
+        for (int i = 0; i < names.length; i++) {
+            result = result.getType().getDeclaredField(names[i]);
+            if (i < names.length - 1) {
+                newParents.add(result);
+            }
+        }
+        return result;
     }
 
     public List<ColumnField> selectFields() {
