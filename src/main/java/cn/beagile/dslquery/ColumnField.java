@@ -43,13 +43,21 @@ public class ColumnField {
     }
 
     public String expression() {
-        return getTableName() + "." + columnName() + " " + alias();
+        return selectName() + " " + alias();
+    }
+
+    public String selectName() {
+        return getTableName() + "." + columnName();
     }
 
     private Object getTableName() {
         if (joined) {
             return parents.stream().map(Field::getName).collect(Collectors.joining("_"));
         }
+        return getRootTable();
+    }
+
+    private String getRootTable() {
         return ((View) this.rootClass.getAnnotation(View.class)).value();
     }
 
@@ -60,5 +68,9 @@ public class ColumnField {
 
     public boolean is(Field field) {
         return this.field.equals(field);
+    }
+
+    public Field getField() {
+        return field;
     }
 }

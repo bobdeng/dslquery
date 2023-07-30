@@ -53,7 +53,7 @@ public class DoubleJoinTest {
     public void setup() {
         dslQuery = new DSLQuery<>(null, User.class);
         resultBean = new ResultBean(dslQuery.getQueryResultClass());
-        sqlBuilder = new SQLBuilder<>(dslQuery, resultBean);
+        sqlBuilder = new SQLBuilder<>(dslQuery);
     }
 
     @Test

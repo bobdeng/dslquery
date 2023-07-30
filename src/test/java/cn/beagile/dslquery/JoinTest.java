@@ -39,7 +39,7 @@ public class JoinTest {
     }
     @Test
     public void should_select_join() {
-        sqlBuilder = new SQLBuilder<>(dslQuery, new ResultBean(dslQuery.getQueryResultClass()));
+        sqlBuilder = new SQLBuilder<>(dslQuery);
         assertEquals("select t_user.name name,org.name org_name from t_user\n" +
                 "left join t_org org on org.id = t_user.org_id\n".trim(), sqlBuilder.sql().trim());
     }
@@ -60,7 +60,7 @@ public class JoinTest {
     @Test
     public void should_add_where(){
         dslQuery=dslQuery.where("(and(name equals 123))");
-        sqlBuilder = new SQLBuilder<>(dslQuery, new ResultBean(dslQuery.getQueryResultClass()));
+        sqlBuilder = new SQLBuilder<>(dslQuery);
         String expect = "select t_user.name name,org.name org_name from t_user\n" +
                 "left join t_org org on org.id = t_user.org_id\n" +
                 " where ((t_user.name = :p1))";
@@ -69,7 +69,7 @@ public class JoinTest {
     @Test
     public void should_add_where_with_join_column(){
         dslQuery=dslQuery.where("(and(org.name equals 123))");
-        sqlBuilder = new SQLBuilder<>(dslQuery, new ResultBean(dslQuery.getQueryResultClass()));
+        sqlBuilder = new SQLBuilder<>(dslQuery);
         String expect = "select t_user.name name,org.name org_name from t_user\n" +
                 "left join t_org org on org.id = t_user.org_id\n" +
                 " where ((org.name = :p1))";
@@ -78,7 +78,7 @@ public class JoinTest {
     @Test
     public void should_get_count_with_join_column(){
         dslQuery=dslQuery.where("(and(org.name equals 123))");
-        sqlBuilder = new SQLBuilder<>(dslQuery, new ResultBean(dslQuery.getQueryResultClass()));
+        sqlBuilder = new SQLBuilder<>(dslQuery);
         String expect = "select count(*) from t_user\n" +
                 "left join t_org org on org.id = t_user.org_id\n" +
                 "where ((org.name = :p1))";

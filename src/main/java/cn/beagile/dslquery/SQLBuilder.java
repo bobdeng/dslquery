@@ -2,15 +2,16 @@ package cn.beagile.dslquery;
 
 import com.google.gson.Gson;
 
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
 import java.lang.reflect.Field;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -20,7 +21,6 @@ class SQLBuilder<T> {
     private static final Map<Class, Function<String, Object>> FIELD_CAST_MAP = new HashMap<>();
 
     private final Map<String, Object> params;
-    private final ResultBean resultBean;
     private final DSLQuery<T> dslQuery;
     private final ColumnFields columnFields;
 
@@ -28,7 +28,6 @@ class SQLBuilder<T> {
     private String sql;
     private String countSql;
     private String whereCondition;
-    private Stack<String> fieldPrefix = new Stack<>();
 
     static {
         FIELD_CAST_MAP.put(Integer.class, Integer::parseInt);
@@ -44,11 +43,10 @@ class SQLBuilder<T> {
         FIELD_CAST_MAP.put(String.class, s -> s);
     }
 
-    SQLBuilder(DSLQuery<T> dslQuery, ResultBean resultBean) {
-        this.resultBean = resultBean;
+    SQLBuilder(DSLQuery<T> dslQuery) {
         this.dslQuery = dslQuery;
         this.params = new HashMap<>();
-        columnFields = new ColumnFields(resultBean.getClazz());
+        columnFields = new ColumnFields(dslQuery.getQueryResultClass());
     }
 
 
@@ -71,15 +69,9 @@ class SQLBuilder<T> {
     }
 
     private void setParam(String paramName, String fieldName, String value, BiFunction<String, Field, Object> valueConverter) {
-        FieldWithColumn fieldColumn = getColumns().getFieldColumn(fieldName);
-        Field field = fieldColumn.getField();
+        Field field = columnFields.findFieldByName(fieldName).getField();
         Object paramValue = valueConverter.apply(value, field);
         params.put(paramName, paramValue);
-    }
-
-    private FieldsWithColumns getColumns() {
-        FieldsWithColumns fieldsWithColumns = resultBean.getFieldsWithColumns();
-        return fieldsWithColumns;
     }
 
     private Object castValueByField(String value, Field field) {
@@ -118,7 +110,7 @@ class SQLBuilder<T> {
     }
 
     String aliasOf(String field) {
-        return getColumns().getFieldColumn(field).getFieldName();
+        return columnFields.findFieldByName(field).selectName();
     }
 
     public String countSql() {
@@ -163,82 +155,18 @@ class SQLBuilder<T> {
     }
 
     private String getSelectSQL() {
-        /*
-        List<String> lines = new ArrayList<>();
-        String fields = getColumns().getListFields().stream()
-                .map(FieldWithColumn::selectName).collect(Collectors.joining(","));
-        lines.add(String.format("select %s from %s", fields, getViewName()));
-        lines.add(getAllJoinTables(resultBean.getClazz()));
-        return lines.stream().map(String::trim).collect(Collectors.joining("\n"));*/
         String select = "select " + columnFields.selectFields().stream().map(ColumnField::expression).collect(Collectors.joining(",")) + " from " + columnFields.from();
         String join = columnFields.joins();
         return Stream.of(select, join).collect(Collectors.joining("\n"));
     }
 
-    private String getAllJoinTables(Class queryResultClass) {
-        return String.join("\n", getJoinTables(queryResultClass).trim(), getJoinsTables(queryResultClass).trim());
-    }
-
-    private String getJoinTables(Class clz) {
-        return Arrays.stream(clz.getDeclaredFields())
-                .filter(field -> !isIgnored(field))
-                .filter(field -> field.isAnnotationPresent(JoinColumn.class))
-                .map(field -> getJoin(clz, field, new JoinColumn[]{field.getAnnotation(JoinColumn.class)}))
-                .collect(Collectors.joining("\n", "\n", ""));
-    }
-
-    private boolean isIgnored(Field field) {
-        return resultBean.ignored(field);
-    }
-
-    private String getJoinsTables(Class clz) {
-        return Arrays.stream(clz.getDeclaredFields())
-                .filter(field -> !isIgnored(field))
-                .filter(field -> field.isAnnotationPresent(JoinColumns.class))
-                .map(field -> getJoin(clz, field, field.getAnnotation(JoinColumns.class).value()))
-                .collect(Collectors.joining("", "\n", ""));
-    }
-
-    private String getJoin(Class clz, Field field, JoinColumn[] joinColumns) {
-        String myTable = getViewName(clz);
-        List<String> lines = new ArrayList<>();
-        fieldPrefix.push(field.getName());
-        for (int i = 0; i < joinColumns.length; i++) {
-            String joinTable = i == joinColumns.length - 1 ? field.getType().getAnnotation(View.class).value() : joinColumns[i].table();
-            String alias = fieldPrefix.stream().collect(Collectors.joining("_"));
-            if (i == 0) {
-                String onTable = fieldPrefix.size() > 1 ? fieldPrefix.stream().limit(fieldPrefix.size() - 1).collect(Collectors.joining("_")) : myTable;
-                String leftJoin = "left join " + joinTable + " " + alias + " on " + alias + "." + joinColumns[i].referencedColumnName() + " = " + onTable + "." + joinColumns[i].name();
-                lines.add(leftJoin);
-            } else {
-                String onTable = joinColumns[0].table();
-                String leftJoin = "left join " + joinTable + " " + alias + " on " + alias + "." + joinColumns[i].referencedColumnName() + " = " + onTable + "." + joinColumns[i].name();
-                lines.add(leftJoin);
-            }
-        }
-        lines.add(getAllJoinTables(field.getType()));
-        fieldPrefix.pop();
-        return lines.stream().map(String::trim).filter(line -> !line.isEmpty()).collect(Collectors.joining("\n"));
-    }
-
-
     private String getSortSQL() {
         return String.format("order by %s", dslQuery.getSort().toSQL(this));
     }
 
-    private String getViewName() {
-        View view = (View) resultBean.getClazz().getAnnotation(View.class);
-        return view.value();
-    }
-
-    private String getViewName(Class clz) {
-        View annotation = (View) clz.getAnnotation(View.class);
-        return annotation.value();
-    }
-
     private String getCountSQL() {
         List<String> lines = new ArrayList<>();
-        lines.add(String.format("select count(*) from %s", getViewName() + getJoinTables(resultBean.getClazz())));
+        lines.add(String.format("select count(*) from %s\n%s", columnFields.from(), columnFields.joins()));
         if (getWhereList().size() > 0) {
             lines.add(getWhereSQL());
         }

@@ -52,14 +52,14 @@ public class DSLQuery<T> {
     }
 
     public Paged<T> pagedQuery() {
-        SQLBuilder<T> sqlBuilder = new SQLBuilder<>(this, getResultBean());
+        SQLBuilder<T> sqlBuilder = new SQLBuilder<>(this);
         List<T> result = queryExecutor.list(new DefaultResultSetReader<>(getResultBean()), sqlBuilder.build());
         int count = queryExecutor.count(sqlBuilder.build());
         return new Paged<>(result, count, new Paging(this.skip, this.limit));
     }
 
     public List<T> query() {
-        SQLBuilder<T> sqlBuilder = new SQLBuilder<>(this, getResultBean());
+        SQLBuilder<T> sqlBuilder = new SQLBuilder<>(this);
         return queryExecutor.list(new DefaultResultSetReader<>(getResultBean()), sqlBuilder.build());
     }
 

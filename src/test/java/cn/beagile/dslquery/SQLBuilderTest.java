@@ -59,7 +59,7 @@ public class SQLBuilderTest {
     private SQLBuilder<QueryResultForTest> getSqlBuilder() {
         DSLQuery<QueryResultForTest> dslQuery = new DSLQuery<>(null, QueryResultForTest.class)
                 .timezoneOffset(this.timezoneOffset);
-        return new SQLBuilder(dslQuery, new ResultBean(dslQuery.getQueryResultClass()));
+        return new SQLBuilder(dslQuery);
     }
 
     @Test
