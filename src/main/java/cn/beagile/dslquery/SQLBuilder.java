@@ -191,6 +191,7 @@ class SQLBuilder<T> {
     }
 
     private String getJoin(Class clz, Field field, JoinColumn[] joinColumns) {
+        System.out.println(clz.getName());
         String myTable = getViewName(clz);
         List<String> lines = new ArrayList<>();
         for (int i = 0; i < joinColumns.length; i++) {
@@ -198,8 +199,8 @@ class SQLBuilder<T> {
             String onTable = i == 0 ? myTable : joinColumns[i - 1].table();
             String leftJoin = "left join " + joinTable + " on " + joinTable + "." + joinColumns[i].referencedColumnName() + " = " + onTable + "." + joinColumns[i].name();
             lines.add(leftJoin);
-            lines.add(getAllJoinTables(field.getType()));
         }
+        lines.add(getAllJoinTables(field.getType()));
         return lines.stream().map(String::trim).filter(line -> !line.isEmpty()).collect(Collectors.joining("\n"));
     }
 

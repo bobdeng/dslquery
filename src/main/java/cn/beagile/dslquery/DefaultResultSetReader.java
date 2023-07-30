@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 
 import javax.persistence.Embedded;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
@@ -62,7 +63,7 @@ class DefaultResultSetReader<T> implements Function<ResultSet, T> {
 
     private void setJoinedFields(ResultSet resultSet, Class clz, Object result) {
         Stream.of(clz.getDeclaredFields())
-                .filter(field -> field.isAnnotationPresent(JoinColumn.class))
+                .filter(field -> field.isAnnotationPresent(JoinColumn.class) || field.isAnnotationPresent(JoinColumns.class))
                 .filter(field -> !resultBean.ignored(field.getType()))
                 .forEach(field -> setEmbeddedFieldValue(resultSet, result, field));
     }
