@@ -72,7 +72,7 @@ class FieldWithColumnTest {
 
     @BeforeEach
     public void setup() {
-        fieldsWithColumns = new FieldsWithColumns(Person.class);
+        fieldsWithColumns = new FieldsWithColumns(Person.class, new ResultBean(Person.class));
     }
 
 

@@ -38,7 +38,7 @@ public class DeepJoinTest {
     @Test
     public void should_select_join() {
         DSLQuery<User> dslQuery = new DSLQuery<>(null, User.class);
-        SQLBuilder<User> sqlBuilder = new SQLBuilder<>(dslQuery);
+        SQLBuilder<User> sqlBuilder = new SQLBuilder<>(dslQuery, new ResultBean(dslQuery.getQueryResultClass()));
         assertEquals("select t_user.name name,t_org.name org_name,t_area.name org_area_name from t_user\n" +
                 "left join t_org on t_org.id = t_user.org_id\n" +
                 "left join t_area on t_area.id = t_org.area_id", sqlBuilder.sql());
@@ -46,7 +46,7 @@ public class DeepJoinTest {
 
     @Test
     public void should_read_join_fields() throws SQLException {
-        DefaultResultSetReader<User> reader = new DefaultResultSetReader<>(User.class);
+        DefaultResultSetReader<User> reader = new DefaultResultSetReader<>(User.class, new ResultBean(User.class));
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getString("name")).thenReturn("张三");
         when(resultSet.getString("org_name")).thenReturn("某公司");
@@ -62,7 +62,7 @@ public class DeepJoinTest {
     public void should_add_where_with_join_column(){
         DSLQuery<User> dslQuery = new DSLQuery<>(null, User.class);
         dslQuery=dslQuery.where("(and(org.area.name equals 123))");
-        SQLBuilder sqlBuilder = new SQLBuilder<>(dslQuery);
+        SQLBuilder sqlBuilder = new SQLBuilder<>(dslQuery, new ResultBean(dslQuery.getQueryResultClass()));
         String expect = "select t_user.name name,t_org.name org_name,t_area.name org_area_name from t_user\n" +
                 "left join t_org on t_org.id = t_user.org_id\n" +
                 "left join t_area on t_area.id = t_org.area_id\n" +

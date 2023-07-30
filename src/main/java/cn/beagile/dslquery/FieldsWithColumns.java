@@ -13,12 +13,17 @@ public class FieldsWithColumns {
     private final Stack<Field> embeddedFields = new Stack<>();
     private final Stack<Class> classStack = new Stack<>();
     private final Stack<String> prefix = new Stack<>();
+    private final ResultBean resultBean;
     private AttributeOverrides firstAttributeOverrides;
     private boolean embedded;
-    private Set<Class> ignoreJoinClasses = new HashSet<>();
-
-    FieldsWithColumns(Class rootClass) {
+    FieldsWithColumns(Class rootClass, ResultBean resultBean) {
+        this.resultBean = resultBean;
         findFields(rootClass);
+    }
+
+    public FieldsWithColumns(ResultBean resultBean) {
+        this.resultBean = resultBean;
+        findFields(resultBean.getClazz());
     }
 
     List<FieldWithColumn> getListFields() {
@@ -63,16 +68,17 @@ public class FieldsWithColumns {
 
     private void addJoinFields(Class clz) {
         Arrays.stream(clz.getDeclaredFields())
-                .filter(field -> !ignoreJoinClasses.contains(field.getType()))
+                .filter(field -> !isIgnored(field))
                 .filter(field -> !field.isAnnotationPresent(Embedded.class))
                 .filter(field -> field.isAnnotationPresent(JoinColumn.class) || field.isAnnotationPresent(JoinColumns.class))
                 .forEach(this::getJoinedFields);
     }
 
+    private boolean isIgnored(Field field) {
+        return resultBean.ignored(field.getType());
+    }
+
     private void getJoinedFields(Field field) {
-        if (field.getAnnotation(Ignores.class) != null) {
-            ignoreJoinClasses.addAll(Arrays.asList(field.getAnnotation(Ignores.class).value()));
-        }
         if (isRoot()) {
             this.firstAttributeOverrides = field.getAnnotation(AttributeOverrides.class);
         }

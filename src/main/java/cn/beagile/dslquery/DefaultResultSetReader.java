@@ -31,18 +31,22 @@ class DefaultResultSetReader<T> implements Function<ResultSet, T> {
         COLUMN_READER_MAP.put(Timestamp.class, ResultSet::getTimestamp);
     }
 
-    private final Class<T> queryResultBeanClass;
     private final FieldsWithColumns columns;
+    private final ResultBean resultBean;
+
+    public DefaultResultSetReader(Class<T> queryResultBeanClass, ResultBean resultBean) {
+        this.resultBean = resultBean;
+        this.columns = new FieldsWithColumns(queryResultBeanClass, this.resultBean);
+    }
 
     public DefaultResultSetReader(Class<T> queryResultBeanClass) {
-
-        this.queryResultBeanClass = queryResultBeanClass;
-        this.columns = new FieldsWithColumns(queryResultBeanClass);
+        this.resultBean = new ResultBean(queryResultBeanClass);
+        this.columns = new FieldsWithColumns(queryResultBeanClass, this.resultBean);
     }
 
     @Override
     public T apply(ResultSet resultSet) {
-        return (T) newInstance(resultSet, this.queryResultBeanClass);
+        return (T) newInstance(resultSet, resultBean.getClazz());
     }
 
     private Object newInstance(ResultSet resultSet, Class clz) {
@@ -66,6 +70,7 @@ class DefaultResultSetReader<T> implements Function<ResultSet, T> {
     private void setJoinedFields(ResultSet resultSet, Class clz, Object result) {
         Stream.of(clz.getDeclaredFields())
                 .filter(field -> field.isAnnotationPresent(JoinColumn.class))
+                .filter(field -> !resultBean.ignored(field.getType()))
                 .forEach(field -> setEmbeddedFieldValue(resultSet, result, field));
     }
 

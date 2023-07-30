@@ -5,13 +5,10 @@ import org.junit.jupiter.api.Test;
 
 import javax.persistence.Column;
 import javax.persistence.JoinColumn;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class DoubleJoinTest {
 
@@ -41,7 +38,7 @@ public class DoubleJoinTest {
 
     @Test
     public void should_select_join() {
-        sqlBuilder = new SQLBuilder<>(dslQuery);
+        sqlBuilder = new SQLBuilder<>(dslQuery, new ResultBean(dslQuery.getQueryResultClass()));
         assertEquals("select t_user.name name,t_org.name org_name from t_user\n" +
                 "left join t_inner on t_inner.id = t_user.inner_id\n" +
                 "left join t_org on t_org.id = t_inner.org_id", sqlBuilder.sql()

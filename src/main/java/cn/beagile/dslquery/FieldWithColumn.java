@@ -61,14 +61,15 @@ public class FieldWithColumn {
         if (view == null) {
             return column.name();
         }
-        return view.value() + "." + this.column.name();
+        return String.format("%s.%s", view.value(), this.column.name());
     }
+
     public String columnName() {
-        return (prefix + this.column.name());
+        return String.format("%s%s", prefix, this.column.name());
     }
 
     public String selectName() {
-        return view.value() + "." + this.column.name() + " " + (prefix + this.column.name());
+        return whereName() + " " + columnName();
     }
 
 }

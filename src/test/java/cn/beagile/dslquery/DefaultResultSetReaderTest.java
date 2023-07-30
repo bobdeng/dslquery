@@ -24,6 +24,7 @@ public class DefaultResultSetReaderTest {
         assertEquals("bob", result.getName());
     }
 
+
     @Test
     public void should_read_json_field() throws SQLException {
         DefaultResultSetReader<QueryResultBean> defaultResultSetReader = new DefaultResultSetReader(QueryResultBean.class);
@@ -239,5 +240,27 @@ public class DefaultResultSetReaderTest {
         assertNotNull(result.getEmbeddingField());
         assertEquals("alice", result.getEmbeddingField().name);
         assertNull(result.getEmbeddingField().code);
+    }
+    public static class QueryBeanWithIgnoredField {
+
+        @JoinColumn(name = "org_id", referencedColumnName = "id")
+        @Ignores({Joined.class})
+        private FieldWithJoin fieldWithJoin;
+
+    }
+    public static class FieldWithJoin{
+        @JoinColumn(name = "org_id", referencedColumnName = "id")
+        Joined joined;
+    }
+    public static class Joined{
+       private String name;
+    }
+    @Test
+    public void should_not_read_ignored_field() throws SQLException {
+        DefaultResultSetReader<QueryBeanWithIgnoredField> defaultResultSetReader = new DefaultResultSetReader(QueryBeanWithIgnoredField.class);
+        ResultSet rs = mock(ResultSet.class);
+        when(rs.getString("fieldWithJoin_joined_name")).thenReturn("ignored");
+        QueryBeanWithIgnoredField result = defaultResultSetReader.apply(rs);
+        assertNull(result.fieldWithJoin.joined);
     }
 }

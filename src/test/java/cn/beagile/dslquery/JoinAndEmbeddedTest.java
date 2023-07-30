@@ -52,14 +52,14 @@ public class JoinAndEmbeddedTest {
 
     @Test
     public void should_select_join() {
-        sqlBuilder = new SQLBuilder<>(dslQuery);
+        sqlBuilder = new SQLBuilder<>(dslQuery, new ResultBean(dslQuery.getQueryResultClass()));
         assertEquals("select t_user.name name,t_user.contact_name contact_name,t_org.name org_name from t_user\n" +
                 "left join t_org on t_org.id = t_user.org_id", sqlBuilder.sql());
     }
 
     @Test
     public void should_read_join_fields() throws SQLException {
-        DefaultResultSetReader<User> reader = new DefaultResultSetReader<>(User.class);
+        DefaultResultSetReader<User> reader = new DefaultResultSetReader<>(User.class, new ResultBean(dslQuery.getQueryResultClass()));
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getString("name")).thenReturn("张三");
         when(resultSet.getString("org_name")).thenReturn("某公司");

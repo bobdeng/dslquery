@@ -2,7 +2,6 @@ package cn.beagile.dslquery;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class DSLQuery<T> {
     private final QueryExecutor queryExecutor;
@@ -51,15 +50,24 @@ public class DSLQuery<T> {
     }
 
     public Paged<T> pagedQuery() {
-        SQLBuilder<T> sqlBuilder = new SQLBuilder<>(this);
-        List<T> result = queryExecutor.list(new DefaultResultSetReader<>(queryResultClass), sqlBuilder.build());
+        SQLBuilder<T> sqlBuilder = new SQLBuilder<>(this, getResultBean());
+        List<T> result = queryExecutor.list(new DefaultResultSetReader<>(queryResultClass, getResultBean()), sqlBuilder.build());
         int count = queryExecutor.count(sqlBuilder.build());
         return new Paged<>(result, count, new Paging(this.skip, this.limit));
     }
 
     public List<T> query() {
-        SQLBuilder<T> sqlBuilder = new SQLBuilder<>(this);
-        return queryExecutor.list(new DefaultResultSetReader<>(queryResultClass), sqlBuilder.build());
+        SQLBuilder<T> sqlBuilder = new SQLBuilder<>(this, getResultBean());
+        return queryExecutor.list(new DefaultResultSetReader<>(queryResultClass, getResultBean()), sqlBuilder.build());
+    }
+
+    private ResultBean resultBean;
+
+    private ResultBean getResultBean() {
+        if (resultBean == null) {
+            resultBean = new ResultBean(queryResultClass);
+        }
+        return resultBean;
     }
 
     public Class<T> getQueryResultClass() {

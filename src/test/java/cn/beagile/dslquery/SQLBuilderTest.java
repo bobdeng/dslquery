@@ -1,6 +1,5 @@
 package cn.beagile.dslquery;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import javax.persistence.Column;
@@ -9,7 +8,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -61,7 +59,7 @@ public class SQLBuilderTest {
     private SQLBuilder<QueryResultForTest> getSqlBuilder() {
         DSLQuery<QueryResultForTest> dslQuery = new DSLQuery<>(null, QueryResultForTest.class)
                 .timezoneOffset(this.timezoneOffset);
-        return new SQLBuilder(dslQuery);
+        return new SQLBuilder(dslQuery, new ResultBean(dslQuery.getQueryResultClass()));
     }
 
     @Test

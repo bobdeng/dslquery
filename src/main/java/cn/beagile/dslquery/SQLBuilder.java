@@ -20,18 +20,14 @@ class SQLBuilder<T> {
     private static final Map<Class, Function<String, Object>> FIELD_CAST_MAP = new HashMap<>();
 
     private final Map<String, Object> params;
-    private final Class<T> queryResultClass;
-    private final int timezoneOffset;
-    private final List<ComplexExpression> whereList;
-    private final Sort sort;
     private final Paging page;
-    private final FieldsWithColumns columns;
+    private final ResultBean resultBean;
+    private final DSLQuery<T> dslQuery;
 
     private int paramIndex;
     private String sql;
     private String countSql;
     private String whereCondition;
-    private Set<Class> ignoreJoinClasses = new HashSet<>();
 
     static {
         FIELD_CAST_MAP.put(Integer.class, Integer::parseInt);
@@ -47,14 +43,11 @@ class SQLBuilder<T> {
         FIELD_CAST_MAP.put(String.class, s -> s);
     }
 
-    SQLBuilder(DSLQuery<T> dslQuery) {
-        this.whereList = dslQuery.getWhereList();
-        this.sort = dslQuery.getSort();
-        this.queryResultClass = dslQuery.getQueryResultClass();
+    SQLBuilder(DSLQuery<T> dslQuery, ResultBean resultBean) {
+        this.resultBean = resultBean;
+        this.dslQuery = dslQuery;
         this.params = new HashMap<>();
-        this.timezoneOffset = dslQuery.getTimezoneOffset();
         this.page = new Paging(dslQuery.getSkip(), dslQuery.getLimit());
-        columns = new FieldsWithColumns(queryResultClass);
     }
 
 
@@ -77,10 +70,14 @@ class SQLBuilder<T> {
     }
 
     private void setParam(String paramName, String fieldName, String value, BiFunction<String, Field, Object> valueConverter) {
-        FieldWithColumn fieldColumn = columns.getFieldColumn(fieldName);
+        FieldWithColumn fieldColumn = getColumns().getFieldColumn(fieldName);
         Field field = fieldColumn.getField();
         Object paramValue = valueConverter.apply(value, field);
         params.put(paramName, paramValue);
+    }
+
+    private FieldsWithColumns getColumns() {
+        return resultBean.getFieldsWithColumns();
     }
 
     private Object castValueByField(String value, Field field) {
@@ -110,7 +107,7 @@ class SQLBuilder<T> {
     private Instant getInstantValue(String value, Field field) {
         String dateFormat = field.getAnnotation(DateFormat.class).value();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateFormat);
-        ZoneId zoneId = ZoneOffset.ofHours(this.timezoneOffset).normalized();
+        ZoneId zoneId = ZoneOffset.ofHours(this.dslQuery.getTimezoneOffset()).normalized();
         return LocalDateTime.parse(value, formatter).atZone(zoneId).toInstant();
     }
 
@@ -119,7 +116,7 @@ class SQLBuilder<T> {
     }
 
     String aliasOf(String field) {
-        return columns.getFieldColumn(field).whereName();
+        return getColumns().getFieldColumn(field).whereName();
     }
 
     public String countSql() {
@@ -143,10 +140,10 @@ class SQLBuilder<T> {
     private String getSQL() {
         List<String> lines = new ArrayList<>();
         lines.add(getSelectSQL());
-        if (whereList.size() > 0) {
+        if (getWhereList().size() > 0) {
             lines.add(getWhereSQL());
         }
-        if (this.sort != null) {
+        if (dslQuery.getSort() != null) {
             lines.add(getSortSQL());
         }
         return lines.stream().collect(Collectors.joining("\n"));
@@ -154,16 +151,20 @@ class SQLBuilder<T> {
 
     private String getWhereSQL() {
         if (this.whereCondition == null) {
-            this.whereCondition = String.format(" where %s", whereList.stream().map(where -> where.toSQL(this)).collect(Collectors.joining(" and ")));
+            this.whereCondition = String.format(" where %s", getWhereList().stream().map(where -> where.toSQL(this)).collect(Collectors.joining(" and ")));
         }
         return this.whereCondition;
     }
 
+    private List<ComplexExpression> getWhereList() {
+        return this.dslQuery.getWhereList();
+    }
+
     private String getSelectSQL() {
         List<String> lines = new ArrayList<>();
-        String fields = columns.getListFields().stream().map(FieldWithColumn::selectName).collect(Collectors.joining(","));
+        String fields = getColumns().getListFields().stream().map(FieldWithColumn::selectName).collect(Collectors.joining(","));
         lines.add(String.format("select %s from %s", fields, getViewName()));
-        lines.add(getAllJoinTables(this.queryResultClass));
+        lines.add(getAllJoinTables(resultBean.getClazz()));
         return lines.stream().map(String::trim).collect(Collectors.joining("\n"));
     }
 
@@ -173,24 +174,25 @@ class SQLBuilder<T> {
 
     private String getJoinTables(Class clz) {
         return Arrays.stream(clz.getDeclaredFields())
-                .filter(field -> !ignoreJoinClasses.contains(field.getType()))
+                .filter(field -> !isIgnored(field))
                 .filter(field -> field.isAnnotationPresent(JoinColumn.class))
                 .map(field -> getJoin(clz, field, new JoinColumn[]{field.getAnnotation(JoinColumn.class)}))
                 .collect(Collectors.joining("\n", "\n", ""));
     }
 
+    private boolean isIgnored(Field field) {
+        return resultBean.ignored(field.getType());
+    }
+
     private String getJoinsTables(Class clz) {
         return Arrays.stream(clz.getDeclaredFields())
-                .filter(field -> !ignoreJoinClasses.contains(field.getType()))
+                .filter(field -> !isIgnored(field))
                 .filter(field -> field.isAnnotationPresent(JoinColumns.class))
                 .map(field -> getJoin(clz, field, field.getAnnotation(JoinColumns.class).value()))
                 .collect(Collectors.joining("", "\n", ""));
     }
 
     private String getJoin(Class clz, Field field, JoinColumn[] joinColumns) {
-        if (field.isAnnotationPresent(Ignores.class)) {
-            ignoreJoinClasses.addAll(Arrays.asList(field.getAnnotation(Ignores.class).value()));
-        }
         String myTable = getViewName(clz);
         List<String> lines = new ArrayList<>();
         for (int i = 0; i < joinColumns.length; i++) {
@@ -205,11 +207,11 @@ class SQLBuilder<T> {
 
 
     private String getSortSQL() {
-        return String.format("order by %s", sort.toSQL(this));
+        return String.format("order by %s", dslQuery.getSort().toSQL(this));
     }
 
     private String getViewName() {
-        View view = queryResultClass.getAnnotation(View.class);
+        View view = (View) resultBean.getClazz().getAnnotation(View.class);
         return view.value();
     }
 
@@ -220,8 +222,8 @@ class SQLBuilder<T> {
 
     private String getCountSQL() {
         List<String> lines = new ArrayList<>();
-        lines.add(String.format("select count(*) from %s", getViewName() + getJoinTables(this.queryResultClass)));
-        if (whereList.size() > 0) {
+        lines.add(String.format("select count(*) from %s", getViewName() + getJoinTables(resultBean.getClazz())));
+        if (getWhereList().size() > 0) {
             lines.add(getWhereSQL());
         }
         return lines.stream().map(String::trim).collect(Collectors.joining("\n"));
