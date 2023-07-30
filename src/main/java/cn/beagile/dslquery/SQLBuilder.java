@@ -20,7 +20,6 @@ class SQLBuilder<T> {
     private static final Map<Class, Function<String, Object>> FIELD_CAST_MAP = new HashMap<>();
 
     private final Map<String, Object> params;
-    private final Paging page;
     private final ResultBean resultBean;
     private final DSLQuery<T> dslQuery;
 
@@ -47,7 +46,6 @@ class SQLBuilder<T> {
         this.resultBean = resultBean;
         this.dslQuery = dslQuery;
         this.params = new HashMap<>();
-        this.page = new Paging(dslQuery.getSkip(), dslQuery.getLimit());
     }
 
 
@@ -134,7 +132,7 @@ class SQLBuilder<T> {
     }
 
     public SQLQuery build() {
-        return new SQLQuery(this.sql(), this.countSql(), this.params, this.page);
+        return new SQLQuery(this.sql(), this.countSql(), this.params, dslQuery.getPage());
     }
 
     private String getSQL() {

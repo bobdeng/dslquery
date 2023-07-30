@@ -46,7 +46,7 @@ public class DeepJoinTest {
 
     @Test
     public void should_read_join_fields() throws SQLException {
-        DefaultResultSetReader<User> reader = new DefaultResultSetReader<>(User.class, new ResultBean(User.class));
+        DefaultResultSetReader<User> reader = new DefaultResultSetReader<>(new ResultBean(User.class));
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getString("name")).thenReturn("张三");
         when(resultSet.getString("org_name")).thenReturn("某公司");

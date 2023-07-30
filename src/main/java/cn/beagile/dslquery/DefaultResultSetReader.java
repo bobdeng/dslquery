@@ -31,17 +31,10 @@ class DefaultResultSetReader<T> implements Function<ResultSet, T> {
         COLUMN_READER_MAP.put(Timestamp.class, ResultSet::getTimestamp);
     }
 
-    private final FieldsWithColumns columns;
     private final ResultBean resultBean;
 
-    public DefaultResultSetReader(Class<T> queryResultBeanClass, ResultBean resultBean) {
+    public DefaultResultSetReader(ResultBean resultBean) {
         this.resultBean = resultBean;
-        this.columns = new FieldsWithColumns(queryResultBeanClass, this.resultBean);
-    }
-
-    public DefaultResultSetReader(Class<T> queryResultBeanClass) {
-        this.resultBean = new ResultBean(queryResultBeanClass);
-        this.columns = new FieldsWithColumns(queryResultBeanClass, this.resultBean);
     }
 
     @Override
@@ -76,8 +69,12 @@ class DefaultResultSetReader<T> implements Function<ResultSet, T> {
 
     private void setPrimitiveFields(ResultSet resultSet, Class clz, Object result) {
         Stream.of(clz.getDeclaredFields())
-                .filter(columns::hasField)
+                .filter(getColumns()::hasField)
                 .forEach(field -> setFieldValue(resultSet, result, field));
+    }
+
+    private FieldsWithColumns getColumns() {
+        return resultBean.getFieldsWithColumns();
     }
 
     private void setFieldValue(ResultSet resultSet, Object result, Field field) {
@@ -109,7 +106,7 @@ class DefaultResultSetReader<T> implements Function<ResultSet, T> {
     }
 
     private String getFieldColumnName(Field field) {
-        return columns.getFieldColumnByField(field).columnName();
+        return getColumns().getFieldColumnByField(field).columnName();
     }
 
     private void setEmbeddedFieldValue(ResultSet resultSet, Object result, Field field) {
