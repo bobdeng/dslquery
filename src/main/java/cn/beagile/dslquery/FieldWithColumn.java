@@ -7,12 +7,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Stack;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class FieldWithColumn {
     private final Field field;
     private final boolean embedded;
     private final Column column;
     private final String prefix;
+    private final List<String> prefixes;
     private View view;
 
     public FieldWithColumn(Field field, Optional<AttributeOverride> attributeOverride, Stack<String> prefix, Stack<Class> classStack, boolean embedded) {
@@ -22,6 +24,7 @@ public class FieldWithColumn {
                 .orElseGet(() -> field.getAnnotation(Column.class));
         setView(field, classStack);
         this.prefix = setPrefix(prefix);
+        this.prefixes = prefix.stream().collect(Collectors.toList());
     }
 
 
@@ -31,6 +34,14 @@ public class FieldWithColumn {
         }
         return "";
     }
+
+    private String getTableAlias() {
+        if (prefixes.size() > 0) {
+            return prefixes.stream().limit(prefixes.size()).collect(Collectors.joining("_", "", ""));
+        }
+        return view.value();
+    }
+
 
     private void setView(Field field, Stack<Class> classStack) {
         if (!embedded) {
@@ -69,7 +80,13 @@ public class FieldWithColumn {
     }
 
     public String selectName() {
-        return whereName() + " " + columnName();
+        return getTableAlias() + "." + this.column.name() + " " + columnName();
     }
 
+    public String getFieldName() {
+        if (prefixes.size() == 0) {
+            return Stream.of(view.value(), column.name()).collect(Collectors.joining("."));
+        }
+        return Stream.of(prefixes.stream().collect(Collectors.joining("_")), column.name()).collect(Collectors.joining("."));
+    }
 }

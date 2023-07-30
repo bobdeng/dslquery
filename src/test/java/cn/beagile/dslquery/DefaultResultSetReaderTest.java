@@ -241,10 +241,10 @@ public class DefaultResultSetReaderTest {
         assertEquals("alice", result.getEmbeddingField().name);
         assertNull(result.getEmbeddingField().code);
     }
+    @Ignores({"fieldWithJoin.joined"})
     public static class QueryBeanWithIgnoredField {
 
         @JoinColumn(name = "org_id", referencedColumnName = "id")
-        @Ignores({Joined.class})
         private FieldWithJoin fieldWithJoin;
 
     }
@@ -259,7 +259,6 @@ public class DefaultResultSetReaderTest {
     public void should_not_read_ignored_field() throws SQLException {
         DefaultResultSetReader<QueryBeanWithIgnoredField> defaultResultSetReader = new DefaultResultSetReader(new ResultBean(QueryBeanWithIgnoredField.class));
         ResultSet rs = mock(ResultSet.class);
-        when(rs.getString("fieldWithJoin_joined_name")).thenReturn("ignored");
         QueryBeanWithIgnoredField result = defaultResultSetReader.apply(rs);
         assertNull(result.fieldWithJoin.joined);
     }

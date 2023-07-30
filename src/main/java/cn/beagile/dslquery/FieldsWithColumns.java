@@ -16,6 +16,7 @@ public class FieldsWithColumns {
     private final ResultBean resultBean;
     private AttributeOverrides firstAttributeOverrides;
     private boolean embedded;
+
     FieldsWithColumns(Class rootClass, ResultBean resultBean) {
         this.resultBean = resultBean;
         findFields(rootClass);
@@ -75,7 +76,7 @@ public class FieldsWithColumns {
     }
 
     private boolean isIgnored(Field field) {
-        return resultBean.ignored(field.getType());
+        return resultBean.ignored(field);
     }
 
     private void getJoinedFields(Field field) {
@@ -136,18 +137,18 @@ public class FieldsWithColumns {
                 .findFirst();
     }
 
-    private String getFieldFullName(Field field) {
+    public String getFieldFullName(Field field) {
         Stream<String> parentNames = embeddedFields.stream().map(Field::getName);
         return Stream.concat(parentNames, Stream.of(field.getName()))
                 .collect(Collectors.joining("."));
     }
 
     FieldWithColumn getFieldColumn(String field) {
-        FieldWithColumn result = columnHashMapByColumnName.get(field);
-        if (result == null) {
-            throw new RuntimeException("field not found: " + field);
-        }
-        return result;
+        return findFieldColumn(field).orElseThrow(() -> new RuntimeException("field not found: " + field));
+    }
+
+    Optional<FieldWithColumn> findFieldColumn(String field) {
+        return Optional.ofNullable(columnHashMapByColumnName.get(field));
     }
 
     FieldWithColumn getFieldColumnByField(Field field) {

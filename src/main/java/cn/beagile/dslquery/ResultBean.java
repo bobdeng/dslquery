@@ -1,23 +1,38 @@
 package cn.beagile.dslquery;
 
+import javax.persistence.Column;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.lang.reflect.Field;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
 public class ResultBean {
     private final FieldsWithColumns fieldsWithColumns;
     private Class clazz;
-    private Set<Class> ignoreJoinClasses=new HashSet<>();
+    private Set<String> ignoreJoinClasses = new HashSet<>();
+    private Map<Field, String> fieldAliasMap = new HashMap<>();
+    private Stack<String> classStack = new Stack<>();
 
     public ResultBean(Class clazz) {
         this.clazz = clazz;
-        getIgnoredClass(clazz);
+        getIgnoredClass();
+        addFieldAlias(clazz);
         fieldsWithColumns = new FieldsWithColumns(this);
     }
+
+    private void addFieldAlias(Class clz) {
+        Arrays.stream(clz.getDeclaredFields())
+                .filter(field -> field.isAnnotationPresent(JoinColumn.class))
+                .forEach(field -> {
+                    fieldAliasMap.put(field, Stream.concat(classStack.stream(),Stream.of(field.getName())).collect(Collectors.joining(".")));
+                    classStack.push(field.getName());
+                    addFieldAlias(field.getType());
+                    classStack.pop();
+                });
+    }
+
     public Class getClazz() {
         return clazz;
     }
@@ -26,23 +41,24 @@ public class ResultBean {
         return fieldsWithColumns;
     }
 
-    private void getIgnoredClass(Class clazz) {
-        Arrays.stream(clazz.getDeclaredFields())
-                .filter(field -> field.isAnnotationPresent(JoinColumn.class))
-                .filter(field -> field.isAnnotationPresent(Ignores.class))
-                .flatMap(field -> Stream.of(field.getAnnotation(Ignores.class).value()))
-                .forEach(ignoreJoinClasses::add);
-        Arrays.stream(clazz.getDeclaredFields())
-                .filter(field -> field.isAnnotationPresent(JoinColumn.class))
-                .forEach(field -> getIgnoredClass(field.getType()));
-        Arrays.stream(clazz.getDeclaredFields())
-                .filter(field -> field.isAnnotationPresent(JoinColumns.class))
-                .forEach(field -> getIgnoredClass(field.getType()));
-
+    private void getIgnoredClass() {
+        if (this.clazz.isAnnotationPresent(Ignores.class)) {
+            this.ignoreJoinClasses = Arrays.stream(((Ignores) this.clazz.getAnnotation(Ignores.class)).value())
+                    .collect(Collectors.toSet());
+        }
     }
 
     public boolean ignored(Class clz) {
-        return ignoreJoinClasses.contains(clz);
+        return false;
     }
+
+    public boolean ignored(Field field) {
+        String name = fieldAliasMap.get(field);
+        if(name==null){
+            return false;
+        }
+        return ignoreJoinClasses.contains(name);
+    }
+
 
 }

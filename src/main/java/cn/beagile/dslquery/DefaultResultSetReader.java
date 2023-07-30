@@ -64,7 +64,7 @@ class DefaultResultSetReader<T> implements Function<ResultSet, T> {
     private void setJoinedFields(ResultSet resultSet, Class clz, Object result) {
         Stream.of(clz.getDeclaredFields())
                 .filter(field -> field.isAnnotationPresent(JoinColumn.class) || field.isAnnotationPresent(JoinColumns.class))
-                .filter(field -> !resultBean.ignored(field.getType()))
+                .filter(field -> !resultBean.ignored(field))
                 .forEach(field -> setEmbeddedFieldValue(resultSet, result, field));
     }
 

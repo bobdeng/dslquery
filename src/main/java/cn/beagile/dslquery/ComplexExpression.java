@@ -23,9 +23,9 @@ class ComplexExpression implements FilterExpression {
         return condition;
     }
 
-    public String toSQL(SQLBuilder sqlParams) {
+    public String toSQL(SQLBuilder sqlBuilder) {
         return expressions.stream()
-                .map(predicate -> predicate.toSQL(sqlParams))
+                .map(predicate -> predicate.toSQL(sqlBuilder))
                 .collect(Collectors.joining(" " + this.condition + " ", "(", ")"));
     }
 

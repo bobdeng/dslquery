@@ -39,9 +39,9 @@ public class DeepJoinTest {
     public void should_select_join() {
         DSLQuery<User> dslQuery = new DSLQuery<>(null, User.class);
         SQLBuilder<User> sqlBuilder = new SQLBuilder<>(dslQuery, new ResultBean(dslQuery.getQueryResultClass()));
-        assertEquals("select t_user.name name,t_org.name org_name,t_area.name org_area_name from t_user\n" +
-                "left join t_org on t_org.id = t_user.org_id\n" +
-                "left join t_area on t_area.id = t_org.area_id", sqlBuilder.sql());
+        assertEquals("select t_user.name name,org.name org_name,org_area.name org_area_name from t_user\n" +
+                "left join t_org org on org.id = t_user.org_id\n" +
+                "left join t_area org_area on org_area.id = org.area_id", sqlBuilder.sql());
     }
 
     @Test
@@ -63,10 +63,10 @@ public class DeepJoinTest {
         DSLQuery<User> dslQuery = new DSLQuery<>(null, User.class);
         dslQuery=dslQuery.where("(and(org.area.name equals 123))");
         SQLBuilder sqlBuilder = new SQLBuilder<>(dslQuery, new ResultBean(dslQuery.getQueryResultClass()));
-        String expect = "select t_user.name name,t_org.name org_name,t_area.name org_area_name from t_user\n" +
-                "left join t_org on t_org.id = t_user.org_id\n" +
-                "left join t_area on t_area.id = t_org.area_id\n" +
-                " where ((t_area.name = :p1))";
+        String expect = "select t_user.name name,org.name org_name,org_area.name org_area_name from t_user\n" +
+                "left join t_org org on org.id = t_user.org_id\n" +
+                "left join t_area org_area on org_area.id = org.area_id\n" +
+                " where ((org_area.name = :p1))";
         assertEquals(expect, sqlBuilder.sql());
     }
 

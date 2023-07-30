@@ -27,6 +27,7 @@ class SQLBuilder<T> {
     private String sql;
     private String countSql;
     private String whereCondition;
+    private Stack<String> fieldPrefix = new Stack<>();
 
     static {
         FIELD_CAST_MAP.put(Integer.class, Integer::parseInt);
@@ -75,7 +76,8 @@ class SQLBuilder<T> {
     }
 
     private FieldsWithColumns getColumns() {
-        return resultBean.getFieldsWithColumns();
+        FieldsWithColumns fieldsWithColumns = resultBean.getFieldsWithColumns();
+        return fieldsWithColumns;
     }
 
     private Object castValueByField(String value, Field field) {
@@ -114,7 +116,7 @@ class SQLBuilder<T> {
     }
 
     String aliasOf(String field) {
-        return getColumns().getFieldColumn(field).whereName();
+        return getColumns().getFieldColumn(field).getFieldName();
     }
 
     public String countSql() {
@@ -160,7 +162,8 @@ class SQLBuilder<T> {
 
     private String getSelectSQL() {
         List<String> lines = new ArrayList<>();
-        String fields = getColumns().getListFields().stream().map(FieldWithColumn::selectName).collect(Collectors.joining(","));
+        String fields = getColumns().getListFields().stream()
+                .map(FieldWithColumn::selectName).collect(Collectors.joining(","));
         lines.add(String.format("select %s from %s", fields, getViewName()));
         lines.add(getAllJoinTables(resultBean.getClazz()));
         return lines.stream().map(String::trim).collect(Collectors.joining("\n"));
@@ -179,7 +182,7 @@ class SQLBuilder<T> {
     }
 
     private boolean isIgnored(Field field) {
-        return resultBean.ignored(field.getType());
+        return resultBean.ignored(field);
     }
 
     private String getJoinsTables(Class clz) {
@@ -191,16 +194,24 @@ class SQLBuilder<T> {
     }
 
     private String getJoin(Class clz, Field field, JoinColumn[] joinColumns) {
-        System.out.println(clz.getName());
         String myTable = getViewName(clz);
         List<String> lines = new ArrayList<>();
+        fieldPrefix.push(field.getName());
         for (int i = 0; i < joinColumns.length; i++) {
             String joinTable = i == joinColumns.length - 1 ? field.getType().getAnnotation(View.class).value() : joinColumns[i].table();
-            String onTable = i == 0 ? myTable : joinColumns[i - 1].table();
-            String leftJoin = "left join " + joinTable + " on " + joinTable + "." + joinColumns[i].referencedColumnName() + " = " + onTable + "." + joinColumns[i].name();
-            lines.add(leftJoin);
+            String alias = fieldPrefix.stream().collect(Collectors.joining("_"));
+            if (i == 0) {
+                String onTable = fieldPrefix.size() > 1 ? fieldPrefix.stream().limit(fieldPrefix.size() - 1).collect(Collectors.joining("_")) : myTable;
+                String leftJoin = "left join " + joinTable + " " + alias + " on " + alias + "." + joinColumns[i].referencedColumnName() + " = " + onTable + "." + joinColumns[i].name();
+                lines.add(leftJoin);
+            } else {
+                String onTable = joinColumns[0].table();
+                String leftJoin = "left join " + joinTable + " " + alias + " on " + alias + "." + joinColumns[i].referencedColumnName() + " = " + onTable + "." + joinColumns[i].name();
+                lines.add(leftJoin);
+            }
         }
         lines.add(getAllJoinTables(field.getType()));
+        fieldPrefix.pop();
         return lines.stream().map(String::trim).filter(line -> !line.isEmpty()).collect(Collectors.joining("\n"));
     }
 
