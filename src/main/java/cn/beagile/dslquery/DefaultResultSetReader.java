@@ -33,9 +33,11 @@ class DefaultResultSetReader<T> implements Function<ResultSet, T> {
     }
 
     private final ResultBean resultBean;
+    private final ColumnFields columnFields;
 
     public DefaultResultSetReader(ResultBean resultBean) {
         this.resultBean = resultBean;
+        columnFields = new ColumnFields(resultBean.getClazz());
     }
 
     @Override
@@ -107,7 +109,8 @@ class DefaultResultSetReader<T> implements Function<ResultSet, T> {
     }
 
     private String getFieldColumnName(Field field) {
-        return getColumns().getFieldColumnByField(field).columnName();
+        ColumnField columnField = columnFields.findField(field);
+        return columnField.alias();
     }
 
     private void setEmbeddedFieldValue(ResultSet resultSet, Object result, Field field) {

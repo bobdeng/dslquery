@@ -60,9 +60,9 @@ public class DoubleJoinTest {
     public void should_select_join() {
 
         assertEquals("select t_user.name name,org.name org_name,org_area.name org_area_name from t_user\n" +
-                "left join t_inner org on org.id = t_user.inner_id\n" +
+                "left join t_inner on t_inner.id = t_user.inner_id\n" +
                 "left join t_org org on org.id = t_inner.org_id\n" +
-                "left join t_org_area org_area on org_area.org_id = org.id\n" +
+                "left join t_org_area on t_org_area.org_id = org.id\n" +
                 "left join t_area org_area on org_area.id = t_org_area.area_id", sqlBuilder.sql()
         );
     }

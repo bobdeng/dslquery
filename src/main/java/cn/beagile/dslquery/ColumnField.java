@@ -8,27 +8,29 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ColumnField {
-    private final Field field;
-    private final Class rootClass;
-    private final List<Field> parents;
-    private final Column column;
+    private Field field;
+    private Class rootClass;
+    private List<Field> parents;
+    private Column column;
+    private boolean joined;
 
 
     public ColumnField(Field field, Class rootClass) {
 
-        this(field, rootClass, new ArrayList<>(), field.getAnnotation(Column.class));
+        this(field, rootClass, new ArrayList<>(), field.getAnnotation(Column.class), false);
     }
 
     public ColumnField(Field field, Class rootClass, List<Field> parents) {
-        this(field, rootClass, parents, field.getAnnotation(Column.class));
+        this(field, rootClass, parents, field.getAnnotation(Column.class), false);
     }
 
-    public ColumnField(Field field, Class rootClass, List<Field> parents, Column column) {
+    public ColumnField(Field field, Class rootClass, List<Field> parents, Column column, boolean joined) {
 
         this.field = field;
         this.rootClass = rootClass;
         this.parents = parents;
         this.column = column;
+        this.joined = joined;
     }
 
     public String columnName() {
@@ -45,11 +47,18 @@ public class ColumnField {
     }
 
     private Object getTableName() {
+        if (joined) {
+            return parents.stream().map(Field::getName).collect(Collectors.joining("_"));
+        }
         return ((View) this.rootClass.getAnnotation(View.class)).value();
     }
 
     public String fieldName() {
         return Stream.concat(parents.stream(), Stream.of(field))
                 .map(Field::getName).collect(Collectors.joining("."));
+    }
+
+    public boolean is(Field field) {
+        return this.field.equals(field);
     }
 }

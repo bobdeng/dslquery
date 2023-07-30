@@ -53,7 +53,7 @@ public class JoinAndEmbeddedTest {
     @Test
     public void should_select_join() {
         sqlBuilder = new SQLBuilder<>(dslQuery, new ResultBean(dslQuery.getQueryResultClass()));
-        assertEquals("select t_user.name name,t_user.contact_name contact_name,org.name org_name from t_user\n" +
+        assertEquals("select t_user.name name,org.name org_name,t_user.contact_name userContact_name from t_user\n" +
                 "left join t_org org on org.id = t_user.org_id", sqlBuilder.sql());
     }
 

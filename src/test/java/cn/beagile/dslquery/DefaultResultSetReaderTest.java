@@ -40,7 +40,7 @@ public class DefaultResultSetReaderTest {
     public void should_read_embedding_field() throws SQLException {
         DefaultResultSetReader<QueryResultBean> defaultResultSetReader = new DefaultResultSetReader(new ResultBean(QueryResultBean.class));
         ResultSet rs = mock(ResultSet.class);
-        when(rs.getString("another_name")).thenReturn("alice");
+        when(rs.getString("embeddingField_name")).thenReturn("alice");
         QueryResultBean result = defaultResultSetReader.apply(rs);
         assertNotNull(result.getEmbeddingField());
         assertEquals("alice", result.getEmbeddingField().getName());
@@ -118,7 +118,7 @@ public class DefaultResultSetReaderTest {
     public void should_read_string_field_with_alias() throws SQLException {
         DefaultResultSetReader<QueryResultWithAliasBean> defaultResultSetReader = new DefaultResultSetReader(new ResultBean(QueryResultWithAliasBean.class));
         ResultSet rs = mock(ResultSet.class);
-        when(rs.getString("name1")).thenReturn("bob");
+        when(rs.getString("name")).thenReturn("bob");
         QueryResultWithAliasBean result = defaultResultSetReader.apply(rs);
         assertNotNull(result);
         assertEquals("bob", result.getName());
@@ -183,7 +183,7 @@ public class DefaultResultSetReaderTest {
         DefaultResultSetReader<QueryResultWithInstantFieldBean> defaultResultSetReader = new DefaultResultSetReader(new ResultBean(QueryResultWithInstantFieldBean.class));
         ResultSet rs = mock(ResultSet.class);
         Timestamp time = new Timestamp(18L);
-        when(rs.getTimestamp("created_at")).thenReturn(time);
+        when(rs.getTimestamp("createdAt")).thenReturn(time);
         QueryResultWithInstantFieldBean result = defaultResultSetReader.apply(rs);
         assertNotNull(result);
         assertEquals(18L, result.createdAt.toEpochMilli());
@@ -200,7 +200,7 @@ public class DefaultResultSetReaderTest {
         DefaultResultSetReader<QueryResultWithTimestampFieldBean> defaultResultSetReader = new DefaultResultSetReader(new ResultBean(QueryResultWithTimestampFieldBean.class));
         ResultSet rs = mock(ResultSet.class);
         Timestamp time = new Timestamp(18L);
-        when(rs.getTimestamp("created_at")).thenReturn(time);
+        when(rs.getTimestamp("createdAt")).thenReturn(time);
         QueryResultWithTimestampFieldBean result = defaultResultSetReader.apply(rs);
         assertNotNull(result);
         assertEquals(18L, result.createdAt.getTime());
@@ -234,7 +234,7 @@ public class DefaultResultSetReaderTest {
     public void should_read_embedding_field_override_field() throws SQLException {
         DefaultResultSetReader<QueryBeanWithEmbeddedFieldAndOverride> defaultResultSetReader = new DefaultResultSetReader(new ResultBean(QueryBeanWithEmbeddedFieldAndOverride.class));
         ResultSet rs = mock(ResultSet.class);
-        when(rs.getString("embedded_field_name")).thenReturn("alice");
+        when(rs.getString("embeddingField_name")).thenReturn("alice");
         when(rs.getString("code")).thenReturn("123456");
         QueryBeanWithEmbeddedFieldAndOverride result = defaultResultSetReader.apply(rs);
         assertNotNull(result.getEmbeddingField());

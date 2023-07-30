@@ -22,6 +22,7 @@ class SQLBuilder<T> {
     private final Map<String, Object> params;
     private final ResultBean resultBean;
     private final DSLQuery<T> dslQuery;
+    private final ColumnFields columnFields;
 
     private int paramIndex;
     private String sql;
@@ -47,6 +48,7 @@ class SQLBuilder<T> {
         this.resultBean = resultBean;
         this.dslQuery = dslQuery;
         this.params = new HashMap<>();
+        columnFields = new ColumnFields(resultBean.getClazz());
     }
 
 
@@ -161,12 +163,16 @@ class SQLBuilder<T> {
     }
 
     private String getSelectSQL() {
+        /*
         List<String> lines = new ArrayList<>();
         String fields = getColumns().getListFields().stream()
                 .map(FieldWithColumn::selectName).collect(Collectors.joining(","));
         lines.add(String.format("select %s from %s", fields, getViewName()));
         lines.add(getAllJoinTables(resultBean.getClazz()));
-        return lines.stream().map(String::trim).collect(Collectors.joining("\n"));
+        return lines.stream().map(String::trim).collect(Collectors.joining("\n"));*/
+        String select = "select " + columnFields.selectFields().stream().map(ColumnField::expression).collect(Collectors.joining(",")) + " from " + columnFields.from();
+        String join = columnFields.joins();
+        return Stream.of(select, join).collect(Collectors.joining("\n"));
     }
 
     private String getAllJoinTables(Class queryResultClass) {

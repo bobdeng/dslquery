@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
 public class DSLQueryTest {
     QueryExecutor queryExecutor;
     ArgumentCaptor<SQLQuery> sqlQueryArgumentCaptor;
-    private String fields = "view_query.name name,view_query.age age,view_query.json json,view_query.another_name another_name";
+    private String fields = "view_query.name name,view_query.age age,view_query.json json,view_query.another_name embeddingField_name";
 
     @BeforeEach
     public void setup() {
@@ -89,7 +89,7 @@ public class DSLQueryTest {
         verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
         String sql = sqlQuery.getSql();
-        expectSqlWithoudEnter("select view_query.name1 name1,view_query.age age from view_query where (((view_query.name1 = :p1) or (view_query.name1 = :p2)) and (view_query.age > :p3))", sql);
+        expectSqlWithoudEnter("select view_query.name1 name,view_query.age age from view_query where (((view_query.name1 = :p1) or (view_query.name1 = :p2)) and (view_query.age > :p3))", sql);
         Map<String, Object> params = sqlQuery.getParams();
         assertEquals("bob", params.get("p1"));
         assertEquals("alice", params.get("p2"));
@@ -106,7 +106,7 @@ public class DSLQueryTest {
                 .where("(and(name equals bob))").query();
         verify(queryExecutor, times(1)).list(any(), sqlQueryArgumentCaptor.capture());
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
-        expectSqlWithoudEnter("select view_query.name1 name1,view_query.age age from view_query where ((view_query.age > :p1)) and ((view_query.name1 = :p2))", sqlQuery.getSql());
+        expectSqlWithoudEnter("select view_query.name1 name,view_query.age age from view_query where ((view_query.age > :p1)) and ((view_query.name1 = :p2))", sqlQuery.getSql());
     }
 
     //带有排序条件，执行查询
@@ -194,7 +194,7 @@ public class DSLQueryTest {
         dslQuery.limit(null).skip(null).sort("name asc").query();
         verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
-        expectSqlWithoudEnter("select view_query.name1 name1,view_query.age age from view_queryorder by view_query.name1 asc", sqlQuery.getSql());
+        expectSqlWithoudEnter("select view_query.name1 name,view_query.age age from view_queryorder by view_query.name1 asc", sqlQuery.getSql());
     }
 
     @Test
@@ -203,7 +203,7 @@ public class DSLQueryTest {
         dslQuery.sort("name asc,age desc").query();
         verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
-        expectSqlWithoudEnter("select view_query.name1 name1,view_query.age age from view_queryorder by view_query.name1 asc,view_query.age desc", sqlQuery.getSql());
+        expectSqlWithoudEnter("select view_query.name1 name,view_query.age age from view_queryorder by view_query.name1 asc,view_query.age desc", sqlQuery.getSql());
     }
 
     //带有分页条件，执行查询
@@ -263,7 +263,6 @@ public class DSLQueryTest {
         @Embedded
         @AttributeOverrides({
                 @AttributeOverride(name = "code", column = @Column(name = "code2")),
-                @AttributeOverride(name = "field2.code", column = @Column(name = "code3"))
         })
         private EmbeddedField field;
         @Embedded
@@ -301,7 +300,7 @@ public class DSLQueryTest {
         dslQuery.query();
         verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
-        expectSqlWithoudEnter("select view_query.code2 code2,view_query.name1 name1 from view_query", sqlQuery.getSql());
+        expectSqlWithoudEnter("select view_query.code2 field_code,view_query.name1 field2_name from view_query", sqlQuery.getSql());
     }
 
     @Test
