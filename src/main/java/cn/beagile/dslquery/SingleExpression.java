@@ -49,7 +49,7 @@ class SingleExpression implements FilterExpression {
 
     public String toSQL(SQLBuilder sqlBuilder) {
         Operator operatorEnum = Operators.byName(this.operator);
-        String[] paramNames = operatorEnum.params(field, sqlBuilder);
+        String[] paramNames = operatorEnum.params(sqlBuilder);
         if (operatorEnum.requireValue) {
             addParams(sqlBuilder, operatorEnum, paramNames);
         }

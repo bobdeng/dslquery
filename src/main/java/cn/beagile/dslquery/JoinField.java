@@ -48,7 +48,7 @@ public class JoinField {
     }
 
     private String getTableAlias() {
-        return parents.stream().map(Field::getName).collect(Collectors.joining("_"));
+        return parents.stream().map(Field::getName).collect(Collectors.joining("_", "", "_"));
     }
 
     private String singleJoinStatement() {
@@ -64,7 +64,7 @@ public class JoinField {
         if (parents.size() == 1) {
             return field.getDeclaringClass().getAnnotation(View.class).value();
         }
-        return parents.stream().map(Field::getName).limit(parents.size() - 1).collect(Collectors.joining("_"));
+        return parents.stream().map(Field::getName).limit(parents.size() - 1).collect(Collectors.joining("_", "", "_"));
     }
 
     public boolean is(Field field) {

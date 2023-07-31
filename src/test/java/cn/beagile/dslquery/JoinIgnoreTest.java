@@ -47,9 +47,9 @@ public class JoinIgnoreTest {
     @Test
     public void should_select_join() {
         sqlBuilder = new SQLBuilder<>(dslQuery);
-        assertEquals("select t_user.name name,org.name org_name,area.name area_name from t_user\n" +
-                "left join t_org org on org.id = t_user.org_id\n" +
-                "left join t_area area on area.id = t_user.area_id", sqlBuilder.sql()
+        assertEquals("select t_user.name name_,org_.name org_name_,area_.name area_name_ from t_user\n" +
+                "left join t_org org_ on org_.id = t_user.org_id\n" +
+                "left join t_area area_ on area_.id = t_user.area_id", sqlBuilder.sql()
         );
     }
 

@@ -35,8 +35,8 @@ public class ColumnFieldsTest {
         assertEquals(1, columnFields.selectFields().size());
         assertEquals("f_name", columnFields.selectFields().get(0).columnName());
         assertEquals("name", columnFields.selectFields().get(0).fieldName());
-        assertEquals("name", columnFields.selectFields().get(0).alias());
-        assertEquals("has_one.f_name name", columnFields.selectFields().get(0).expression());
+        assertEquals("name_", columnFields.selectFields().get(0).alias());
+        assertEquals("has_one.f_name name_", columnFields.selectFields().get(0).expression());
     }
 
     @View("has_embedded")
@@ -54,8 +54,8 @@ public class ColumnFieldsTest {
         assertEquals(1, columnFields.selectFields().size());
         assertEquals("f_name", columnFields.selectFields().get(0).columnName());
         assertEquals("hasOne.name", columnFields.selectFields().get(0).fieldName());
-        assertEquals("hasOne_name", columnFields.selectFields().get(0).alias());
-        assertEquals("has_embedded.f_name hasOne_name", columnFields.selectFields().get(0).expression());
+        assertEquals("hasOne_name_", columnFields.selectFields().get(0).alias());
+        assertEquals("has_embedded.f_name hasOne_name_", columnFields.selectFields().get(0).expression());
     }
 
     @View("has_embedded")
@@ -87,8 +87,8 @@ public class ColumnFieldsTest {
         assertEquals(1, columnFields.selectFields().size());
         assertEquals("name_2", columnFields.selectFields().get(0).columnName());
         assertEquals("one.hasOne.name", columnFields.selectFields().get(0).fieldName());
-        assertEquals("one_hasOne_name", columnFields.selectFields().get(0).alias());
-        assertEquals("has_2embedded.name_2 one_hasOne_name", columnFields.selectFields().get(0).expression());
+        assertEquals("one_hasOne_name_", columnFields.selectFields().get(0).alias());
+        assertEquals("has_2embedded.name_2 one_hasOne_name_", columnFields.selectFields().get(0).expression());
     }
 
     @View("t_slave")
@@ -109,9 +109,9 @@ public class ColumnFieldsTest {
         assertEquals(1, columnFields.selectFields().size());
         assertEquals("id", columnFields.selectFields().get(0).columnName());
         assertEquals("master.id", columnFields.selectFields().get(0).fieldName());
-        assertEquals("master_id", columnFields.selectFields().get(0).alias());
-        assertEquals("master.id master_id", columnFields.selectFields().get(0).expression());
-        assertEquals("left join t_master master on master.id = t_slave.master_id", columnFields.joins());
+        assertEquals("master_id_", columnFields.selectFields().get(0).alias());
+        assertEquals("master_.id master_id_", columnFields.selectFields().get(0).expression());
+        assertEquals("left join t_master master_ on master_.id = t_slave.master_id", columnFields.joins());
     }
 
     @View("t_tool")
@@ -126,10 +126,10 @@ public class ColumnFieldsTest {
         assertEquals(1, columnFields.selectFields().size());
         assertEquals("id", columnFields.selectFields().get(0).columnName());
         assertEquals("slave.master.id", columnFields.selectFields().get(0).fieldName());
-        assertEquals("slave_master_id", columnFields.selectFields().get(0).alias());
-        assertEquals("slave_master.id slave_master_id", columnFields.selectFields().get(0).expression());
-        assertEquals("left join t_slave slave on slave.id = t_tool.slave_id\n" +
-                "left join t_master slave_master on slave_master.id = slave.master_id", columnFields.joins());
+        assertEquals("slave_master_id_", columnFields.selectFields().get(0).alias());
+        assertEquals("slave_master_.id slave_master_id_", columnFields.selectFields().get(0).expression());
+        assertEquals("left join t_slave slave_ on slave_.id = t_tool.slave_id\n" +
+                "left join t_master slave_master_ on slave_master_.id = slave_.master_id", columnFields.joins());
     }
 
     @View("t_tool")
@@ -145,9 +145,9 @@ public class ColumnFieldsTest {
         assertEquals(1, columnFields.selectFields().size());
         assertEquals("id", columnFields.selectFields().get(0).columnName());
         assertEquals("master.id", columnFields.selectFields().get(0).fieldName());
-        assertEquals("master_id", columnFields.selectFields().get(0).alias());
-        assertEquals("master.id master_id", columnFields.selectFields().get(0).expression());
+        assertEquals("master_id_", columnFields.selectFields().get(0).alias());
+        assertEquals("master_.id master_id_", columnFields.selectFields().get(0).expression());
         assertEquals("left join t_slave on t_slave.id = t_tool.slave_id\n" +
-                "left join t_master master on master.id = t_slave.master_id", columnFields.joins());
+                "left join t_master master_ on master_.id = t_slave.master_id", columnFields.joins());
     }
 }

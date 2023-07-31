@@ -20,10 +20,6 @@ public class ColumnField {
         this(field, rootClass, new ArrayList<>(), field.getAnnotation(Column.class), false);
     }
 
-    public ColumnField(Field field, Class rootClass, List<Field> parents) {
-        this(field, rootClass, parents, field.getAnnotation(Column.class), false);
-    }
-
     public ColumnField(Field field, Class rootClass, List<Field> parents, Column column, boolean joined) {
 
         this.field = field;
@@ -39,7 +35,7 @@ public class ColumnField {
 
     public String alias() {
         return Stream.concat(parents.stream(), Stream.of(field))
-                .map(Field::getName).collect(Collectors.joining("_"));
+                .map(Field::getName).collect(Collectors.joining("_", "", "_"));
     }
 
     public String expression() {
@@ -52,7 +48,7 @@ public class ColumnField {
 
     private Object getTableName() {
         if (joined) {
-            return parents.stream().map(Field::getName).collect(Collectors.joining("_"));
+            return parents.stream().map(Field::getName).collect(Collectors.joining("_", "", "_"));
         }
         return getRootTable();
     }

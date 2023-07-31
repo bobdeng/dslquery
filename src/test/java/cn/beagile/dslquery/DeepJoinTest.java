@@ -50,20 +50,20 @@ public class DeepJoinTest {
     public void should_select_join() {
         DSLQuery<User> dslQuery = new DSLQuery<>(null, User.class);
         SQLBuilder<User> sqlBuilder = new SQLBuilder<>(dslQuery);
-        assertEquals("select t_user.name name,org.name org_name,org_area.name org_area_name,org_city.name org_city_name,org_city_area.name org_city_area_name from t_user\n" +
-                "left join t_org org on org.id = t_user.org_id\n" +
-                "left join t_area org_area on org_area.id = org.area_id\n" +
-                "left join t_city org_city on org_city.id = org.city_id\n" +
-                "left join t_area org_city_area on org_city_area.id = org_city.area_id", sqlBuilder.sql());
+        assertEquals("select t_user.name name_,org_.name org_name_,org_area_.name org_area_name_,org_city_.name org_city_name_,org_city_area_.name org_city_area_name_ from t_user\n" +
+                "left join t_org org_ on org_.id = t_user.org_id\n" +
+                "left join t_area org_area_ on org_area_.id = org_.area_id\n" +
+                "left join t_city org_city_ on org_city_.id = org_.city_id\n" +
+                "left join t_area org_city_area_ on org_city_area_.id = org_city_.area_id", sqlBuilder.sql());
     }
 
     @Test
     public void should_read_join_fields() throws SQLException {
         DefaultResultSetReader<User> reader = new DefaultResultSetReader<>(User.class);
         ResultSet resultSet = mock(ResultSet.class);
-        when(resultSet.getString("name")).thenReturn("张三");
-        when(resultSet.getString("org_name")).thenReturn("某公司");
-        when(resultSet.getString("org_area_name")).thenReturn("某地区");
+        when(resultSet.getString("name_")).thenReturn("张三");
+        when(resultSet.getString("org_name_")).thenReturn("某公司");
+        when(resultSet.getString("org_area_name_")).thenReturn("某地区");
         User result = reader.apply(resultSet);
         assertEquals("张三", result.name);
         assertNotNull(result.org);
@@ -77,12 +77,12 @@ public class DeepJoinTest {
         DSLQuery<User> dslQuery = new DSLQuery<>(null, User.class);
         dslQuery = dslQuery.where("(and(org.area.name equals 123))");
         SQLBuilder sqlBuilder = new SQLBuilder<>(dslQuery);
-        String expect = "select t_user.name name,org.name org_name,org_area.name org_area_name,org_city.name org_city_name,org_city_area.name org_city_area_name from t_user\n" +
-                "left join t_org org on org.id = t_user.org_id\n" +
-                "left join t_area org_area on org_area.id = org.area_id\n" +
-                "left join t_city org_city on org_city.id = org.city_id\n" +
-                "left join t_area org_city_area on org_city_area.id = org_city.area_id\n" +
-                " where ((org_area.name = :p1))";
+        String expect = "select t_user.name name_,org_.name org_name_,org_area_.name org_area_name_,org_city_.name org_city_name_,org_city_area_.name org_city_area_name_ from t_user\n" +
+                "left join t_org org_ on org_.id = t_user.org_id\n" +
+                "left join t_area org_area_ on org_area_.id = org_.area_id\n" +
+                "left join t_city org_city_ on org_city_.id = org_.city_id\n" +
+                "left join t_area org_city_area_ on org_city_area_.id = org_city_.area_id\n" +
+                " where ((org_area_.name = :p1))";
         assertEquals(expect, sqlBuilder.sql());
     }
 

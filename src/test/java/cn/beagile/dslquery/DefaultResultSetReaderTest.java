@@ -18,7 +18,7 @@ public class DefaultResultSetReaderTest {
     public void should_read_string_field() throws SQLException {
         DefaultResultSetReader<QueryResultBean> defaultResultSetReader = new DefaultResultSetReader(QueryResultBean.class);
         ResultSet rs = mock(ResultSet.class);
-        when(rs.getString("name")).thenReturn("bob");
+        when(rs.getString("name_")).thenReturn("bob");
         QueryResultBean result = defaultResultSetReader.apply(rs);
         assertNotNull(result);
         assertEquals("bob", result.getName());
@@ -29,7 +29,7 @@ public class DefaultResultSetReaderTest {
     public void should_read_json_field() throws SQLException {
         DefaultResultSetReader<QueryResultBean> defaultResultSetReader = new DefaultResultSetReader(QueryResultBean.class);
         ResultSet rs = mock(ResultSet.class);
-        when(rs.getString("json")).thenReturn("[{\"name\":\"bob\"}]");
+        when(rs.getString("json_")).thenReturn("[{\"name\":\"bob\"}]");
         QueryResultBean result = defaultResultSetReader.apply(rs);
         assertNotNull(result.getJson());
         assertEquals("bob", result.getJson()[0].getName());
@@ -40,7 +40,7 @@ public class DefaultResultSetReaderTest {
     public void should_read_embedding_field() throws SQLException {
         DefaultResultSetReader<QueryResultBean> defaultResultSetReader = new DefaultResultSetReader(QueryResultBean.class);
         ResultSet rs = mock(ResultSet.class);
-        when(rs.getString("embeddingField_name")).thenReturn("alice");
+        when(rs.getString("embeddingField_name_")).thenReturn("alice");
         QueryResultBean result = defaultResultSetReader.apply(rs);
         assertNotNull(result.getEmbeddingField());
         assertEquals("alice", result.getEmbeddingField().getName());
@@ -50,7 +50,7 @@ public class DefaultResultSetReaderTest {
     public void should_read_null_json_field() throws SQLException {
         DefaultResultSetReader<QueryResultBean> defaultResultSetReader = new DefaultResultSetReader(QueryResultBean.class);
         ResultSet rs = mock(ResultSet.class);
-        when(rs.getString("json")).thenReturn(null);
+        when(rs.getString("json_")).thenReturn(null);
         QueryResultBean result = defaultResultSetReader.apply(rs);
         assertNull(result.getJson());
     }
@@ -59,7 +59,7 @@ public class DefaultResultSetReaderTest {
     public void should_throw_when_sql_fail() throws SQLException {
         DefaultResultSetReader<QueryResultBean> defaultResultSetReader = new DefaultResultSetReader(QueryResultBean.class);
         ResultSet rs = mock(ResultSet.class);
-        when(rs.getString("name")).thenThrow(new SQLException("sql error"));
+        when(rs.getString("name_")).thenThrow(new SQLException("sql error"));
         RuntimeException e = assertThrows(RuntimeException.class, () -> defaultResultSetReader.apply(rs));
     }
     public static class QueryWithBoolean{
@@ -71,7 +71,7 @@ public class DefaultResultSetReaderTest {
     public void should_read_boolean_json_field() throws SQLException {
         DefaultResultSetReader<QueryWithBoolean> defaultResultSetReader = new DefaultResultSetReader(QueryWithBoolean.class);
         ResultSet rs = mock(ResultSet.class);
-        when(rs.getBoolean("flag")).thenReturn(true);
+        when(rs.getBoolean("flag_")).thenReturn(true);
         QueryWithBoolean result = defaultResultSetReader.apply(rs);
         assertTrue(result.flag);
     }
@@ -81,7 +81,7 @@ public class DefaultResultSetReaderTest {
         DefaultResultSetReader<QueryWithBoolean> defaultResultSetReader = new DefaultResultSetReader(clazz);
         ResultSet rs = mock(ResultSet.class);
         when(rs.wasNull()).thenReturn(true);
-        when(rs.getBoolean("flag")).thenReturn(true);
+        when(rs.getBoolean("flag_")).thenReturn(true);
         QueryWithBoolean result = defaultResultSetReader.apply(rs);
         assertNull(result.flag);
     }
@@ -120,7 +120,7 @@ public class DefaultResultSetReaderTest {
         Class clz=QueryResultWithAliasBean.class;
         DefaultResultSetReader<QueryResultWithAliasBean> defaultResultSetReader = new DefaultResultSetReader(clz);
         ResultSet rs = mock(ResultSet.class);
-        when(rs.getString("name")).thenReturn("bob");
+        when(rs.getString("name_")).thenReturn("bob");
         QueryResultWithAliasBean result = defaultResultSetReader.apply(rs);
         assertNotNull(result);
         assertEquals("bob", result.getName());
@@ -130,7 +130,7 @@ public class DefaultResultSetReaderTest {
     public void should_read_int_field() throws SQLException {
         DefaultResultSetReader<QueryResultWithIntFieldBean> defaultResultSetReader = new DefaultResultSetReader(QueryResultWithIntFieldBean.class);
         ResultSet rs = mock(ResultSet.class);
-        when(rs.getInt("age")).thenReturn(18);
+        when(rs.getInt("age_")).thenReturn(18);
         QueryResultWithIntFieldBean result = defaultResultSetReader.apply(rs);
         assertNotNull(result);
         assertEquals(18, result.getAge());
@@ -149,7 +149,7 @@ public class DefaultResultSetReaderTest {
     public void should_read_decimal_field() throws SQLException {
         DefaultResultSetReader<QueryResultWithDecimalFieldBean> defaultResultSetReader = new DefaultResultSetReader(QueryResultWithDecimalFieldBean.class);
         ResultSet rs = mock(ResultSet.class);
-        when(rs.getBigDecimal("weight")).thenReturn(new BigDecimal("18.001"));
+        when(rs.getBigDecimal("weight_")).thenReturn(new BigDecimal("18.001"));
         QueryResultWithDecimalFieldBean result = defaultResultSetReader.apply(rs);
         assertNotNull(result);
         assertEquals(new BigDecimal("18.001"), result.getWeight());
@@ -168,7 +168,7 @@ public class DefaultResultSetReaderTest {
     public void should_read_long_field() throws SQLException {
         DefaultResultSetReader<QueryResultWithLongFieldBean> defaultResultSetReader = new DefaultResultSetReader(QueryResultWithLongFieldBean.class);
         ResultSet rs = mock(ResultSet.class);
-        when(rs.getLong("weight")).thenReturn(18L);
+        when(rs.getLong("weight_")).thenReturn(18L);
         QueryResultWithLongFieldBean result = defaultResultSetReader.apply(rs);
         assertNotNull(result);
         assertEquals(18L, result.getWeight());
@@ -185,7 +185,7 @@ public class DefaultResultSetReaderTest {
         DefaultResultSetReader<QueryResultWithInstantFieldBean> defaultResultSetReader = new DefaultResultSetReader(QueryResultWithInstantFieldBean.class);
         ResultSet rs = mock(ResultSet.class);
         Timestamp time = new Timestamp(18L);
-        when(rs.getTimestamp("createdAt")).thenReturn(time);
+        when(rs.getTimestamp("createdAt_")).thenReturn(time);
         QueryResultWithInstantFieldBean result = defaultResultSetReader.apply(rs);
         assertNotNull(result);
         assertEquals(18L, result.createdAt.toEpochMilli());
@@ -202,7 +202,7 @@ public class DefaultResultSetReaderTest {
         DefaultResultSetReader<QueryResultWithTimestampFieldBean> defaultResultSetReader = new DefaultResultSetReader(QueryResultWithTimestampFieldBean.class);
         ResultSet rs = mock(ResultSet.class);
         Timestamp time = new Timestamp(18L);
-        when(rs.getTimestamp("createdAt")).thenReturn(time);
+        when(rs.getTimestamp("createdAt_")).thenReturn(time);
         QueryResultWithTimestampFieldBean result = defaultResultSetReader.apply(rs);
         assertNotNull(result);
         assertEquals(18L, result.createdAt.getTime());
@@ -236,8 +236,8 @@ public class DefaultResultSetReaderTest {
     public void should_read_embedding_field_override_field() throws SQLException {
         DefaultResultSetReader<QueryBeanWithEmbeddedFieldAndOverride> defaultResultSetReader = new DefaultResultSetReader(QueryBeanWithEmbeddedFieldAndOverride.class);
         ResultSet rs = mock(ResultSet.class);
-        when(rs.getString("embeddingField_name")).thenReturn("alice");
-        when(rs.getString("code")).thenReturn("123456");
+        when(rs.getString("embeddingField_name_")).thenReturn("alice");
+        when(rs.getString("code_")).thenReturn("123456");
         QueryBeanWithEmbeddedFieldAndOverride result = defaultResultSetReader.apply(rs);
         assertNotNull(result.getEmbeddingField());
         assertEquals("alice", result.getEmbeddingField().name);
