@@ -134,9 +134,15 @@ public class ColumnFields {
     public ColumnField findField(Field field) {
         return this.fields.stream().filter(columnField -> columnField.is(field)).findFirst().orElseThrow(() -> new RuntimeException("not found"));
     }
+    public boolean hasField(Field field){
+        return this.fields.stream().anyMatch(columnField -> columnField.is(field));
+    }
 
     public ColumnField findFieldByName(String field) {
         return this.fields.stream().filter(columnField -> columnField.fieldName().equals(field))
                 .findFirst().orElseThrow(() -> new RuntimeException("field not found: " + field));
+    }
+    public boolean hasJoinField(Field field){
+        return this.joinFields.stream().anyMatch(joinField -> joinField.is(field));
     }
 }

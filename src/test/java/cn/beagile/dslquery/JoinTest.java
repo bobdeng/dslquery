@@ -47,7 +47,7 @@ public class JoinTest {
     @Test
     public void should_read_join_fields() throws SQLException {
         long start=System.currentTimeMillis();
-        DefaultResultSetReader<User> reader = new DefaultResultSetReader<>(new ResultBean(User.class));
+        DefaultResultSetReader<User> reader = new DefaultResultSetReader<>(User.class);
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getString("name")).thenReturn("张三");
         when(resultSet.getString("org_name")).thenReturn("某公司");

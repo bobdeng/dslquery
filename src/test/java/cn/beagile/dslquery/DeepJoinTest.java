@@ -46,7 +46,7 @@ public class DeepJoinTest {
 
     @Test
     public void should_read_join_fields() throws SQLException {
-        DefaultResultSetReader<User> reader = new DefaultResultSetReader<>(new ResultBean(User.class));
+        DefaultResultSetReader<User> reader = new DefaultResultSetReader<>(User.class);
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getString("name")).thenReturn("张三");
         when(resultSet.getString("org_name")).thenReturn("某公司");
@@ -58,6 +58,7 @@ public class DeepJoinTest {
         assertNotNull(result.org.area);
         assertEquals("某地区", result.org.area.name);
     }
+
     @Test
     public void should_add_where_with_join_column(){
         DSLQuery<User> dslQuery = new DSLQuery<>(null, User.class);

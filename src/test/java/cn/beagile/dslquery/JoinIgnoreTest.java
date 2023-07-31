@@ -43,13 +43,7 @@ public class JoinIgnoreTest {
         dslQuery = new DSLQuery<>(null, User.class);
 
     }
-    @Test
-    public void should_has_no_ignored_column(){
-        FieldsWithColumns fieldsWithColumns = new FieldsWithColumns(new ResultBean(dslQuery.getQueryResultClass()));
-        assertFalse(fieldsWithColumns.findFieldColumn("org.area").isPresent());
-        assertTrue(fieldsWithColumns.findFieldColumn("org.name").isPresent());
-        assertTrue(fieldsWithColumns.findFieldColumn("area.name").isPresent());
-    }
+
     @Test
     public void should_select_join() {
         sqlBuilder = new SQLBuilder<>(dslQuery);

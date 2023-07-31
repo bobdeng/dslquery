@@ -59,7 +59,7 @@ public class JoinAndEmbeddedTest {
 
     @Test
     public void should_read_join_fields() throws SQLException {
-        DefaultResultSetReader<User> reader = new DefaultResultSetReader<>(new ResultBean(dslQuery.getQueryResultClass()));
+        DefaultResultSetReader<User> reader = new DefaultResultSetReader<>(dslQuery.getQueryResultClass());
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getString("name")).thenReturn("张三");
         when(resultSet.getString("org_name")).thenReturn("某公司");

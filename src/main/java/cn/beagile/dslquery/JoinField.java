@@ -67,6 +67,10 @@ public class JoinField {
         return parents.stream().map(Field::getName).limit(parents.size() - 1).collect(Collectors.joining("_"));
     }
 
+    public boolean is(Field field) {
+        return this.field.equals(field);
+    }
+
     public static class JoinBuilder {
         private String joinTable;
         private String joinTableAlias;

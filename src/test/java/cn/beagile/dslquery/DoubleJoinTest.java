@@ -19,7 +19,6 @@ public class DoubleJoinTest {
 
     private DSLQuery<User> dslQuery;
     private SQLBuilder<User> sqlBuilder;
-    private ResultBean resultBean;
 
     @View("t_user")
     public static class User {
@@ -52,7 +51,6 @@ public class DoubleJoinTest {
     @BeforeEach
     public void setup() {
         dslQuery = new DSLQuery<>(null, User.class);
-        resultBean = new ResultBean(dslQuery.getQueryResultClass());
         sqlBuilder = new SQLBuilder<>(dslQuery);
     }
 
@@ -69,7 +67,7 @@ public class DoubleJoinTest {
 
     @Test
     public void params() throws SQLException {
-        DefaultResultSetReader<User> reader = new DefaultResultSetReader<>(resultBean);
+        DefaultResultSetReader<User> reader = new DefaultResultSetReader<>(User.class);
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getString("org_area_name")).thenReturn("area");
         when(resultSet.getString("org_name")).thenReturn("org");
