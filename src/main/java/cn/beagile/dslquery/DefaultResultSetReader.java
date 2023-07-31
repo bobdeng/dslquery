@@ -34,15 +34,17 @@ class DefaultResultSetReader<T> implements Function<ResultSet, T> {
 
     private final ResultBean resultBean;
     private final ColumnFields columnFields;
+    private final Class queryClass;
 
     public DefaultResultSetReader(ResultBean resultBean) {
         this.resultBean = resultBean;
+        this.queryClass = resultBean.getClazz();
         columnFields = new ColumnFields(resultBean.getClazz());
     }
 
     @Override
     public T apply(ResultSet resultSet) {
-        return (T) newInstance(resultSet, resultBean.getClazz());
+        return (T) newInstance(resultSet, queryClass);
     }
 
     private Object newInstance(ResultSet resultSet, Class clz) {
