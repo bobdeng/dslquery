@@ -19,10 +19,21 @@ public class DeepJoinTest {
         private String name;
         @JoinColumn(name = "org_id", referencedColumnName = "id")
         private Org org;
+
     }
 
     @View("t_org")
     public static class Org {
+        @Column(name = "name")
+        private String name;
+        @JoinColumn(name = "area_id", referencedColumnName = "id")
+        private Area area;
+        @JoinColumn(name = "city_id", referencedColumnName = "id")
+        private City city;
+    }
+
+    @View("t_city")
+    public static class City {
         @Column(name = "name")
         private String name;
         @JoinColumn(name = "area_id", referencedColumnName = "id")
@@ -39,9 +50,11 @@ public class DeepJoinTest {
     public void should_select_join() {
         DSLQuery<User> dslQuery = new DSLQuery<>(null, User.class);
         SQLBuilder<User> sqlBuilder = new SQLBuilder<>(dslQuery);
-        assertEquals("select t_user.name name,org.name org_name,org_area.name org_area_name from t_user\n" +
+        assertEquals("select t_user.name name,org.name org_name,org_area.name org_area_name,org_city.name org_city_name,org_city_area.name org_city_area_name from t_user\n" +
                 "left join t_org org on org.id = t_user.org_id\n" +
-                "left join t_area org_area on org_area.id = org.area_id", sqlBuilder.sql());
+                "left join t_area org_area on org_area.id = org.area_id\n" +
+                "left join t_city org_city on org_city.id = org.city_id\n" +
+                "left join t_area org_city_area on org_city_area.id = org_city.area_id", sqlBuilder.sql());
     }
 
     @Test
@@ -60,13 +73,15 @@ public class DeepJoinTest {
     }
 
     @Test
-    public void should_add_where_with_join_column(){
+    public void should_add_where_with_join_column() {
         DSLQuery<User> dslQuery = new DSLQuery<>(null, User.class);
-        dslQuery=dslQuery.where("(and(org.area.name equals 123))");
+        dslQuery = dslQuery.where("(and(org.area.name equals 123))");
         SQLBuilder sqlBuilder = new SQLBuilder<>(dslQuery);
-        String expect = "select t_user.name name,org.name org_name,org_area.name org_area_name from t_user\n" +
+        String expect = "select t_user.name name,org.name org_name,org_area.name org_area_name,org_city.name org_city_name,org_city_area.name org_city_area_name from t_user\n" +
                 "left join t_org org on org.id = t_user.org_id\n" +
                 "left join t_area org_area on org_area.id = org.area_id\n" +
+                "left join t_city org_city on org_city.id = org.city_id\n" +
+                "left join t_area org_city_area on org_city_area.id = org_city.area_id\n" +
                 " where ((org_area.name = :p1))";
         assertEquals(expect, sqlBuilder.sql());
     }

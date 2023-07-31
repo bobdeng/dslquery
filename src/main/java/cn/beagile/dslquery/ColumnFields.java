@@ -59,7 +59,7 @@ public class ColumnFields {
         if (isFieldIgnored(newParents)) return;
         joinFields.add(new JoinField(field, newParents));
         readJoinColumnFields(field, newParents);
-        readJoinTables(annotation, field, newParents);
+        readJoins(field.getType(), newParents);
     }
 
     private boolean isFieldIgnored(List<Field> newParents) {
@@ -72,14 +72,6 @@ public class ColumnFields {
                 .filter(f -> f.isAnnotationPresent(Column.class))
                 .forEach(it -> {
                     fields.add(new ColumnField(it, field.getType(), newParents, it.getAnnotation(Column.class), true));
-                });
-    }
-
-    private void readJoinTables(Class<? extends Annotation> annotation, Field field, List<Field> newParents) {
-        Arrays.stream(field.getType().getDeclaredFields())
-                .filter(f -> f.isAnnotationPresent(annotation))
-                .forEach(it -> {
-                    readJoins(field.getType(), newParents);
                 });
     }
 
@@ -134,7 +126,8 @@ public class ColumnFields {
     public ColumnField findField(Field field) {
         return this.fields.stream().filter(columnField -> columnField.is(field)).findFirst().orElseThrow(() -> new RuntimeException("not found"));
     }
-    public boolean hasField(Field field){
+
+    public boolean hasField(Field field) {
         return this.fields.stream().anyMatch(columnField -> columnField.is(field));
     }
 
@@ -142,7 +135,8 @@ public class ColumnFields {
         return this.fields.stream().filter(columnField -> columnField.fieldName().equals(field))
                 .findFirst().orElseThrow(() -> new RuntimeException("field not found: " + field));
     }
-    public boolean hasJoinField(Field field){
+
+    public boolean hasJoinField(Field field) {
         return this.joinFields.stream().anyMatch(joinField -> joinField.is(field));
     }
 }
