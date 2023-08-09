@@ -69,4 +69,8 @@ public class ColumnField {
     public Field getField() {
         return field;
     }
+
+    public String parentNames() {
+        return parents.stream().map(Field::getName).collect(Collectors.joining("."));
+    }
 }

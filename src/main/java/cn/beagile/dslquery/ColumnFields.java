@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class ColumnFields {
@@ -108,7 +109,15 @@ public class ColumnFields {
     }
 
     public List<ColumnField> selectFields() {
-        return fields;
+        List<String> selectIgnores = Arrays.asList(Optional.ofNullable(((SelectIgnores) clz.getAnnotation(SelectIgnores.class)))
+                .map(SelectIgnores::value)
+                .orElse(new String[0]));
+        return fields.stream().filter(field -> {
+            if (selectIgnores.contains(field.parentNames())) {
+                return false;
+            }
+            return true;
+        }).collect(Collectors.toList());
     }
 
     public String from() {
@@ -138,5 +147,12 @@ public class ColumnFields {
 
     public boolean hasJoinField(Field field) {
         return this.joinFields.stream().anyMatch(joinField -> joinField.is(field));
+    }
+
+    public String distinct() {
+        if (((View) this.clz.getAnnotation(View.class)).distinct()) {
+            return " distinct ";
+        }
+        return " ";
     }
 }

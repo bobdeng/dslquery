@@ -155,7 +155,7 @@ class SQLBuilder<T> {
     }
 
     private String getSelectSQL() {
-        String select = "select " + columnFields.selectFields().stream().map(ColumnField::expression).collect(Collectors.joining(",")) + " from " + columnFields.from();
+        String select = "select"+ columnFields.distinct() + columnFields.selectFields().stream().map(ColumnField::expression).collect(Collectors.joining(",")) + " from " + columnFields.from();
         String join = columnFields.joins();
         return Stream.of(select, join).collect(Collectors.joining("\n"));
     }

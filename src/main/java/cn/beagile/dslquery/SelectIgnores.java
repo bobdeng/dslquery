@@ -7,8 +7,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface View {
-    String value() default "";
-
-    boolean distinct() default false;
+public @interface SelectIgnores {
+    String[] value() default {};
 }
