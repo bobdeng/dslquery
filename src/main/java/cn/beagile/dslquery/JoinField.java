@@ -7,6 +7,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class JoinField {
     private Field field;
@@ -69,6 +70,10 @@ public class JoinField {
 
     public boolean is(Field field) {
         return this.field.equals(field);
+    }
+
+    public String parentNames() {
+        return parents.stream().map(Field::getName).collect(Collectors.joining("."));
     }
 
     public static class JoinBuilder {

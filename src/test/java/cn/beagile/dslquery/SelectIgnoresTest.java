@@ -1,11 +1,17 @@
 package cn.beagile.dslquery;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.verification.Times;
 
 import javax.persistence.Column;
 import javax.persistence.JoinColumn;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.*;
 
 public class SelectIgnoresTest {
     @SelectIgnores({"ignoreBean"})
@@ -40,5 +46,15 @@ public class SelectIgnoresTest {
         assertEquals("select distinct v_query_result.name name_ from v_query_result\n" +
                 "left join t_ignore_bean ignoreBean_ on ignoreBean_.parent_id = v_query_result.id\n" +
                 " where ((ignoreBean_.id = :p1))", sqlBuilder.build().getSql());
+    }
+
+    @Test
+    public void should_not_read_ignored_field() throws SQLException {
+        DefaultResultSetReader<Object> reader = new DefaultResultSetReader<>(QueryResult.class);
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.getLong("ignoreBean_id_")).thenReturn(2L);
+        QueryResult result = (QueryResult) reader.apply(resultSet);
+        verify(resultSet, times(0)).getLong("ignoreBean_id_");
+        assertNull(result.ignoreBean);
     }
 }

@@ -109,9 +109,7 @@ public class ColumnFields {
     }
 
     public List<ColumnField> selectFields() {
-        List<String> selectIgnores = Arrays.asList(Optional.ofNullable(((SelectIgnores) clz.getAnnotation(SelectIgnores.class)))
-                .map(SelectIgnores::value)
-                .orElse(new String[0]));
+        List<String> selectIgnores = getSelectIgnores();
         return fields.stream().filter(field -> {
             if (selectIgnores.contains(field.parentNames())) {
                 return false;
@@ -154,5 +152,21 @@ public class ColumnFields {
             return " distinct ";
         }
         return " ";
+    }
+
+    public boolean isIgnored(Field field) {
+        List<String> selectIgnores = getSelectIgnores();
+        boolean result = this.joinFields.stream()
+                .filter(joinField -> joinField.is(field))
+                .anyMatch(joinField -> selectIgnores.contains(joinField.parentNames()));
+        return result;
+
+    }
+
+    private List<String> getSelectIgnores() {
+        List<String> selectIgnores = Arrays.asList(Optional.ofNullable(((SelectIgnores) clz.getAnnotation(SelectIgnores.class)))
+                .map(SelectIgnores::value)
+                .orElse(new String[0]));
+        return selectIgnores;
     }
 }
