@@ -8,10 +8,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.ArgumentCaptor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -30,9 +27,11 @@ public class DSLQueryTest {
         list.add(new QueryResultBean("bob"));
         when(queryExecutor.list(any(), any())).thenReturn(Collections.singletonList(list));
     }
+
     private static void expectSqlWithoudEnter(String expected, String sql) {
         assertEquals(expected, sql.replace("\n", ""));
     }
+
     @Test
     public void should_execute_query_without_filter_sort_page() {
         DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultBean.class);
@@ -42,7 +41,6 @@ public class DSLQueryTest {
         expectSqlWithoudEnter("select " + fields + " from view_query", sqlQuery.getSql());
     }
 
-    //带有查询条件，执行查询
     @Test
     public void should_execute_query_with_where() {
         DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultBean.class);
@@ -54,8 +52,43 @@ public class DSLQueryTest {
         assertEquals("bob", params.get("p1"));
         assertEquals(1, params.size());
     }
+
     @Test
-    public void when_where_null(){
+    public void should_execute_query_with_where_between() {
+        DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultBean.class);
+        dslQuery.where("(and(age between 18,26))").query();
+        verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
+        SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
+        expectSqlWithoudEnter("select " + fields + " from view_query where ((view_query.age between :p1 and :p2))", sqlQuery.getSql());
+        Map<String, Object> params = sqlQuery.getParams();
+        assertEquals(18, params.get("p1"));
+        assertEquals(26, params.get("p2"));
+    }
+
+    @Test
+    public void should_execute_query_with_where_in() {
+        DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultBean.class);
+        dslQuery.where("(and(name in ['bob','alice']))").query();
+        verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
+        SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
+        expectSqlWithoudEnter("select " + fields + " from view_query where ((view_query.name in (:p1)))", sqlQuery.getSql());
+        Map<String, Object> params = sqlQuery.getParams();
+        assertEquals(Arrays.asList("bob", "alice"), params.get("p1"));
+    }
+
+    @Test
+    public void should_execute_query_with_where_notnull() {
+        DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultBean.class);
+        dslQuery.where("(and(name notnull))").query();
+        verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
+        SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
+        expectSqlWithoudEnter("select " + fields + " from view_query where ((view_query.name is not null))", sqlQuery.getSql());
+        Map<String, Object> params = sqlQuery.getParams();
+        assertNull(params.get("p1"));
+    }
+
+    @Test
+    public void when_where_null() {
         DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultBean.class);
         dslQuery.where(null).sort(null).query();
         verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());

@@ -92,7 +92,7 @@ public class ColumnFields {
                 Field embeddedField = getFieldByName(field, names, newParents);
                 fields.add(new ColumnField(embeddedField, clz, newParents, attributeOverride.column(), false));
             } catch (NoSuchFieldException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         });
     }
