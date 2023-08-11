@@ -79,10 +79,10 @@ public class DSLQueryTest {
     @Test
     public void should_execute_query_with_where_notnull() {
         DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultBean.class);
-        dslQuery.where("(and(name notnull))").query();
+        dslQuery.where("(and(name notnull))").sort("name desc").query();
         verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
-        expectSqlWithoudEnter("select " + fields + " from view_query where ((view_query.name is not null))", sqlQuery.getSql());
+        expectSqlWithoudEnter("select " + fields + " from view_query where ((view_query.name is not null))order by view_query.name desc", sqlQuery.getSql());
         Map<String, Object> params = sqlQuery.getParams();
         assertNull(params.get("p1"));
     }
@@ -91,6 +91,14 @@ public class DSLQueryTest {
     public void when_where_null() {
         DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultBean.class);
         dslQuery.where(null).sort(null).query();
+        verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
+        SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
+        expectSqlWithoudEnter("select " + fields + " from view_query", sqlQuery.getSql());
+    }
+    @Test
+    public void when_where_empth() {
+        DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultBean.class);
+        dslQuery.where("").sort("").query();
         verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
         expectSqlWithoudEnter("select " + fields + " from view_query", sqlQuery.getSql());

@@ -38,6 +38,8 @@ public class SQLBuilderTest {
         private long normalLongPrimitive;
         @Column(name = "passed")
         private Boolean passed;
+        @Column(name = "passed")
+        private boolean anotherBoolean;
     }
 
     @Test
@@ -84,19 +86,37 @@ public class SQLBuilderTest {
     }
 
     @Test
-    public void add_boolean_param() {
+    public void add_Boolean_param() {
         SQLBuilder<QueryResultForTest> sqlQuery = getSqlBuilder();
         sqlQuery.addParam("passed", "passed", "true");
         assertEquals(true, sqlQuery.getParams().get("passed"));
     }
     @Test
-    public void add_boolean_param_with_1() {
+    public void add_boolean_param() {
+        SQLBuilder<QueryResultForTest> sqlQuery = getSqlBuilder();
+        sqlQuery.addParam("anotherBoolean", "anotherBoolean", "true");
+        assertEquals(true, sqlQuery.getParams().get("anotherBoolean"));
+    }
+    @Test
+    public void add_boolean_param_with1() {
+        SQLBuilder<QueryResultForTest> sqlQuery = getSqlBuilder();
+        sqlQuery.addParam("anotherBoolean", "anotherBoolean", "1");
+        assertEquals(true, sqlQuery.getParams().get("anotherBoolean"));
+    }
+    @Test
+    public void add_boolean_param_with_0() {
+        SQLBuilder<QueryResultForTest> sqlQuery = getSqlBuilder();
+        sqlQuery.addParam("anotherBoolean", "anotherBoolean", "0");
+        assertEquals(false, sqlQuery.getParams().get("anotherBoolean"));
+    }
+    @Test
+    public void add_Boolean_param_with_1() {
         SQLBuilder<QueryResultForTest> sqlQuery = getSqlBuilder();
         sqlQuery.addParam("passed", "passed", "1");
         assertEquals(true, sqlQuery.getParams().get("passed"));
     }
     @Test
-    public void add_boolean_param_with_0() {
+    public void add_Boolean_param_with_0() {
         SQLBuilder<QueryResultForTest> sqlQuery = getSqlBuilder();
         sqlQuery.addParam("passed", "passed", "0");
         assertEquals(false, sqlQuery.getParams().get("passed"));
