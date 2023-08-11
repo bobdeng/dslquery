@@ -55,12 +55,15 @@ public class DSLQuery<T> {
         SQLBuilder<T> sqlBuilder = new SQLBuilder<>(this);
         List<T> result = queryExecutor.list(new DefaultResultSetReader<>(queryResultClass), sqlBuilder.build());
         int count = queryExecutor.count(sqlBuilder.build());
+        sqlBuilder.fetchOne2Many(result,queryExecutor);
         return new Paged<>(result, count, new Paging(this.skip, this.limit));
     }
 
     public List<T> query() {
         SQLBuilder<T> sqlBuilder = new SQLBuilder<>(this);
-        return queryExecutor.list(new DefaultResultSetReader<>(queryResultClass), sqlBuilder.build());
+        List<T> result = queryExecutor.list(new DefaultResultSetReader<>(queryResultClass), sqlBuilder.build());
+        sqlBuilder.fetchOne2Many(result,queryExecutor);
+        return result;
     }
 
     public Class<T> getQueryResultClass() {

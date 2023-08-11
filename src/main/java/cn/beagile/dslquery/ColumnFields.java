@@ -14,6 +14,7 @@ public class ColumnFields {
     private List<String> ignores = new ArrayList<>();
     private List<ColumnField> fields;
     private List<JoinField> joinFields = new ArrayList<>();
+    private List<One2ManyField> one2ManyFields = new ArrayList<>();
 
     public ColumnFields(Class clz) {
         Ignores ignores = (Ignores) clz.getAnnotation(Ignores.class);
@@ -24,6 +25,16 @@ public class ColumnFields {
         readPrimitiveFields(clz);
         readJoins(clz, new ArrayList<>());
         readEmbeddedFields(clz);
+        readOneToManyFields(clz);
+    }
+
+    private void readOneToManyFields(Class clz) {
+        Arrays.stream(clz.getDeclaredFields()).filter(
+                field -> field.isAnnotationPresent(OneToMany.class)
+        ).forEach(field -> {
+            one2ManyFields.add(new One2ManyField(field));
+        });
+
     }
 
     private void readPrimitiveFields(Class clz) {
@@ -50,6 +61,7 @@ public class ColumnFields {
     private void readJoinFields(Class clz, List<Field> parents, Class<? extends Annotation> annotation) {
         Arrays.stream(clz.getDeclaredFields())
                 .filter(field -> field.isAnnotationPresent(annotation))
+                .filter(field -> !field.isAnnotationPresent(OneToMany.class))
                 .forEach(field -> {
                     readJoinFieldsFromField(parents, annotation, field);
                 });
@@ -168,5 +180,15 @@ public class ColumnFields {
                 .map(SelectIgnores::value)
                 .orElse(new String[0]));
         return selectIgnores;
+    }
+
+    public List<One2ManyField> oneToManyFields() {
+        return one2ManyFields;
+    }
+
+    public void fetchOneToManyFields(Object master, QueryExecutor queryExecutor) {
+        one2ManyFields.forEach(one2ManyField -> {
+            one2ManyField.fetch(master, queryExecutor);
+        });
     }
 }

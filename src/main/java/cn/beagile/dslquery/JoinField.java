@@ -54,7 +54,8 @@ public class JoinField {
 
     private String singleJoinStatement() {
         JoinColumn joinColumn = field.getAnnotation(JoinColumn.class);
-        return JoinBuilder.joinBuilder().joinTable(field.getType().getAnnotation(View.class).value())
+        return JoinBuilder.joinBuilder()
+                .joinTable(field.getType().getAnnotation(View.class).value())
                 .joinTableAlias(getTableAlias())
                 .joinField(joinColumn.referencedColumnName())
                 .onTable(getJoinTable())

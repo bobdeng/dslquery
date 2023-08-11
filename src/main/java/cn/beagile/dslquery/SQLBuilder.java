@@ -155,7 +155,7 @@ class SQLBuilder<T> {
     }
 
     private String getSelectSQL() {
-        String select = "select"+ columnFields.distinct() + columnFields.selectFields().stream().map(ColumnField::expression).collect(Collectors.joining(",")) + " from " + columnFields.from();
+        String select = "select" + columnFields.distinct() + columnFields.selectFields().stream().map(ColumnField::expression).collect(Collectors.joining(",")) + " from " + columnFields.from();
         String join = columnFields.joins();
         return Stream.of(select, join).collect(Collectors.joining("\n"));
     }
@@ -171,5 +171,13 @@ class SQLBuilder<T> {
             lines.add(getWhereSQL());
         }
         return lines.stream().map(String::trim).collect(Collectors.joining("\n"));
+    }
+
+    public void fetchOne2Many(List<T> result, QueryExecutor queryExecutor) {
+        result.forEach(t -> fetchOne2Many(t, queryExecutor));
+    }
+
+    private void fetchOne2Many(T t, QueryExecutor queryExecutor) {
+        columnFields.fetchOneToManyFields(t, queryExecutor);
     }
 }

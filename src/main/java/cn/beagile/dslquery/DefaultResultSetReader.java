@@ -93,7 +93,8 @@ class DefaultResultSetReader<T> implements Function<ResultSet, T> {
     private void readJson(ResultSet resultSet, Object result, Field field) throws SQLException {
         String fieldValue = resultSet.getString(getFieldColumnName(field));
         if (fieldValue != null) {
-            new ReflectFieldSetter(result, field, new Gson().fromJson(fieldValue, field.getType())).set();
+            ReflectField reflectField = new ReflectField(result, field, new Gson().fromJson(fieldValue, field.getType()));
+            reflectField.set(new Gson().fromJson(fieldValue, field.getType()));
         }
     }
 
@@ -102,7 +103,8 @@ class DefaultResultSetReader<T> implements Function<ResultSet, T> {
         if (resultSet.wasNull()) {
             return;
         }
-        new ReflectFieldSetter(result, field, value).set();
+        ReflectField reflectField = new ReflectField(result, field, value);
+        reflectField.set(value);
     }
 
     private String getFieldColumnName(Field field) {
@@ -111,6 +113,7 @@ class DefaultResultSetReader<T> implements Function<ResultSet, T> {
     }
 
     private void setEmbeddedFieldValue(ResultSet resultSet, Object result, Field field) {
-        new ReflectFieldSetter(result, field, newInstance(resultSet, field.getType())).set();
+        ReflectField reflectField = new ReflectField(result, field, newInstance(resultSet, field.getType()));
+        reflectField.set(newInstance(resultSet, field.getType()));
     }
 }

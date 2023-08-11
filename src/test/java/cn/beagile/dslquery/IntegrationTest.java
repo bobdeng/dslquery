@@ -24,6 +24,8 @@ public class IntegrationTest {
 
     @View("person")
     public static class Person {
+        @Column(name = "id")
+        private Integer id;
         @Column(name = "name1")
         private String name;
         @Column(name = "age")
@@ -56,6 +58,9 @@ public class IntegrationTest {
 
         @JoinColumn(name = "org_id", referencedColumnName = "id")
         private Org org;
+        @OneToMany(targetEntity = Child.class)
+        @JoinColumn(name = "id", referencedColumnName = "personId")
+        private List<Child> children;
     }
 
     @View("org")
@@ -70,6 +75,16 @@ public class IntegrationTest {
     public static class Area {
         @Column(name = "name")
         private String name;
+    }
+
+    @View("children")
+    public static class Child {
+        @Column(name = "name")
+        private String name;
+        @Column(name = "person_id")
+        private Integer personId;
+        @Column(name = "id")
+        private Integer id;
     }
 
     public static class SpringQueryExecutor implements QueryExecutor {
@@ -94,12 +109,14 @@ public class IntegrationTest {
             return jdbcTemplate.query(sqlQuery.getCountSql(), sqlQuery.getParams(), (rs, rowNum) -> rs.getInt(1)).get(0);
         }
     }
+
     @Test
     public void should_query_by_area() {
         DSLQuery<Person> query = new DSLQuery<>(new SpringQueryExecutor(jdbcTemplate), Person.class);
         List<Person> result = query.timezoneOffset(-8).where("(and(org.area.name equals cn))").skip(0).limit(10).query();
         assertEquals(1, result.size());
     }
+
     @Test
     public void should_query() {
 
@@ -122,6 +139,16 @@ public class IntegrationTest {
         assertEquals("123 main st", result.get(0).contact.address);
         assertEquals("123456789", result.get(0).contact.phone);
         assertEquals("12345", result.get(0).contact.zipCode.code);
+    }
+
+    @Test
+    public void should_query_with_one2many() {
+
+        DSLQuery<Person> query = new DSLQuery<>(new SpringQueryExecutor(jdbcTemplate), Person.class);
+        List<Person> result = query.skip(0).limit(10).query();
+        assertEquals(2, result.size());
+        assertEquals(2, result.get(1).children.size());
+        assertEquals(0, result.get(0).children.size());
     }
 
     @Test
