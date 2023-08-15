@@ -7,6 +7,7 @@ import javax.persistence.*;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -52,7 +53,7 @@ public class JoinAndEmbeddedTest {
 
     @Test
     public void should_read_join_fields() throws SQLException {
-        DefaultResultSetReader<User> reader = new DefaultResultSetReader<>(dslQuery.getQueryResultClass());
+        DefaultResultSetReader<User> reader = new DefaultResultSetReader<>(dslQuery.getQueryResultClass(), Arrays.asList());
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getString("name_")).thenReturn("张三");
         when(resultSet.getString("org_name_")).thenReturn("某公司");

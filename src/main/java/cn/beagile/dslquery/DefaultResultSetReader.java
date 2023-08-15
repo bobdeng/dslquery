@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -35,9 +36,9 @@ class DefaultResultSetReader<T> implements Function<ResultSet, T> {
     private final ColumnFields columnFields;
     private final Class queryClass;
 
-    public DefaultResultSetReader(Class queryClass) {
+    public <T> DefaultResultSetReader(Class<T> queryClass, List<String> ignores) {
         this.queryClass = queryClass;
-        columnFields = new ColumnFields(queryClass);
+        columnFields = new ColumnFields(queryClass, ignores);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package cn.beagile.dslquery;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class DSLQuery<T> {
@@ -11,16 +12,18 @@ public class DSLQuery<T> {
     private Integer skip;
     private Integer limit;
     private int timezoneOffset;
-    private List<String> ignores=new ArrayList<>();
+    private List<String> ignores = new ArrayList<>();
 
     public DSLQuery(QueryExecutor queryExecutor, Class<T> queryResultClass) {
         this.queryExecutor = queryExecutor;
         this.queryResultClass = queryResultClass;
         this.whereList = new ArrayList<>();
     }
-    public Paging getPage(){
+
+    public Paging getPage() {
         return new Paging(getSkip(), getLimit());
     }
+
     public DSLQuery<T> where(String where) {
         if (where == null || where.isEmpty()) {
             return this;
@@ -54,16 +57,16 @@ public class DSLQuery<T> {
 
     public Paged<T> pagedQuery() {
         SQLBuilder<T> sqlBuilder = new SQLBuilder<>(this);
-        List<T> result = queryExecutor.list(new DefaultResultSetReader<>(queryResultClass), sqlBuilder.build());
+        List<T> result = queryExecutor.list(new DefaultResultSetReader<>(queryResultClass, ignores), sqlBuilder.build());
         int count = queryExecutor.count(sqlBuilder.build());
-        sqlBuilder.fetchOne2Many(result,queryExecutor);
+        sqlBuilder.fetchOne2Many(result, queryExecutor);
         return new Paged<>(result, count, new Paging(this.skip, this.limit));
     }
 
     public List<T> query() {
         SQLBuilder<T> sqlBuilder = new SQLBuilder<>(this);
-        List<T> result = queryExecutor.list(new DefaultResultSetReader<>(queryResultClass), sqlBuilder.build());
-        sqlBuilder.fetchOne2Many(result,queryExecutor);
+        List<T> result = queryExecutor.list(new DefaultResultSetReader<>(queryResultClass, ignores), sqlBuilder.build());
+        sqlBuilder.fetchOne2Many(result, queryExecutor);
         return result;
     }
 
@@ -91,8 +94,8 @@ public class DSLQuery<T> {
         return timezoneOffset;
     }
 
-    public DSLQuery<T> ignores(String fieldName) {
-        ignores.add(fieldName);
+    public DSLQuery<T> ignores(String... fieldName) {
+        Arrays.stream(fieldName).forEach(ignores::add);
         return this;
     }
 
