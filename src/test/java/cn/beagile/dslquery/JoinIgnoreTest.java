@@ -53,4 +53,15 @@ public class JoinIgnoreTest {
         );
     }
 
+    @Test
+    public void manual_ignores() {
+        dslQuery = new DSLQuery<>(null, User.class)
+                .ignores("area");
+        sqlBuilder = new SQLBuilder<>(dslQuery);
+        assertEquals("select t_user.name name_,org_.name org_name_ from t_user\n" +
+                        "left join t_org org_ on org_.id = t_user.org_id"
+                , sqlBuilder.sql()
+        );
+    }
+
 }

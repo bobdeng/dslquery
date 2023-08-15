@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ColumnFields {
     private final Class clz;
@@ -17,10 +18,15 @@ public class ColumnFields {
     private List<One2ManyField> one2ManyFields = new ArrayList<>();
 
     public ColumnFields(Class clz) {
-        Ignores ignores = (Ignores) clz.getAnnotation(Ignores.class);
+        this(clz, new ArrayList<>());
+    }
+
+    public <T> ColumnFields(Class<T> clz, List<String> otherIgnores) {
+        Ignores ignores = clz.getAnnotation(Ignores.class);
         if (ignores != null) {
             this.ignores = Arrays.asList(ignores.value());
         }
+        this.ignores = Stream.concat(this.ignores.stream(), otherIgnores.stream()).collect(Collectors.toList());
         this.clz = clz;
         readPrimitiveFields(clz);
         readJoins(clz, new ArrayList<>());

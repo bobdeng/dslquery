@@ -11,6 +11,7 @@ public class DSLQuery<T> {
     private Integer skip;
     private Integer limit;
     private int timezoneOffset;
+    private List<String> ignores=new ArrayList<>();
 
     public DSLQuery(QueryExecutor queryExecutor, Class<T> queryResultClass) {
         this.queryExecutor = queryExecutor;
@@ -90,4 +91,12 @@ public class DSLQuery<T> {
         return timezoneOffset;
     }
 
+    public DSLQuery<T> ignores(String fieldName) {
+        ignores.add(fieldName);
+        return this;
+    }
+
+    public List<String> getIgnores() {
+        return ignores;
+    }
 }
