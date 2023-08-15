@@ -83,7 +83,7 @@ public class ColumnFields {
 
     private boolean isFieldIgnored(List<Field> newParents) {
         String fieldName = newParents.stream().map(Field::getName).collect(Collectors.joining("."));
-        return ignores.contains(fieldName);
+        return ignores.stream().anyMatch(fieldName::startsWith);
     }
 
     private void readJoinColumnFields(Field field, List<Field> newParents) {
