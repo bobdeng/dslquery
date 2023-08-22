@@ -103,7 +103,6 @@ class DefaultResultSetReader<T> implements Function<ResultSet, T> {
     }
 
     private String getFieldColumnName(Field field, List<Field> parents) {
-        System.out.println(columnFields.findField(field, parents).alias());
         return columnFields.findField(field, parents).alias();
     }
 
