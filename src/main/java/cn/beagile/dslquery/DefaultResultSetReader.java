@@ -14,7 +14,9 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 class DefaultResultSetReader<T> implements Function<ResultSet, T> {
@@ -35,6 +37,7 @@ class DefaultResultSetReader<T> implements Function<ResultSet, T> {
 
     private final ColumnFields columnFields;
     private final Class queryClass;
+    private Stack<Field> parents = new Stack<>();
 
     public <T> DefaultResultSetReader(Class<T> queryClass, List<String> ignores) {
         this.queryClass = queryClass;
@@ -92,15 +95,21 @@ class DefaultResultSetReader<T> implements Function<ResultSet, T> {
     }
 
     private void readJson(ResultSet resultSet, Object result, Field field) throws SQLException {
-        String fieldValue = resultSet.getString(getFieldColumnName(field));
+        String fieldValue = resultSet.getString(getFieldColumnName(field, parents.stream().collect(Collectors.toList())));
         if (fieldValue != null) {
             ReflectField reflectField = new ReflectField(result, field, new Gson().fromJson(fieldValue, field.getType()));
             reflectField.set(new Gson().fromJson(fieldValue, field.getType()));
         }
     }
 
+    private String getFieldColumnName(Field field, List<Field> parents) {
+        System.out.println(columnFields.findField(field, parents).alias());
+        return columnFields.findField(field, parents).alias();
+    }
+
+
     private void readPrimitive(ResultSet resultSet, Object result, Field field, ColumnFieldReader columnFieldReader) throws SQLException {
-        Object value = columnFieldReader.readValue(resultSet, getFieldColumnName(field));
+        Object value = columnFieldReader.readValue(resultSet, getFieldColumnName(field, parents.stream().collect(Collectors.toList())));
         if (resultSet.wasNull()) {
             return;
         }
@@ -114,7 +123,9 @@ class DefaultResultSetReader<T> implements Function<ResultSet, T> {
     }
 
     private void setEmbeddedFieldValue(ResultSet resultSet, Object result, Field field) {
+        parents.push(field);
         ReflectField reflectField = new ReflectField(result, field, newInstance(resultSet, field.getType()));
         reflectField.set(newInstance(resultSet, field.getType()));
+        parents.pop();
     }
 }

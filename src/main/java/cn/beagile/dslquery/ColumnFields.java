@@ -201,4 +201,8 @@ public class ColumnFields {
             one2ManyField.fetch(master, queryExecutor);
         });
     }
+
+    public ColumnField findField(Field field, List<Field> parents) {
+        return this.fields.stream().filter(columnField -> columnField.is(field, parents)).findFirst().orElseThrow(() -> new RuntimeException("not found"));
+    }
 }

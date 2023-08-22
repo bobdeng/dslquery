@@ -73,4 +73,8 @@ public class ColumnField {
     public String parentNames() {
         return parents.stream().map(Field::getName).collect(Collectors.joining("."));
     }
+
+    public boolean is(Field field, List<Field> parents) {
+        return this.field.equals(field) && this.parents.equals(parents);
+    }
 }
