@@ -152,12 +152,8 @@ public class ColumnFields {
         return joinFields.stream().map(JoinField::joinStatement).collect(Collectors.joining("\n"));
     }
 
-    public ColumnField findField(Field field) {
-        return this.fields.stream().filter(columnField -> columnField.is(field)).findFirst().orElseThrow(() -> new RuntimeException("not found"));
-    }
-
-    public boolean hasField(Field field) {
-        return this.fields.stream().anyMatch(columnField -> columnField.is(field));
+    public boolean hasField(Field field,List<Field> parents) {
+        return this.fields.stream().anyMatch(columnField -> columnField.is(field,parents));
     }
 
     public ColumnField findFieldByName(String field) {

@@ -62,10 +62,6 @@ public class ColumnField {
                 .map(Field::getName).collect(Collectors.joining("."));
     }
 
-    public boolean is(Field field) {
-        return this.field.equals(field);
-    }
-
     public Field getField() {
         return field;
     }

@@ -11,10 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -77,7 +74,7 @@ class DefaultResultSetReader<T> implements Function<ResultSet, T> {
 
     private void setPrimitiveFields(ResultSet resultSet, Class clz, Object result) {
         Stream.of(clz.getDeclaredFields())
-                .filter(columnFields::hasField)
+                .filter(field1 -> columnFields.hasField(field1, new ArrayList<>(parents)))
                 .forEach(field -> setFieldValue(resultSet, result, field));
     }
 
@@ -95,7 +92,7 @@ class DefaultResultSetReader<T> implements Function<ResultSet, T> {
     }
 
     private void readJson(ResultSet resultSet, Object result, Field field) throws SQLException {
-        String fieldValue = resultSet.getString(getFieldColumnName(field, parents.stream().collect(Collectors.toList())));
+        String fieldValue = resultSet.getString(getFieldColumnName(field, new ArrayList<>(parents)));
         if (fieldValue != null) {
             ReflectField reflectField = new ReflectField(result, field, new Gson().fromJson(fieldValue, field.getType()));
             reflectField.set(new Gson().fromJson(fieldValue, field.getType()));
@@ -108,17 +105,12 @@ class DefaultResultSetReader<T> implements Function<ResultSet, T> {
 
 
     private void readPrimitive(ResultSet resultSet, Object result, Field field, ColumnFieldReader columnFieldReader) throws SQLException {
-        Object value = columnFieldReader.readValue(resultSet, getFieldColumnName(field, parents.stream().collect(Collectors.toList())));
+        Object value = columnFieldReader.readValue(resultSet, getFieldColumnName(field, new ArrayList<>(parents)));
         if (resultSet.wasNull()) {
             return;
         }
         ReflectField reflectField = new ReflectField(result, field, value);
         reflectField.set(value);
-    }
-
-    private String getFieldColumnName(Field field) {
-        ColumnField columnField = columnFields.findField(field);
-        return columnField.alias();
     }
 
     private void setEmbeddedFieldValue(ResultSet resultSet, Object result, Field field) {
