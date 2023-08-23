@@ -1,6 +1,7 @@
 package cn.beagile.dslquery;
 
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,6 @@ public class ColumnField {
     }
 
     public String alias() {
-        System.out.println(Stream.concat(parents.stream(), Stream.of(field)).map(Field::getName).collect(Collectors.joining("_")));
         return Stream.concat(parents.stream(), Stream.of(field))
                 .map(Field::getName).collect(Collectors.joining("_", "", "_"));
     }
@@ -49,6 +49,10 @@ public class ColumnField {
 
     private Object getTableName() {
         if (joined) {
+            Field lastParentField = parents.get(parents.size() - 1);
+            if (lastParentField.isAnnotationPresent(Embedded.class)) {
+                return parents.stream().map(Field::getName).limit(parents.size() - 1).collect(Collectors.joining("_", "", "_"));
+            }
             return parents.stream().map(Field::getName).collect(Collectors.joining("_", "", "_"));
         }
         return getRootTable();

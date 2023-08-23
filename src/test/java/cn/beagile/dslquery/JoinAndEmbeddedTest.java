@@ -68,10 +68,11 @@ public class JoinAndEmbeddedTest {
     }
 
     @Test
-    public void should_select_join_fields_with_embedded() throws SQLException {
+    public void should_select_join_fields_with_embedded() {
         ColumnFields columnFields = new ColumnFields(User.class);
         columnFields.selectFields().stream().map(ColumnField::expression).forEach(System.out::println);
-        assertTrue(columnFields.selectFields().stream().map(ColumnField::expression).anyMatch(select -> select.contains("org_userContact_name_")));
+        assertTrue(columnFields.selectFields().stream().map(ColumnField::expression).anyMatch(select -> select.contains("org_.contact_name org_userContact_name_")));
+
     }
 
     @Test

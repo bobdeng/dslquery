@@ -117,7 +117,7 @@ public class ColumnFields {
                 List<Field> newParents = new ArrayList<>();
                 newParents.addAll(parents);
                 Field embeddedField = getFieldByName(field, names, newParents);
-                fields.add(new ColumnField(embeddedField, clz, newParents, attributeOverride.column(), false));
+                fields.add(new ColumnField(embeddedField, clz, newParents, attributeOverride.column(), !clz.equals(this.clz)));
             } catch (NoSuchFieldException e) {
                 throw new RuntimeException(e);
             }
