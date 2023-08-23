@@ -9,8 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -36,6 +35,11 @@ public class JoinAndEmbeddedTest {
     public static class Org {
         @Column(name = "name")
         private String name;
+        @Embedded
+        @AttributeOverrides({
+                @AttributeOverride(name = "name", column = @Column(name = "contact_name"))
+        })
+        private UserContact userContact;
     }
 
     @View("user_contact")
@@ -61,5 +65,21 @@ public class JoinAndEmbeddedTest {
         assertEquals("张三", result.name);
         assertNotNull(result.org);
         assertEquals("某公司", result.org.name);
+    }
+
+    @Test
+    public void should_select_join_fields_with_embedded() throws SQLException {
+        ColumnFields columnFields = new ColumnFields(User.class);
+        columnFields.selectFields().stream().map(ColumnField::expression).forEach(System.out::println);
+        assertTrue(columnFields.selectFields().stream().map(ColumnField::expression).anyMatch(select -> select.contains("org_userContact_name_")));
+    }
+
+    @Test
+    public void should_read_join_fields_with_embedded() throws SQLException {
+        DefaultResultSetReader<User> reader = new DefaultResultSetReader<>(dslQuery.getQueryResultClass(), Arrays.asList());
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.getString("org_userContact_name_")).thenReturn("张三");
+        User result = reader.apply(resultSet);
+        assertEquals("张三", result.org.userContact.name);
     }
 }

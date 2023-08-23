@@ -34,6 +34,7 @@ public class ColumnField {
     }
 
     public String alias() {
+        System.out.println(Stream.concat(parents.stream(), Stream.of(field)).map(Field::getName).collect(Collectors.joining("_")));
         return Stream.concat(parents.stream(), Stream.of(field))
                 .map(Field::getName).collect(Collectors.joining("_", "", "_"));
     }

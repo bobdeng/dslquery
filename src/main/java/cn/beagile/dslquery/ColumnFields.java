@@ -49,13 +49,17 @@ public class ColumnFields {
     }
 
     private void readEmbeddedFields(Class clz) {
+        readEmbeddedFields(clz, new ArrayList<>());
+    }
+
+    private void readEmbeddedFields(Class clz, List<Field> parents) {
         Arrays.stream(clz.getDeclaredFields())
                 .filter(field -> field.isAnnotationPresent(Embedded.class))
                 .forEach(field -> {
-                    List<Field> parents = new ArrayList<>();
-                    parents.add(field);
+                    List<Field> newParents = new ArrayList<>(parents);
+                    newParents.add(field);
                     AttributeOverrides overrides = field.getAnnotation(AttributeOverrides.class);
-                    readEmbedded(clz, field, parents, overrides);
+                    readEmbedded(clz, field, newParents, overrides);
                 });
     }
 
@@ -69,15 +73,16 @@ public class ColumnFields {
                 .filter(field -> field.isAnnotationPresent(annotation))
                 .filter(field -> !field.isAnnotationPresent(OneToMany.class))
                 .forEach(field -> {
-                    readJoinFieldsFromField(parents, annotation, field);
+                    readJoinFieldsFromField(parents, field);
                 });
     }
 
-    private void readJoinFieldsFromField(List<Field> parents, Class<? extends Annotation> annotation, Field field) {
+    private void readJoinFieldsFromField(List<Field> parents, Field field) {
         List<Field> newParents = newParents(parents, field);
         if (isFieldIgnored(newParents)) return;
         joinFields.add(new JoinField(field, newParents));
         readJoinColumnFields(field, newParents);
+        readEmbeddedFields(field.getType(), newParents);
         readJoins(field.getType(), newParents);
     }
 
@@ -152,8 +157,8 @@ public class ColumnFields {
         return joinFields.stream().map(JoinField::joinStatement).collect(Collectors.joining("\n"));
     }
 
-    public boolean hasField(Field field,List<Field> parents) {
-        return this.fields.stream().anyMatch(columnField -> columnField.is(field,parents));
+    public boolean hasField(Field field, List<Field> parents) {
+        return this.fields.stream().anyMatch(columnField -> columnField.is(field, parents));
     }
 
     public ColumnField findFieldByName(String field) {
