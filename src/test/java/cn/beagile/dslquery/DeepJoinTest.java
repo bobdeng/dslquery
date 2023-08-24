@@ -15,6 +15,7 @@ import static org.mockito.Mockito.when;
 
 public class DeepJoinTest {
     @View("t_user")
+    @DeepJoinIncludes({"org.area","org.city", "org.city.area"})
     public static class User {
         @Column(name = "name")
         private String name;

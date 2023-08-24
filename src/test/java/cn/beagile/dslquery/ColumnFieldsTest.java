@@ -116,6 +116,7 @@ public class ColumnFieldsTest {
     }
 
     @View("t_tool")
+    @DeepJoinIncludes("slave.master")
     public static class Tool {
         @JoinColumn(name = "slave_id", referencedColumnName = "id")
         public Slave slave;

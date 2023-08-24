@@ -23,6 +23,7 @@ public class IntegrationTest {
     NamedParameterJdbcTemplate jdbcTemplate;
 
     @View("person")
+    @DeepJoinIncludes("org.area")
     public static class Person {
         @Column(name = "id")
         private Integer id;

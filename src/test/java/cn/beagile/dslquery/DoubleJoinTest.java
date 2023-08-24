@@ -22,6 +22,7 @@ public class DoubleJoinTest {
     private SQLBuilder<User> sqlBuilder;
 
     @View("t_user")
+    @DeepJoinIncludes({"org.area"})
     public static class User {
         @Column(name = "name")
         private String name;

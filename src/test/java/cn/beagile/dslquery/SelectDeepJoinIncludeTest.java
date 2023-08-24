@@ -5,16 +5,19 @@ import org.junit.jupiter.api.Test;
 
 import javax.persistence.Column;
 import javax.persistence.JoinColumn;
+import java.sql.ResultSet;
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
-public class JoinIgnoreTest {
+public class SelectDeepJoinIncludeTest {
 
     private DSLQuery<User> dslQuery;
     private SQLBuilder<User> sqlBuilder;
 
     @View("t_user")
-    @Ignores({"org.area"})
+    @DeepJoinIncludes({"org.area"})
     public static class User {
         @Column(name = "name")
         private String name;
@@ -47,21 +50,20 @@ public class JoinIgnoreTest {
     @Test
     public void should_select_join() {
         sqlBuilder = new SQLBuilder<>(dslQuery);
-        assertEquals("select t_user.name name_,org_.name org_name_,area_.name area_name_ from t_user\n" +
+        assertEquals("select t_user.name name_,org_.name org_name_,org_area_.name org_area_name_,area_.name area_name_ from t_user\n" +
                 "left join t_org org_ on org_.id = t_user.org_id\n" +
+                "left join t_area org_area_ on org_area_.id = org_.area_id\n" +
                 "left join t_area area_ on area_.id = t_user.area_id", sqlBuilder.sql()
         );
     }
 
     @Test
-    public void manual_ignores() {
-        dslQuery = new DSLQuery<>(null, User.class)
-                .ignores("area");
-        sqlBuilder = new SQLBuilder<>(dslQuery);
-        assertEquals("select t_user.name name_,org_.name org_name_ from t_user\n" +
-                        "left join t_org org_ on org_.id = t_user.org_id"
-                , sqlBuilder.sql()
-        );
+    public void should_not_read() {
+        DefaultResultSetReader<User> reader = new DefaultResultSetReader<>(User.class, Arrays.asList());
+        ResultSet resultSet = mock(ResultSet.class);
+        User user = reader.apply(resultSet);
+        assertNotNull(user.org.area);
     }
+
 
 }

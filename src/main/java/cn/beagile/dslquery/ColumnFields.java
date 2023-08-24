@@ -3,10 +3,7 @@ package cn.beagile.dslquery;
 import javax.persistence.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -16,12 +13,17 @@ public class ColumnFields {
     private List<ColumnField> fields;
     private List<JoinField> joinFields = new ArrayList<>();
     private List<One2ManyField> one2ManyFields = new ArrayList<>();
+    private Set<String> includes;
 
     public ColumnFields(Class clz) {
         this(clz, new ArrayList<>());
     }
 
     public <T> ColumnFields(Class<T> clz, List<String> otherIgnores) {
+        String[] deepJoinIncludes = Optional.ofNullable(clz.getAnnotation(DeepJoinIncludes.class))
+                .map(DeepJoinIncludes::value)
+                .orElse(new String[]{});
+        this.includes = Stream.of(deepJoinIncludes).collect(Collectors.toSet());
         Ignores ignores = clz.getAnnotation(Ignores.class);
         if (ignores != null) {
             this.ignores = Arrays.asList(ignores.value());
@@ -68,10 +70,19 @@ public class ColumnFields {
         readJoinFields(clz, parents, JoinColumns.class);
     }
 
+    private boolean isJoinInclude(Field field, List<Field> parents) {
+        if (parents.size() == 0) {
+            return true;
+        }
+        String fieldName = Stream.concat(parents.stream(), Stream.of(field)).map(Field::getName).collect(Collectors.joining("."));
+        return includes.contains(fieldName);
+    }
+
     private void readJoinFields(Class clz, List<Field> parents, Class<? extends Annotation> annotation) {
         Arrays.stream(clz.getDeclaredFields())
                 .filter(field -> field.isAnnotationPresent(annotation))
                 .filter(field -> !field.isAnnotationPresent(OneToMany.class))
+                .filter(field -> isJoinInclude(field, parents))
                 .forEach(field -> {
                     readJoinFieldsFromField(parents, field);
                 });
