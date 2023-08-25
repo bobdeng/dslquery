@@ -134,7 +134,7 @@ class SQLBuilder<T> {
     private String getSQL() {
         List<String> lines = new ArrayList<>();
         lines.add(getSelectSQL());
-        if (getWhereList().size() > 0) {
+        if (!getWhereList().isEmpty()) {
             lines.add(getWhereSQL());
         }
         if (dslQuery.getSort() != null) {
@@ -157,7 +157,7 @@ class SQLBuilder<T> {
     private String getSelectSQL() {
         String select = "select" + columnFields.distinct() + columnFields.selectFields().stream().map(ColumnField::expression).collect(Collectors.joining(",")) + " from " + columnFields.from();
         String join = columnFields.joins();
-        return Stream.of(select, join).collect(Collectors.joining("\n"));
+        return String.join("\n", select, join);
     }
 
     private String getSortSQL() {
@@ -166,8 +166,8 @@ class SQLBuilder<T> {
 
     private String getCountSQL() {
         List<String> lines = new ArrayList<>();
-        lines.add(String.format("select count(*) from %s\n%s", columnFields.from(), columnFields.joins()));
-        if (getWhereList().size() > 0) {
+        lines.add(String.format("select count(*) from %s\n%s", columnFields.from(), columnFields.countJoins()));
+        if (!getWhereList().isEmpty()) {
             lines.add(getWhereSQL());
         }
         return lines.stream().map(String::trim).collect(Collectors.joining("\n"));

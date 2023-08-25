@@ -54,6 +54,21 @@ public class IgnoreDeepJoinTest {
                 "left join t_area area_ on area_.id = t_user.area_id", sqlBuilder.sql()
         );
     }
+    @Test
+    public void should_select_count_join() {
+        dslQuery.selectIgnores("org","area");
+        sqlBuilder = new SQLBuilder<>(dslQuery);
+        assertEquals("select count(*) from t_user", sqlBuilder.countSql()
+        );
+    }
+    @Test
+    public void should_select_count_join_withignore() {
+        sqlBuilder = new SQLBuilder<>(dslQuery);
+        assertEquals("select count(*) from t_user\n" +
+                "left join t_org org_ on org_.id = t_user.org_id\n" +
+                "left join t_area area_ on area_.id = t_user.area_id", sqlBuilder.countSql()
+        );
+    }
 
     @Test
     public void should_not_read() {

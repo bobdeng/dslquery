@@ -171,6 +171,12 @@ public class ColumnFields {
         return joinFields.stream().map(JoinField::joinStatement).collect(Collectors.joining("\n"));
     }
 
+    public String countJoins() {
+        return joinFields.stream()
+                .filter(joinField -> !this.selectIgnores.contains(joinField.parentNames()))
+                .map(JoinField::joinStatement).collect(Collectors.joining("\n"));
+    }
+
     public boolean hasField(Field field, List<Field> parents) {
         return this.fields.stream().anyMatch(columnField -> columnField.is(field, parents));
     }
