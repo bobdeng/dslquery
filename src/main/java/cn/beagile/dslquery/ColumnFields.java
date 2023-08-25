@@ -45,7 +45,7 @@ public class ColumnFields {
         String[] deepJoinIncludes = Optional.ofNullable(clz.getAnnotation(DeepJoinIncludes.class))
                 .map(DeepJoinIncludes::value)
                 .orElse(new String[]{});
-        Stream<String> streamDeepJoins = Arrays.asList(deepJoinIncludes).stream();
+        Stream<String> streamDeepJoins = Arrays.stream(deepJoinIncludes);
         Stream<String> streamDeepJoinsOuter = Optional.ofNullable(dslQuery).map(it -> it.getDeepJoins().stream()).orElse(Stream.empty());
         this.includes = Stream.concat(streamDeepJoins, streamDeepJoinsOuter).collect(Collectors.toSet());
     }
