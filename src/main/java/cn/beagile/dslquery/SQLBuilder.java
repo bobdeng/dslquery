@@ -46,7 +46,7 @@ class SQLBuilder<T> {
     SQLBuilder(DSLQuery<T> dslQuery) {
         this.dslQuery = dslQuery;
         this.params = new HashMap<>();
-        columnFields = new ColumnFields(dslQuery.getQueryResultClass(),dslQuery.getIgnores());
+        columnFields = new ColumnFields(dslQuery.getQueryResultClass(),dslQuery);
     }
 
 

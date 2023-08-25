@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import javax.persistence.Column;
 import javax.persistence.JoinColumn;
 import java.sql.ResultSet;
-import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -59,7 +58,7 @@ public class SelectDeepJoinIncludeTest {
 
     @Test
     public void should_not_read() {
-        DefaultResultSetReader<User> reader = new DefaultResultSetReader<>(User.class, Arrays.asList());
+        DefaultResultSetReader<User> reader = new DefaultResultSetReader<>(User.class);
         ResultSet resultSet = mock(ResultSet.class);
         User user = reader.apply(resultSet);
         assertNotNull(user.org.area);

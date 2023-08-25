@@ -152,12 +152,5 @@ public class ColumnFieldsTest {
         assertEquals("left join t_slave on t_slave.id = t_tool.slave_id\n" +
                 "left join t_master master_ on master_.id = t_slave.master_id", columnFields.joins());
     }
-    @Test
-    public void should_be_ignore_when_same(){
-        ColumnFields columnFields = new ColumnFields(ToolMaster.class, Arrays.asList("abc"));
-        assertTrue(columnFields.isFieldIgnored("abc"));
-        assertTrue(columnFields.isFieldIgnored("abc.ef"));
-        assertFalse(columnFields.isFieldIgnored("abcDef"));
-        assertFalse(columnFields.isFieldIgnored("abcDef.abc"));
-    }
+
 }

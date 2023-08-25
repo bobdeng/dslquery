@@ -13,7 +13,6 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 class DefaultResultSetReader<T> implements Function<ResultSet, T> {
@@ -36,9 +35,14 @@ class DefaultResultSetReader<T> implements Function<ResultSet, T> {
     private final Class queryClass;
     private Stack<Field> parents = new Stack<>();
 
-    public <T> DefaultResultSetReader(Class<T> queryClass, List<String> ignores) {
+    public <T> DefaultResultSetReader(Class<T> queryClass) {
         this.queryClass = queryClass;
-        columnFields = new ColumnFields(queryClass, ignores);
+        columnFields = new ColumnFields(queryClass);
+    }
+
+    public <T> DefaultResultSetReader(Class<T> queryClass, DSLQuery<T> dslQuery) {
+        this.queryClass = queryClass;
+        columnFields = new ColumnFields(queryClass, dslQuery);
     }
 
     @Override

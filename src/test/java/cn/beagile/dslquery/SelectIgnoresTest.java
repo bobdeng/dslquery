@@ -7,7 +7,6 @@ import javax.persistence.JoinColumn;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -50,7 +49,7 @@ public class SelectIgnoresTest {
 
     @Test
     public void should_not_read_ignored_field() throws SQLException {
-        DefaultResultSetReader<QueryResult> reader = new DefaultResultSetReader<>(QueryResult.class, Arrays.asList());
+        DefaultResultSetReader<QueryResult> reader = new DefaultResultSetReader<>(QueryResult.class);
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getLong("ignoreBean_id_")).thenReturn(2L);
         QueryResult result = (QueryResult) reader.apply(resultSet);

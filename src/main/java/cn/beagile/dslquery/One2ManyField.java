@@ -27,6 +27,6 @@ public class One2ManyField {
         SQLQuery sqlQuery = new SQLBuilder<>(dslQuery)
                 .build();
         ReflectField reflectField = new ReflectField(master, field);
-        reflectField.set(queryExecutor.list(new DefaultResultSetReader<>(oneToMany.targetEntity(), Arrays.asList()), sqlQuery));
+        reflectField.set(queryExecutor.list(new DefaultResultSetReader<>(oneToMany.targetEntity(), dslQuery), sqlQuery));
     }
 }

@@ -9,31 +9,32 @@ import java.util.stream.Stream;
 
 public class ColumnFields {
     private final Class clz;
-    private List<String> ignores = new ArrayList<>();
     private List<ColumnField> fields;
     private List<JoinField> joinFields = new ArrayList<>();
     private List<One2ManyField> one2ManyFields = new ArrayList<>();
     private Set<String> includes;
 
-    public ColumnFields(Class clz) {
-        this(clz, new ArrayList<>());
+
+    public <T> ColumnFields(Class<T> clz) {
+        this(clz, null);
     }
 
-    public <T> ColumnFields(Class<T> clz, List<String> otherIgnores) {
-        String[] deepJoinIncludes = Optional.ofNullable(clz.getAnnotation(DeepJoinIncludes.class))
-                .map(DeepJoinIncludes::value)
-                .orElse(new String[]{});
-        this.includes = Stream.of(deepJoinIncludes).collect(Collectors.toSet());
-        Ignores ignores = clz.getAnnotation(Ignores.class);
-        if (ignores != null) {
-            this.ignores = Arrays.asList(ignores.value());
-        }
-        this.ignores = Stream.concat(this.ignores.stream(), otherIgnores.stream()).collect(Collectors.toList());
+    public <T> ColumnFields(Class<T> clz, DSLQuery dslQuery) {
+        initDeepJoins(clz, dslQuery);
         this.clz = clz;
         readPrimitiveFields(clz);
         readJoins(clz, new ArrayList<>());
         readEmbeddedFields(clz);
         readOneToManyFields(clz);
+    }
+
+    private <T> void initDeepJoins(Class<T> clz, DSLQuery dslQuery) {
+        String[] deepJoinIncludes = Optional.ofNullable(clz.getAnnotation(DeepJoinIncludes.class))
+                .map(DeepJoinIncludes::value)
+                .orElse(new String[]{});
+        Stream<String> streamDeepJoins = Arrays.asList(deepJoinIncludes).stream();
+        Stream<String> streamDeepJoinsOuter = Optional.ofNullable(dslQuery).map(it -> it.getDeepJoins().stream()).orElse(Stream.empty());
+        this.includes = Stream.concat(streamDeepJoins, streamDeepJoinsOuter).collect(Collectors.toSet());
     }
 
     private void readOneToManyFields(Class clz) {
@@ -90,20 +91,10 @@ public class ColumnFields {
 
     private void readJoinFieldsFromField(List<Field> parents, Field field) {
         List<Field> newParents = newParents(parents, field);
-        if (isFieldIgnored(newParents)) return;
         joinFields.add(new JoinField(field, newParents));
         readJoinColumnFields(field, newParents);
         readEmbeddedFields(field.getType(), newParents);
         readJoins(field.getType(), newParents);
-    }
-
-    private boolean isFieldIgnored(List<Field> newParents) {
-        String fieldName = newParents.stream().map(Field::getName).collect(Collectors.joining("."));
-        return isFieldIgnored(fieldName);
-    }
-
-    public boolean isFieldIgnored(String fieldName) {
-        return ignores.stream().anyMatch(prefix -> fieldName.startsWith(prefix + ".") || fieldName.equals(prefix));
     }
 
     private void readJoinColumnFields(Field field, List<Field> newParents) {

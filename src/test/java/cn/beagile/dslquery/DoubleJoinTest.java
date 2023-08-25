@@ -9,7 +9,6 @@ import javax.persistence.JoinColumns;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -58,7 +57,7 @@ public class DoubleJoinTest {
 
     @Test
     public void params() throws SQLException {
-        DefaultResultSetReader<User> reader = new DefaultResultSetReader<>(User.class, Arrays.asList());
+        DefaultResultSetReader<User> reader = new DefaultResultSetReader<>(User.class);
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getString("org_area_name_")).thenReturn("area");
         when(resultSet.getString("org_name_")).thenReturn("org");

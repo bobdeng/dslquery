@@ -9,7 +9,6 @@ import javax.persistence.Column;
 import javax.persistence.Embedded;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -71,7 +70,7 @@ public class EmbeddedTest {
 
     @Test
     public void should_read_job_titles() throws SQLException {
-        DefaultResultSetReader<QueryClass> reader = new DefaultResultSetReader<>(QueryClass.class, Arrays.asList());
+        DefaultResultSetReader<QueryClass> reader = new DefaultResultSetReader<>(QueryClass.class);
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getString("title_name_")).thenReturn("name1");
         when(resultSet.getString("title_level_")).thenReturn("level1");

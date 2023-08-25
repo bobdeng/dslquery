@@ -13,11 +13,16 @@ public class DSLQuery<T> {
     private Integer limit;
     private int timezoneOffset;
     private List<String> ignores = new ArrayList<>();
+    private List<String> deepJoins = new ArrayList<>();
 
     public DSLQuery(QueryExecutor queryExecutor, Class<T> queryResultClass) {
         this.queryExecutor = queryExecutor;
         this.queryResultClass = queryResultClass;
         this.whereList = new ArrayList<>();
+    }
+
+    public List<String> getDeepJoins() {
+        return deepJoins;
     }
 
     public Paging getPage() {
@@ -57,7 +62,7 @@ public class DSLQuery<T> {
 
     public Paged<T> pagedQuery() {
         SQLBuilder<T> sqlBuilder = new SQLBuilder<>(this);
-        List<T> result = queryExecutor.list(new DefaultResultSetReader<>(queryResultClass, ignores), sqlBuilder.build());
+        List<T> result = queryExecutor.list(new DefaultResultSetReader<>(queryResultClass, this), sqlBuilder.build());
         int count = queryExecutor.count(sqlBuilder.build());
         sqlBuilder.fetchOne2Many(result, queryExecutor);
         return new Paged<>(result, count, new Paging(this.skip, this.limit));
@@ -65,7 +70,7 @@ public class DSLQuery<T> {
 
     public List<T> query() {
         SQLBuilder<T> sqlBuilder = new SQLBuilder<>(this);
-        List<T> result = queryExecutor.list(new DefaultResultSetReader<>(queryResultClass, ignores), sqlBuilder.build());
+        List<T> result = queryExecutor.list(new DefaultResultSetReader<>(queryResultClass, this), sqlBuilder.build());
         sqlBuilder.fetchOne2Many(result, queryExecutor);
         return result;
     }
@@ -101,5 +106,10 @@ public class DSLQuery<T> {
 
     public List<String> getIgnores() {
         return ignores;
+    }
+
+    public DSLQuery<T> deepJoinIncludes(String... fields) {
+        deepJoins.addAll(Arrays.asList(fields));
+        return this;
     }
 }
