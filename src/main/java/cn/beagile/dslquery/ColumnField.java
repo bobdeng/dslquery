@@ -59,7 +59,7 @@ public class ColumnField<T> {
     }
 
     private String getRootTable() {
-        return ((View) this.rootClass.getAnnotation(View.class)).value();
+        return this.rootClass.getAnnotation(View.class).value();
     }
 
     public String fieldName() {

@@ -12,7 +12,6 @@ public class DSLQuery<T> {
     private Integer skip;
     private Integer limit;
     private int timezoneOffset;
-    private List<String> ignores = new ArrayList<>();
     private List<String> deepJoins = new ArrayList<>();
     private List<String> selectIgnores = new ArrayList<>();
 
@@ -98,15 +97,6 @@ public class DSLQuery<T> {
 
     public int getTimezoneOffset() {
         return timezoneOffset;
-    }
-
-    public DSLQuery<T> ignores(String... fieldName) {
-        Arrays.stream(fieldName).forEach(ignores::add);
-        return this;
-    }
-
-    public List<String> getIgnores() {
-        return ignores;
     }
 
     public DSLQuery<T> deepJoinIncludes(String... fields) {
