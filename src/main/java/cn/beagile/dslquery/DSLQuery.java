@@ -14,6 +14,7 @@ public class DSLQuery<T> {
     private int timezoneOffset;
     private List<String> ignores = new ArrayList<>();
     private List<String> deepJoins = new ArrayList<>();
+    private List<String> selectIgnores = new ArrayList<>();
 
     public DSLQuery(QueryExecutor queryExecutor, Class<T> queryResultClass) {
         this.queryExecutor = queryExecutor;
@@ -111,5 +112,14 @@ public class DSLQuery<T> {
     public DSLQuery<T> deepJoinIncludes(String... fields) {
         deepJoins.addAll(Arrays.asList(fields));
         return this;
+    }
+
+    public DSLQuery<T> selectIgnores(String... selectIgnores) {
+        this.selectIgnores.addAll(Arrays.asList(selectIgnores));
+        return this;
+    }
+
+    public List<String> getSelectIgnores() {
+        return selectIgnores;
     }
 }

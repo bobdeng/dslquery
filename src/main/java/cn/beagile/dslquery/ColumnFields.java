@@ -13,22 +13,35 @@ public class ColumnFields {
     private List<JoinField> joinFields = new ArrayList<>();
     private List<One2ManyField> one2ManyFields = new ArrayList<>();
     private Set<String> includes;
-
+    private Set<String> selectIgnores;
 
     public <T> ColumnFields(Class<T> clz) {
         this(clz, null);
     }
 
-    public <T> ColumnFields(Class<T> clz, DSLQuery dslQuery) {
-        initDeepJoins(clz, dslQuery);
+    public <T> ColumnFields(Class<T> clz, DSLQuery<T> dslQuery) {
         this.clz = clz;
+        initSelectIgnores(clz, dslQuery);
+        initDeepJoins(clz, dslQuery);
+        readFields(clz);
+    }
+
+    private <T> void readFields(Class<T> clz) {
         readPrimitiveFields(clz);
         readJoins(clz, new ArrayList<>());
         readEmbeddedFields(clz);
         readOneToManyFields(clz);
     }
 
-    private <T> void initDeepJoins(Class<T> clz, DSLQuery dslQuery) {
+    private <T> void initSelectIgnores(Class<T> clz, DSLQuery<T> dslQuery) {
+        List<String> innerSelectIgnores = Arrays.asList(Optional.ofNullable(clz.getAnnotation(SelectIgnores.class))
+                .map(SelectIgnores::value)
+                .orElse(new String[0]));
+        List<String> outerSelectIgnores = Optional.ofNullable(dslQuery).map(DSLQuery::getSelectIgnores).orElse(Collections.emptyList());
+        this.selectIgnores = Stream.concat(innerSelectIgnores.stream(), outerSelectIgnores.stream()).collect(Collectors.toSet());
+    }
+
+    private <T> void initDeepJoins(Class<T> clz, DSLQuery<T> dslQuery) {
         String[] deepJoinIncludes = Optional.ofNullable(clz.getAnnotation(DeepJoinIncludes.class))
                 .map(DeepJoinIncludes::value)
                 .orElse(new String[]{});
@@ -72,7 +85,7 @@ public class ColumnFields {
     }
 
     private boolean isJoinInclude(Field field, List<Field> parents) {
-        if (parents.size() == 0) {
+        if (parents.isEmpty()) {
             return true;
         }
         String fieldName = Stream.concat(parents.stream(), Stream.of(field)).map(Field::getName).collect(Collectors.joining("."));
@@ -138,9 +151,8 @@ public class ColumnFields {
     }
 
     public List<ColumnField> selectFields() {
-        List<String> selectIgnores = getSelectIgnores();
         return fields.stream().filter(field -> {
-            if (selectIgnores.contains(field.parentNames())) {
+            if (this.selectIgnores.contains(field.parentNames())) {
                 return false;
             }
             return true;
@@ -180,19 +192,10 @@ public class ColumnFields {
     }
 
     public boolean isIgnored(Field field) {
-        List<String> selectIgnores = getSelectIgnores();
-        boolean result = this.joinFields.stream()
+        return this.joinFields.stream()
                 .filter(joinField -> joinField.is(field))
-                .anyMatch(joinField -> selectIgnores.contains(joinField.parentNames()));
-        return result;
+                .anyMatch(joinField -> this.selectIgnores.contains(joinField.parentNames()));
 
-    }
-
-    private List<String> getSelectIgnores() {
-        List<String> selectIgnores = Arrays.asList(Optional.ofNullable(((SelectIgnores) clz.getAnnotation(SelectIgnores.class)))
-                .map(SelectIgnores::value)
-                .orElse(new String[0]));
-        return selectIgnores;
     }
 
     public List<One2ManyField> oneToManyFields() {
