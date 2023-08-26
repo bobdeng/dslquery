@@ -9,21 +9,19 @@ import java.util.stream.Stream;
 
 public class ColumnFields {
     private final Class clz;
+    private final DSLQuery dslQuery;
     private List<ColumnField> fields;
     private List<JoinField> joinFields = new ArrayList<>();
     private List<One2ManyField> one2ManyFields = new ArrayList<>();
     private Set<String> includes;
     private Set<String> selectIgnores;
 
-    public <T> ColumnFields(Class<T> clz) {
-        this(clz, null);
-    }
-
-    public <T> ColumnFields(Class<T> clz, DSLQuery<T> dslQuery) {
-        this.clz = clz;
-        initSelectIgnores(clz, dslQuery);
-        initDeepJoins(clz, dslQuery);
-        readFields(clz);
+    public <T> ColumnFields(DSLQuery dslQuery) {
+        this.dslQuery = dslQuery;
+        this.clz = dslQuery.getQueryResultClass();
+        initSelectIgnores(this.clz);
+        initDeepJoins(this.clz);
+        readFields(this.clz);
     }
 
     private <T> void readFields(Class<T> clz) {
@@ -33,20 +31,20 @@ public class ColumnFields {
         readOneToManyFields(clz);
     }
 
-    private <T> void initSelectIgnores(Class<T> clz, DSLQuery<T> dslQuery) {
+    private <T> void initSelectIgnores(Class<T> clz) {
         List<String> innerSelectIgnores = Arrays.asList(Optional.ofNullable(clz.getAnnotation(SelectIgnores.class))
                 .map(SelectIgnores::value)
                 .orElse(new String[0]));
-        List<String> outerSelectIgnores = Optional.ofNullable(dslQuery).map(DSLQuery::getSelectIgnores).orElse(Collections.emptyList());
+        List<String> outerSelectIgnores = Optional.ofNullable(this.dslQuery).map(DSLQuery::getSelectIgnores).orElse(Collections.emptyList());
         this.selectIgnores = Stream.concat(innerSelectIgnores.stream(), outerSelectIgnores.stream()).collect(Collectors.toSet());
     }
 
-    private <T> void initDeepJoins(Class<T> clz, DSLQuery<T> dslQuery) {
+    private <T> void initDeepJoins(Class<T> clz) {
         String[] deepJoinIncludes = Optional.ofNullable(clz.getAnnotation(DeepJoinIncludes.class))
                 .map(DeepJoinIncludes::value)
                 .orElse(new String[]{});
         Stream<String> streamDeepJoins = Arrays.stream(deepJoinIncludes);
-        Stream<String> streamDeepJoinsOuter = Optional.ofNullable(dslQuery).map(it -> it.getDeepJoins().stream()).orElse(Stream.empty());
+        Stream<String> streamDeepJoinsOuter = Optional.ofNullable(this.dslQuery).map(it -> it.getDeepJoins().stream()).orElse(Stream.empty());
         this.includes = Stream.concat(streamDeepJoins, streamDeepJoinsOuter).collect(Collectors.toSet());
     }
 
@@ -169,12 +167,6 @@ public class ColumnFields {
 
     public String joins() {
         return joinFields.stream().map(JoinField::joinStatement).collect(Collectors.joining("\n"));
-    }
-
-    public String countJoins() {
-        return joinFields.stream()
-                .filter(joinField -> !this.selectIgnores.contains(joinField.parentNames()))
-                .map(JoinField::joinStatement).collect(Collectors.joining("\n"));
     }
 
     public boolean hasField(Field field, List<Field> parents) {

@@ -18,7 +18,7 @@ public class One2ManyField {
     public void fetch(Object master, QueryExecutor queryExecutor) {
         OneToMany oneToMany = field.getAnnotation(OneToMany.class);
         JoinColumn joinColumn = field.getAnnotation(JoinColumn.class);
-        DSLQuery<Object> dslQuery = new DSLQuery<Object>(queryExecutor, oneToMany.targetEntity());
+        DSLQuery dslQuery = new DSLQuery<Object>(queryExecutor, oneToMany.targetEntity());
         String masterFieldValue = Arrays.stream(master.getClass().getDeclaredFields()).filter(f -> f.getName().equals(joinColumn.name()))
                 .map(f -> new ReflectField(master, f).get())
                 .map(Object::toString)
@@ -27,6 +27,6 @@ public class One2ManyField {
         SQLQuery sqlQuery = new SQLBuilder<>(dslQuery)
                 .build();
         ReflectField reflectField = new ReflectField(master, field);
-        reflectField.set(queryExecutor.list(new DefaultResultSetReader<>(oneToMany.targetEntity(), dslQuery), sqlQuery));
+        reflectField.set(queryExecutor.list(new DefaultResultSetReader<>(dslQuery), sqlQuery));
     }
 }

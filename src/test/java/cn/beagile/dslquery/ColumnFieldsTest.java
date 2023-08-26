@@ -3,7 +3,6 @@ package cn.beagile.dslquery;
 import org.junit.jupiter.api.Test;
 
 import javax.persistence.*;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,7 +16,7 @@ public class ColumnFieldsTest {
 
     @Test
     public void should_return_empty() {
-        ColumnFields columnFields = new ColumnFields(Empty.class);
+        ColumnFields columnFields = new ColumnFields(new DSLQuery<>(null, Empty.class));
         List<ColumnField> fields = columnFields.selectFields();
         assertEquals(0, fields.size());
         assertEquals("empty", columnFields.from());
@@ -32,7 +31,7 @@ public class ColumnFieldsTest {
 
     @Test
     public void should_read_column() {
-        ColumnFields columnFields = new ColumnFields(HasOne.class);
+        ColumnFields columnFields = new ColumnFields(new DSLQuery<>(null, HasOne.class));
         assertEquals(1, columnFields.selectFields().size());
         assertEquals("f_name", columnFields.selectFields().get(0).columnName());
         assertEquals("name", columnFields.selectFields().get(0).fieldName());
@@ -51,7 +50,7 @@ public class ColumnFieldsTest {
 
     @Test
     public void should_read_embedded_column() {
-        ColumnFields columnFields = new ColumnFields(HasEmbedded.class);
+        ColumnFields columnFields = new ColumnFields(new DSLQuery<>(null, HasEmbedded.class));
         assertEquals(1, columnFields.selectFields().size());
         assertEquals("f_name", columnFields.selectFields().get(0).columnName());
         assertEquals("hasOne.name", columnFields.selectFields().get(0).fieldName());
@@ -69,7 +68,7 @@ public class ColumnFieldsTest {
 
     @Test
     public void should_not_read_if_not_override() {
-        ColumnFields columnFields = new ColumnFields(HasEmbeddedNotOverride.class);
+        ColumnFields columnFields = new ColumnFields(new DSLQuery<>(null, HasEmbeddedNotOverride.class));
         assertEquals(0, columnFields.selectFields().size());
     }
 
@@ -84,7 +83,7 @@ public class ColumnFieldsTest {
 
     @Test
     public void should_read_embedded_twice() {
-        ColumnFields columnFields = new ColumnFields(HasEmbedded2.class);
+        ColumnFields columnFields = new ColumnFields(new DSLQuery<>(null, HasEmbedded2.class));
         assertEquals(1, columnFields.selectFields().size());
         assertEquals("name_2", columnFields.selectFields().get(0).columnName());
         assertEquals("one.hasOne.name", columnFields.selectFields().get(0).fieldName());
@@ -106,7 +105,7 @@ public class ColumnFieldsTest {
 
     @Test
     public void should_read_join() {
-        ColumnFields columnFields = new ColumnFields(Slave.class);
+        ColumnFields columnFields = new ColumnFields(new DSLQuery<>(null, Slave.class));
         assertEquals(1, columnFields.selectFields().size());
         assertEquals("id", columnFields.selectFields().get(0).columnName());
         assertEquals("master.id", columnFields.selectFields().get(0).fieldName());
@@ -124,7 +123,7 @@ public class ColumnFieldsTest {
 
     @Test
     public void should_read_join_twice() {
-        ColumnFields columnFields = new ColumnFields(Tool.class);
+        ColumnFields columnFields = new ColumnFields(new DSLQuery<>(null, Tool.class));
         assertEquals(1, columnFields.selectFields().size());
         assertEquals("id", columnFields.selectFields().get(0).columnName());
         assertEquals("slave.master.id", columnFields.selectFields().get(0).fieldName());
@@ -143,7 +142,7 @@ public class ColumnFieldsTest {
 
     @Test
     public void should_read_2join() {
-        ColumnFields columnFields = new ColumnFields(ToolMaster.class);
+        ColumnFields columnFields = new ColumnFields(new DSLQuery<>(null, ToolMaster.class));
         assertEquals(1, columnFields.selectFields().size());
         assertEquals("id", columnFields.selectFields().get(0).columnName());
         assertEquals("master.id", columnFields.selectFields().get(0).fieldName());

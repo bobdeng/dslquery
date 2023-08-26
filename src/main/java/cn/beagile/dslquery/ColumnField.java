@@ -8,20 +8,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class ColumnField<T> {
-    private Field field;
-    private Class<T> rootClass;
-    private List<Field> parents;
-    private Column column;
-    private boolean joined;
+public class ColumnField {
+    private final Field field;
+    private final Class rootClass;
+    private final List<Field> parents;
+    private final Column column;
+    private final boolean joined;
 
 
-    public ColumnField(Field field, Class<T> rootClass) {
+    public ColumnField(Field field, Class rootClass) {
 
         this(field, rootClass, new ArrayList<>(), field.getAnnotation(Column.class), false);
     }
 
-    public ColumnField(Field field, Class<T> rootClass, List<Field> parents, Column column, boolean joined) {
+    public ColumnField(Field field, Class rootClass, List<Field> parents, Column column, boolean joined) {
 
         this.field = field;
         this.rootClass = rootClass;
@@ -59,7 +59,7 @@ public class ColumnField<T> {
     }
 
     private String getRootTable() {
-        return this.rootClass.getAnnotation(View.class).value();
+        return ((View) this.rootClass.getAnnotation(View.class)).value();
     }
 
     public String fieldName() {

@@ -2,7 +2,6 @@ package cn.beagile.dslquery;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.context.annotation.Primary;
 
 import javax.persistence.Column;
 import javax.persistence.JoinColumn;
@@ -77,7 +76,7 @@ public class IgnoreDeepJoinTest {
 
     @Test
     public void should_not_read() {
-        DefaultResultSetReader<User> reader = new DefaultResultSetReader<>(User.class);
+        DefaultResultSetReader<User> reader = new DefaultResultSetReader<>(new DSLQuery<>(null, User.class));
         ResultSet resultSet = mock(ResultSet.class);
         User user = reader.apply(resultSet);
         assertNull(user.org.area);

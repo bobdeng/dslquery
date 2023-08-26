@@ -59,7 +59,7 @@ public class SelectDeepJoinIncludeOutterTest {
 
     @Test
     public void should_not_read() {
-        DefaultResultSetReader<User> reader = new DefaultResultSetReader<>(User.class, dslQuery);
+        DefaultResultSetReader<User> reader = new DefaultResultSetReader<>(dslQuery);
         ResultSet resultSet = mock(ResultSet.class);
         User user = reader.apply(resultSet);
         assertNotNull(user.org.area);

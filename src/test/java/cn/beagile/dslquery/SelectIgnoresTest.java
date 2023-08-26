@@ -49,7 +49,7 @@ public class SelectIgnoresTest {
 
     @Test
     public void should_not_read_ignored_field() throws SQLException {
-        DefaultResultSetReader<QueryResult> reader = new DefaultResultSetReader<>(QueryResult.class);
+        DefaultResultSetReader<QueryResult> reader = new DefaultResultSetReader<>(new DSLQuery<>(null, QueryResult.class));
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getLong("ignoreBean_id_")).thenReturn(2L);
         QueryResult result = (QueryResult) reader.apply(resultSet);

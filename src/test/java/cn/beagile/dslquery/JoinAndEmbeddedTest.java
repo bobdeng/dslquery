@@ -56,7 +56,7 @@ public class JoinAndEmbeddedTest {
 
     @Test
     public void should_read_join_fields() throws SQLException {
-        DefaultResultSetReader<User> reader = new DefaultResultSetReader<>(dslQuery.getQueryResultClass());
+        DefaultResultSetReader<User> reader = new DefaultResultSetReader<>(new DSLQuery<>(null, dslQuery.getQueryResultClass()));
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getString("name_")).thenReturn("张三");
         when(resultSet.getString("org_name_")).thenReturn("某公司");
@@ -68,7 +68,7 @@ public class JoinAndEmbeddedTest {
 
     @Test
     public void should_select_join_fields_with_embedded() {
-        ColumnFields columnFields = new ColumnFields(User.class);
+        ColumnFields columnFields = new ColumnFields(new DSLQuery<>(null, User.class));
         columnFields.selectFields().stream().map(ColumnField::expression).forEach(System.out::println);
         assertTrue(columnFields.selectFields().stream().map(ColumnField::expression).anyMatch(select -> select.contains("org_.contact_name org_userContact_name_")));
 
@@ -76,7 +76,7 @@ public class JoinAndEmbeddedTest {
 
     @Test
     public void should_read_join_fields_with_embedded() throws SQLException {
-        DefaultResultSetReader<User> reader = new DefaultResultSetReader<>(dslQuery.getQueryResultClass());
+        DefaultResultSetReader<User> reader = new DefaultResultSetReader<>(new DSLQuery<>(null, dslQuery.getQueryResultClass()));
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getString("org_userContact_name_")).thenReturn("张三");
         User result = reader.apply(resultSet);

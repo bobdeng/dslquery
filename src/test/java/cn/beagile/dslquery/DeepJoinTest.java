@@ -60,7 +60,7 @@ public class DeepJoinTest {
 
     @Test
     public void should_read_join_fields() throws SQLException {
-        DefaultResultSetReader<User> reader = new DefaultResultSetReader<>(User.class);
+        DefaultResultSetReader<User> reader = new DefaultResultSetReader<>(new DSLQuery<>(null, User.class));
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getString("name_")).thenReturn("张三");
         when(resultSet.getString("org_name_")).thenReturn("某公司");

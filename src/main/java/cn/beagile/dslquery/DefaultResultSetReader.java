@@ -35,14 +35,9 @@ class DefaultResultSetReader<T> implements Function<ResultSet, T> {
     private final Class queryClass;
     private Stack<Field> parents = new Stack<>();
 
-    public <T> DefaultResultSetReader(Class<T> queryClass) {
-        this.queryClass = queryClass;
-        columnFields = new ColumnFields(queryClass);
-    }
-
-    public <T> DefaultResultSetReader(Class<T> queryClass, DSLQuery<T> dslQuery) {
-        this.queryClass = queryClass;
-        columnFields = new ColumnFields(queryClass, dslQuery);
+    public <T> DefaultResultSetReader(DSLQuery<T> dslQuery) {
+        this.queryClass = dslQuery.getQueryResultClass();
+        columnFields = new ColumnFields(dslQuery);
     }
 
     @Override

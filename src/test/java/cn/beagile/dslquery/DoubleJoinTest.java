@@ -57,7 +57,7 @@ public class DoubleJoinTest {
 
     @Test
     public void params() throws SQLException {
-        DefaultResultSetReader<User> reader = new DefaultResultSetReader<>(User.class);
+        DefaultResultSetReader<User> reader = new DefaultResultSetReader<>(new DSLQuery<>(null, User.class));
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getString("org_area_name_")).thenReturn("area");
         when(resultSet.getString("org_name_")).thenReturn("org");

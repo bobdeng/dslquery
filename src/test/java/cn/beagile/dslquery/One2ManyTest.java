@@ -35,13 +35,13 @@ public class One2ManyTest {
 
     @Test
     public void should_not_join() {
-        ColumnFields columnFields = new ColumnFields(Master.class);
+        ColumnFields columnFields = new ColumnFields(new DSLQuery<>(null, Master.class));
         assertEquals("", columnFields.joins());
     }
 
     @Test
     public void should_has_one_to_many_filed() {
-        ColumnFields columnFields = new ColumnFields(Master.class);
+        ColumnFields columnFields = new ColumnFields(new DSLQuery<>(null, Master.class));
         assertEquals(1, columnFields.oneToManyFields().size());
     }
 
@@ -49,7 +49,7 @@ public class One2ManyTest {
     public void should_fetch_one_to_many() {
         ArgumentCaptor<DefaultResultSetReader<Slave>> readerArgumentCaptor = ArgumentCaptor.forClass(DefaultResultSetReader.class);
         ArgumentCaptor<SQLQuery> sqlQueryArgumentCaptor = ArgumentCaptor.forClass(SQLQuery.class);
-        ColumnFields columnFields = new ColumnFields(Master.class);
+        ColumnFields columnFields = new ColumnFields(new DSLQuery<>(null, Master.class));
         Master master = new Master();
         QueryExecutor queryExecutor = mock(QueryExecutor.class);
         master.id = "1";

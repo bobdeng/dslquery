@@ -58,7 +58,7 @@ public class SelectDeepJoinIncludeTest {
 
     @Test
     public void should_not_read() {
-        DefaultResultSetReader<User> reader = new DefaultResultSetReader<>(User.class);
+        DefaultResultSetReader<User> reader = new DefaultResultSetReader<>(new DSLQuery<>(null, User.class));
         ResultSet resultSet = mock(ResultSet.class);
         User user = reader.apply(resultSet);
         assertNotNull(user.org.area);
