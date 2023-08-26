@@ -2,6 +2,7 @@ package cn.beagile.dslquery;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.annotation.Primary;
 
 import javax.persistence.Column;
 import javax.persistence.JoinColumn;
@@ -18,7 +19,7 @@ public class IgnoreDeepJoinTest {
 
     @View("t_user")
     public static class User {
-        @Column(name = "name")
+        @Column(name = "name",unique = true)
         private String name;
         @JoinColumn(name = "org_id", referencedColumnName = "id")
         private Org org;
@@ -54,17 +55,19 @@ public class IgnoreDeepJoinTest {
                 "left join t_area area_ on area_.id = t_user.area_id", sqlBuilder.sql()
         );
     }
+
     @Test
     public void should_select_count_join() {
-        dslQuery.selectIgnores("org","area");
+        dslQuery.selectIgnores("org", "area");
         sqlBuilder = new SQLBuilder<>(dslQuery);
-        assertEquals("select count(*) from t_user", sqlBuilder.countSql()
+        assertEquals("select count(distinct t_user.name) from t_user", sqlBuilder.countSql()
         );
     }
+
     @Test
     public void should_select_count_join_withignore() {
         sqlBuilder = new SQLBuilder<>(dslQuery);
-        assertEquals("select count(*) from t_user\n" +
+        assertEquals("select count(distinct t_user.name) from t_user\n" +
                 "left join t_org org_ on org_.id = t_user.org_id\n" +
                 "left join t_area area_ on area_.id = t_user.area_id", sqlBuilder.countSql()
         );
@@ -73,7 +76,7 @@ public class IgnoreDeepJoinTest {
     @Test
     public void should_not_read() {
         DefaultResultSetReader<User> reader = new DefaultResultSetReader<>(User.class);
-        ResultSet resultSet=mock(ResultSet.class);
+        ResultSet resultSet = mock(ResultSet.class);
         User user = reader.apply(resultSet);
         assertNull(user.org.area);
     }

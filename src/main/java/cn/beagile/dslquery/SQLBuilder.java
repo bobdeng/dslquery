@@ -2,16 +2,14 @@ package cn.beagile.dslquery;
 
 import com.google.gson.Gson;
 
+import javax.persistence.Column;
 import java.lang.reflect.Field;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -166,11 +164,22 @@ class SQLBuilder<T> {
 
     private String getCountSQL() {
         List<String> lines = new ArrayList<>();
-        lines.add(String.format("select count(*) from %s\n%s", columnFields.from(), columnFields.countJoins()));
+        String countField = getCountField();
+        lines.add(String.format("select count(" + countField + ") from %s\n%s", columnFields.from(), columnFields.countJoins()));
         if (!getWhereList().isEmpty()) {
             lines.add(getWhereSQL());
         }
         return lines.stream().map(String::trim).collect(Collectors.joining("\n"));
+    }
+
+    private String getCountField() {
+        String tableName = this.dslQuery.getQueryResultClass().getAnnotation(View.class).value();
+        return Arrays.stream(this.dslQuery.getQueryResultClass().getDeclaredFields())
+                .filter(field -> field.isAnnotationPresent(Column.class))
+                .filter(field -> field.getAnnotation(Column.class).unique())
+                .findFirst()
+                .map(field -> "distinct " + tableName + "." + field.getAnnotation(Column.class).name())
+                .orElse("*");
     }
 
     public void fetchOne2Many(List<T> result, QueryExecutor queryExecutor) {
