@@ -165,7 +165,7 @@ class SQLBuilder<T> {
     private String getCountSQL() {
         List<String> lines = new ArrayList<>();
         String countField = getCountField();
-        lines.add(String.format("select count(" + countField + ") from %s\n%s", columnFields.from(), columnFields.countJoins()));
+        lines.add(String.format("select count(" + countField + ") from %s\n%s", columnFields.from(), columnFields.joins()));
         if (!getWhereList().isEmpty()) {
             lines.add(getWhereSQL());
         }
