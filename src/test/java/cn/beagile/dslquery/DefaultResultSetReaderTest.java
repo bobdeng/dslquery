@@ -194,6 +194,13 @@ public class DefaultResultSetReaderTest {
         assertNotNull(result);
         assertEquals(18L, result.createdAt.toEpochMilli());
     }
+    @Test
+    public void should_read_instant_field_when_null() throws SQLException {
+        DefaultResultSetReader<QueryResultWithInstantFieldBean> defaultResultSetReader = new DefaultResultSetReader(new DSLQuery<>(null, QueryResultWithInstantFieldBean.class));
+        ResultSet rs = mock(ResultSet.class);
+        QueryResultWithInstantFieldBean result = defaultResultSetReader.apply(rs);
+        assertNull(result.createdAt);
+    }
 
     public static class QueryResultWithTimestampFieldBean {
         @Column(name = "created_at")

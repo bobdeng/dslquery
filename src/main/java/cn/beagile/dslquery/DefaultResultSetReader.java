@@ -27,7 +27,7 @@ class DefaultResultSetReader<T> implements Function<ResultSet, T> {
         COLUMN_READER_MAP.put(BigDecimal.class, ResultSet::getBigDecimal);
         COLUMN_READER_MAP.put(Long.class, ResultSet::getLong);
         COLUMN_READER_MAP.put(long.class, ResultSet::getLong);
-        COLUMN_READER_MAP.put(Instant.class, (rs, columnName) -> rs.getTimestamp(columnName).toInstant());
+        COLUMN_READER_MAP.put(Instant.class, (rs, columnName) -> Optional.ofNullable(rs.getTimestamp(columnName)).map(Timestamp::toInstant).orElse(null));
         COLUMN_READER_MAP.put(Timestamp.class, ResultSet::getTimestamp);
     }
 
