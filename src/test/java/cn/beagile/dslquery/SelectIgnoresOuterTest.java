@@ -66,6 +66,28 @@ public class SelectIgnoresOuterTest {
     }
 
     @Test
+    public void should_not_select_embedded_when_join_ignore() {
+        DSLQuery<QueryResult> dslQuery = new DSLQuery<>(null, QueryResult.class)
+                .deepJoinIncludes("ignoreBean", "ignoreBean.ignoreBean2")
+                .selectIgnores("ignoreBean", "ignoreBean.ignoreBean2");
+        SQLBuilder<QueryResult> sqlBuilder = new SQLBuilder<>(dslQuery);
+        assertEquals("select distinct v_query_result.name name_ from v_query_result\n" +
+                "left join t_ignore_bean ignoreBean_ on ignoreBean_.parent_id = v_query_result.id\n" +
+                "left join t_ignore_bean_2 ignoreBean_ignoreBean2_ on ignoreBean_ignoreBean2_.id = ignoreBean_.parent_id", sqlBuilder.build().getSql());
+    }
+
+    @Test
+    public void should_select_embedded() {
+        DSLQuery<QueryResult> dslQuery = new DSLQuery<>(null, QueryResult.class)
+                .deepJoinIncludes("ignoreBean", "ignoreBean.ignoreBean2")
+                .selectIgnores();
+        SQLBuilder<QueryResult> sqlBuilder = new SQLBuilder<>(dslQuery);
+        assertEquals("select distinct v_query_result.name name_,ignoreBean_.id ignoreBean_id_,ignoreBean_ignoreBean2_.name ignoreBean_ignoreBean2_ignoreBean2_name_ from v_query_result\n" +
+                "left join t_ignore_bean ignoreBean_ on ignoreBean_.parent_id = v_query_result.id\n" +
+                "left join t_ignore_bean_2 ignoreBean_ignoreBean2_ on ignoreBean_ignoreBean2_.id = ignoreBean_.parent_id", sqlBuilder.build().getSql());
+    }
+
+    @Test
     public void should_not_read_ignored_field() throws SQLException {
         DefaultResultSetReader<QueryResult> reader = new DefaultResultSetReader<>(new DSLQuery<QueryResult>(null, QueryResult.class)
                 .selectIgnores("ignoreBean"));

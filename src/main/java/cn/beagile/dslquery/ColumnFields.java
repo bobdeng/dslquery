@@ -69,7 +69,7 @@ public class ColumnFields {
     private void readEmbeddedFields(Class clz, List<Field> parents) {
         Arrays.stream(clz.getDeclaredFields())
                 .filter(field -> field.isAnnotationPresent(Embedded.class))
-                .filter(field -> isEmbeddedInclude(field, parents))
+                .filter(field -> isEmbeddedInclude(parents))
                 .forEach(field -> {
                     List<Field> newParents = new ArrayList<>(parents);
                     newParents.add(field);
@@ -91,12 +91,12 @@ public class ColumnFields {
         return includes.contains(fieldName);
     }
 
-    private boolean isEmbeddedInclude(Field field, List<Field> parents) {
+    private boolean isEmbeddedInclude(List<Field> parents) {
         if (parents.size() <= 1) {
             return true;
         }
-        String fieldName = Stream.concat(parents.stream(), Stream.of(field)).map(Field::getName).collect(Collectors.joining("."));
-        return includes.contains(fieldName);
+        String fieldName = parents.stream().map(Field::getName).collect(Collectors.joining("."));
+        return includes.contains(fieldName) && !this.selectIgnores.contains(fieldName);
     }
 
     private void readJoinFields(Class clz, List<Field> parents, Class<? extends Annotation> annotation) {
