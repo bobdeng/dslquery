@@ -2,8 +2,7 @@ package cn.beagile.dslquery;
 
 import org.junit.jupiter.api.Test;
 
-import javax.persistence.Column;
-import javax.persistence.JoinColumn;
+import javax.persistence.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -24,6 +23,22 @@ public class SelectIgnoresOuterTest {
     public static class IgnoreBean {
         @Column(name = "id")
         public Long id;
+        @JoinColumn(name = "parent_id", referencedColumnName = "id")
+        private IgnoreBean2 ignoreBean2;
+    }
+
+    @View("t_ignore_bean_2")
+    public static class IgnoreBean2 {
+        public Long name;
+        @Embedded
+        @AttributeOverrides({
+                @AttributeOverride(name = "name", column = @Column(name = "name"))
+        })
+        IgnoreBean3 ignoreBean2;
+    }
+
+    public static class IgnoreBean3 {
+        public Long name;
     }
 
     @Test
@@ -37,13 +52,16 @@ public class SelectIgnoresOuterTest {
 
     @Test
     public void should_set_params_not_select() {
-        DSLQuery<QueryResult> dslQuery = new DSLQuery<>(null, QueryResult.class).selectIgnores("ignoreBean");
+        DSLQuery<QueryResult> dslQuery = new DSLQuery<>(null, QueryResult.class)
+                .deepJoinIncludes("ignoreBean", "ignoreBean.ignoreBean2")
+                .selectIgnores("ignoreBean", "ignoreBean.ignoreBean2");
         dslQuery.where("(and(ignoreBean.id equals 1))");
         SQLBuilder<QueryResult> sqlBuilder = new SQLBuilder<>(dslQuery);
         sqlBuilder.addParam("ignoreBean.id", "ignoreBean.id", "1");
         assertEquals(1L, sqlBuilder.getParams().get("ignoreBean.id"));
         assertEquals("select distinct v_query_result.name name_ from v_query_result\n" +
                 "left join t_ignore_bean ignoreBean_ on ignoreBean_.parent_id = v_query_result.id\n" +
+                "left join t_ignore_bean_2 ignoreBean_ignoreBean2_ on ignoreBean_ignoreBean2_.id = ignoreBean_.parent_id\n" +
                 " where ((ignoreBean_.id = :p1))", sqlBuilder.build().getSql());
     }
 

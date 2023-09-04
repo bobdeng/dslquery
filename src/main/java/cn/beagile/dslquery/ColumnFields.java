@@ -69,6 +69,7 @@ public class ColumnFields {
     private void readEmbeddedFields(Class clz, List<Field> parents) {
         Arrays.stream(clz.getDeclaredFields())
                 .filter(field -> field.isAnnotationPresent(Embedded.class))
+                .filter(field -> isJoinInclude(field, parents))
                 .forEach(field -> {
                     List<Field> newParents = new ArrayList<>(parents);
                     newParents.add(field);
