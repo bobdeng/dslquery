@@ -18,7 +18,7 @@ public class WhereBuilderTest {
         String result = new WhereBuilder().and()
                 .equals("name", "bob")
                 .build();
-        assertEquals("(and(name equals bob))", result);
+        assertEquals("(and(name eq bob))", result);
     }
 
     @Test
@@ -26,7 +26,7 @@ public class WhereBuilderTest {
         String result = new WhereBuilder().and()
                 .greaterthan("name", "bob")
                 .build();
-        assertEquals("(and(name greaterthan bob))", result);
+        assertEquals("(and(name gt bob))", result);
     }
 
     @Test
@@ -34,7 +34,7 @@ public class WhereBuilderTest {
         String result = new WhereBuilder().and()
                 .lessthan("name", "bob")
                 .build();
-        assertEquals("(and(name lessthan bob))", result);
+        assertEquals("(and(name lt bob))", result);
     }
 
     @Test
@@ -42,7 +42,7 @@ public class WhereBuilderTest {
         String result = new WhereBuilder().and()
                 .notequals("name", "bob")
                 .build();
-        assertEquals("(and(name notequals bob))", result);
+        assertEquals("(and(name ne bob))", result);
     }
 
     @Test
@@ -50,7 +50,7 @@ public class WhereBuilderTest {
         String result = new WhereBuilder().and()
                 .lessthanorequal("name", "bob")
                 .build();
-        assertEquals("(and(name lessthanorequals bob))", result);
+        assertEquals("(and(name le bob))", result);
     }
 
     @Test
@@ -58,7 +58,7 @@ public class WhereBuilderTest {
         String result = new WhereBuilder().and()
                 .greaterthanorequal("name", "bob")
                 .build();
-        assertEquals("(and(name greaterthanorequals bob))", result);
+        assertEquals("(and(name ge bob))", result);
     }
 
     @Test
@@ -66,7 +66,7 @@ public class WhereBuilderTest {
         String result = new WhereBuilder().and()
                 .startswith("name", "bob")
                 .build();
-        assertEquals("(and(name startswith bob))", result);
+        assertEquals("(and(name sw bob))", result);
     }
 
     @Test
@@ -74,7 +74,7 @@ public class WhereBuilderTest {
         String result = new WhereBuilder().and()
                 .endswith("name", "bob")
                 .build();
-        assertEquals("(and(name endswith bob))", result);
+        assertEquals("(and(name ew bob))", result);
     }
 
     @Test
@@ -82,7 +82,7 @@ public class WhereBuilderTest {
         String result = new WhereBuilder().and()
                 .contains("name", "bob")
                 .build();
-        assertEquals("(and(name contains bob))", result);
+        assertEquals("(and(name ct bob))", result);
     }
 
     @Test
@@ -90,7 +90,7 @@ public class WhereBuilderTest {
         String result = new WhereBuilder().and()
                 .isnull("name")
                 .build();
-        assertEquals("(and(name isnull))", result);
+        assertEquals("(and(name isn))", result);
     }
 
     @Test
@@ -98,7 +98,7 @@ public class WhereBuilderTest {
         String result = where().and()
                 .notnull("name")
                 .build();
-        assertEquals("(and(name notnull))", result);
+        assertEquals("(and(name inn))", result);
     }
 
 
@@ -115,7 +115,7 @@ public class WhereBuilderTest {
         String result = new WhereBuilder().and()
                 .notin("name", new String[]{"bob", "alice"})
                 .build();
-        assertEquals("(and(name notin [\"bob\",\"alice\"]))", result);
+        assertEquals("(and(name ni [\"bob\",\"alice\"]))", result);
     }
 
     @Test
@@ -123,7 +123,7 @@ public class WhereBuilderTest {
         String result = new WhereBuilder().and()
                 .between("age", 1, 32)
                 .build();
-        assertEquals("(and(age between 1,32))", result);
+        assertEquals("(and(age bt 1,32))", result);
     }
 
     @Test
@@ -132,7 +132,7 @@ public class WhereBuilderTest {
                 .equals("name", "bob")
                 .greaterthan("age", "18")
                 .build();
-        assertEquals("(and(name equals bob)(age greaterthan 18))", result);
+        assertEquals("(and(name eq bob)(age gt 18))", result);
     }
 
     @Test
@@ -143,7 +143,7 @@ public class WhereBuilderTest {
                 .and()
                 .equals("name", "alice")
                 .build();
-        assertEquals("(and(name equals bob)(age greaterthan 18)(and(name equals alice)))", result);
+        assertEquals("(and(name eq bob)(age gt 18)(and(name eq alice)))", result);
     }
 
     @Test
@@ -155,7 +155,7 @@ public class WhereBuilderTest {
                 .equals("name", "alice")
                 .contains("name", "bob")
                 .build();
-        assertEquals("(or(name equals bob)(age greaterthan 18)(and(name equals alice)(name contains bob)))", result);
+        assertEquals("(or(name eq bob)(age gt 18)(and(name eq alice)(name ct bob)))", result);
     }
 
     @Test
@@ -168,6 +168,6 @@ public class WhereBuilderTest {
                 .prev()
                 .contains("name", "bob")
                 .build();
-        assertEquals("(or(name equals bob)(age greaterthan 18)(and(name equals alice))(name contains bob))", result);
+        assertEquals("(or(name eq bob)(age gt 18)(and(name eq alice))(name ct bob))", result);
     }
 }
