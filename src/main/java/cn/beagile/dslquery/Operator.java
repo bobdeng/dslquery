@@ -4,35 +4,37 @@ import java.util.function.Function;
 
 enum Operator {
 
-    Equals("equals", "=", (value) -> value),
-    NotEquals("notequals", "!=", (value) -> value),
-    LessThan("lessthan", "<", (value) -> value),
-    LessThanOrEqual("lessthanorequals", "<=", (value) -> value),
-    GreaterThan("greaterthan", ">", (value) -> value),
-    GreaterThanOrEqual("greaterthanorequals", ">=", (value) -> value),
-    StartsWith("startswith", "like", (value) -> value + "%"),
-    EndsWith("endswith", "like", (value) -> "%" + value),
-    Contains("contains", "like", (value) -> "%" + value + "%"),
-    IsNull("isnull", "is null", null, false),
-    NotNull("notnull", "is not null", null, false),
-    NotIn("notin", "not in", (value) -> value, true),
-    Between("between", "between", (value) -> value, true),
-    In("in", "in", (value) -> value, true);
+    Equals("equals", "=", (value) -> value, "eq"),
+    NotEquals("notequals", "!=", (value) -> value, "ne"),
+    LessThan("lessthan", "<", (value) -> value, "lt"),
+    LessThanOrEqual("lessthanorequals", "<=", (value) -> value, "le"),
+    GreaterThan("greaterthan", ">", (value) -> value, "gt"),
+    GreaterThanOrEqual("greaterthanorequals", ">=", (value) -> value, "ge"),
+    StartsWith("startswith", "like", (value) -> value + "%", "sw"),
+    EndsWith("endswith", "like", (value) -> "%" + value, "ew"),
+    Contains("contains", "like", (value) -> "%" + value + "%", "ct"),
+    IsNull("isnull", "is null", null, "isn", false),
+    NotNull("notnull", "is not null", null, "inn", false),
+    NotIn("notin", "not in", (value) -> value, "ni", true),
+    Between("between", "between", (value) -> value, "bt", true),
+    In("in", "in", (value) -> value, "in", true);
 
     final String operator;
     final String keyword;
     final boolean requireValue;
+    final String abbr;
     private final Function<String, String> valueTransfer;
 
-    Operator(String keyword, String operator, Function<String, String> valueTransfer) {
-        this(keyword, operator, valueTransfer, true);
+    Operator(String keyword, String operator, Function<String, String> valueTransfer, String abbr) {
+        this(keyword, operator, valueTransfer, abbr, true);
     }
 
-    Operator(String keyword, String operator, Function<String, String> valueTransfer, boolean requireValue) {
+    Operator(String keyword, String operator, Function<String, String> valueTransfer, String abbr, boolean requireValue) {
         this.keyword = keyword;
         this.operator = operator;
         this.valueTransfer = valueTransfer;
         this.requireValue = requireValue;
+        this.abbr = abbr;
     }
 
     public boolean isArray() {

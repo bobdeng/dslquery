@@ -96,7 +96,7 @@ public class DSLQueryTest {
         expectSqlWithoudEnter("select " + fields + " from view_query", sqlQuery.getSql());
     }
     @Test
-    public void when_where_empth() {
+    public void when_where_empty() {
         DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultBean.class);
         dslQuery.where("").sort("").query();
         verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
