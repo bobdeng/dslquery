@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 
 import javax.persistence.Column;
 import java.lang.reflect.Field;
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -91,6 +92,9 @@ class SQLBuilder<T> {
             return field.isAnnotationPresent(DateFormat.class);
         }
         if (field.getType().equals(long.class)) {
+            return field.isAnnotationPresent(DateFormat.class);
+        }
+        if (field.getType().equals(Timestamp.class)) {
             return field.isAnnotationPresent(DateFormat.class);
         }
         return false;
