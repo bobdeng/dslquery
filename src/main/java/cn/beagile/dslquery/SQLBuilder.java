@@ -78,6 +78,9 @@ class SQLBuilder<T> {
             return getInstantValue(value, field);
         }
         if (isTimestampAsDate(field)) {
+            if (field.getType().equals(Timestamp.class)) {
+                return Timestamp.from(getInstantValue(value, field));
+            }
             return getInstantValue(value, field).toEpochMilli();
         }
         return FIELD_CAST_MAP.get(field.getType()).apply(value);
