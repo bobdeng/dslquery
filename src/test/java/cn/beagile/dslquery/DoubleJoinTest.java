@@ -10,8 +10,7 @@ import javax.persistence.JoinColumns;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -76,6 +75,14 @@ public class DoubleJoinTest {
                 "left join t_org_area on t_org_area.org_id = org_.id\n" +
                 "left join t_area org_area_ on org_area_.id = t_org_area.area_id", sqlBuilder.sql()
         );
+    }
+
+    @Test
+    public void should_select_join1() {
+        dslQuery.selectIgnores("org.area");
+        dslQuery.where("(and(org.area.name eq area))");
+        sqlBuilder = new SQLBuilder<>(dslQuery);
+        assertDoesNotThrow(() -> sqlBuilder.sql());
     }
 
 }

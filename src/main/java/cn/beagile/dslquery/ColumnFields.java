@@ -58,7 +58,8 @@ public class ColumnFields {
     }
 
     private void readPrimitiveFields(Class clz) {
-        this.fields = Arrays.stream(clz.getDeclaredFields()).filter(field -> field.isAnnotationPresent(Column.class))
+        this.fields = Arrays.stream(clz.getDeclaredFields())
+                .filter(field -> field.isAnnotationPresent(Column.class))
                 .map(field1 -> new ColumnField(field1, clz)).collect(Collectors.toList());
     }
 
@@ -88,7 +89,7 @@ public class ColumnFields {
             return true;
         }
         String fieldName = Stream.concat(parents.stream(), Stream.of(field)).map(Field::getName).collect(Collectors.joining("."));
-        return includes.contains(fieldName) && !this.selectIgnores.contains(fieldName);
+        return includes.contains(fieldName);
     }
 
     private boolean isEmbeddedInclude(List<Field> parents) {
