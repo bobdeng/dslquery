@@ -55,6 +55,7 @@ public class IgnoreDeepJoinTest {
         );
     }
 
+
     @Test
     public void should_select_count_join() {
         dslQuery.selectIgnores("org", "area");

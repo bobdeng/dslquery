@@ -88,7 +88,7 @@ public class ColumnFields {
             return true;
         }
         String fieldName = Stream.concat(parents.stream(), Stream.of(field)).map(Field::getName).collect(Collectors.joining("."));
-        return includes.contains(fieldName);
+        return includes.contains(fieldName) && !this.selectIgnores.contains(fieldName);
     }
 
     private boolean isEmbeddedInclude(List<Field> parents) {
@@ -159,7 +159,7 @@ public class ColumnFields {
 
     public List<ColumnField> selectFields() {
         return fields.stream().filter(field -> {
-            if (this.selectIgnores.contains(field.parentNames())) {
+            if (this.selectIgnores.stream().anyMatch(ignore -> field.parentNames().startsWith(ignore))) {
                 return false;
             }
             return true;
