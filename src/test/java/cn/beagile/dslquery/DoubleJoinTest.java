@@ -18,6 +18,7 @@ public class DoubleJoinTest {
 
     private DSLQuery<User> dslQuery;
     private SQLBuilder<User> sqlBuilder;
+    private String nullsOrder="";
 
     @View("t_user")
     @DeepJoinIncludes({"org.area"})
@@ -73,7 +74,7 @@ public class DoubleJoinTest {
                 "left join t_inner on t_inner.id = t_user.inner_id\n" +
                 "left join t_org org_ on org_.id = t_inner.org_id\n" +
                 "left join t_org_area on t_org_area.org_id = org_.id\n" +
-                "left join t_area org_area_ on org_area_.id = t_org_area.area_id", sqlBuilder.sql()
+                "left join t_area org_area_ on org_area_.id = t_org_area.area_id", sqlBuilder.sql(nullsOrder)
         );
     }
 
@@ -82,7 +83,7 @@ public class DoubleJoinTest {
         dslQuery.selectIgnores("org.area");
         dslQuery.where("(and(org.area.name eq area))");
         sqlBuilder = new SQLBuilder<>(dslQuery);
-        assertDoesNotThrow(() -> sqlBuilder.sql());
+        assertDoesNotThrow(() -> sqlBuilder.sql(nullsOrder));
     }
 
 }

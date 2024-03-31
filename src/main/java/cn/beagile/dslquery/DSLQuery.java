@@ -71,15 +71,15 @@ public class DSLQuery<T> {
 
     public Paged<T> pagedQuery() {
         SQLBuilder<T> sqlBuilder = new SQLBuilder<>(this);
-        List<T> result = queryExecutor.list(new DefaultResultSetReader<>(this), sqlBuilder.build());
-        int count = queryExecutor.count(sqlBuilder.build());
+        List<T> result = queryExecutor.list(new DefaultResultSetReader<>(this), sqlBuilder.build(queryExecutor.nullsOrder(this.nullsOrder)));
+        int count = queryExecutor.count(sqlBuilder.build(queryExecutor.nullsOrder(this.nullsOrder)));
         sqlBuilder.fetchOne2Many(result, queryExecutor);
         return new Paged<>(result, count, new Paging(this.skip, this.limit));
     }
 
     public List<T> query() {
         SQLBuilder<T> sqlBuilder = new SQLBuilder<>(this);
-        List<T> result = queryExecutor.list(new DefaultResultSetReader<>(this), sqlBuilder.build());
+        List<T> result = queryExecutor.list(new DefaultResultSetReader<>(this), sqlBuilder.build(queryExecutor.nullsOrder(this.nullsOrder)));
         sqlBuilder.fetchOne2Many(result, queryExecutor);
         return result;
     }

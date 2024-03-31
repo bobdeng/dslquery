@@ -125,18 +125,18 @@ class SQLBuilder<T> {
         return this.countSql;
     }
 
-    public String sql() {
+    public String sql(String nullsOrder) {
         if (this.sql == null) {
-            this.sql = this.getSQL();
+            this.sql = this.getSQL(nullsOrder);
         }
         return this.sql;
     }
 
-    public SQLQuery build() {
-        return new SQLQuery(this.sql(), this.countSql(), this.params, dslQuery.getPage(), dslQuery.getNullsOrder());
+    public SQLQuery build(String nullsOrder) {
+        return new SQLQuery(this.sql(nullsOrder), this.countSql(), this.params, dslQuery.getPage(), dslQuery.getNullsOrder());
     }
 
-    private String getSQL() {
+    private String getSQL(String nullsOrder) {
         List<String> lines = new ArrayList<>();
         lines.add(getSelectSQL());
         if (!getWhereList().isEmpty()) {
@@ -144,6 +144,7 @@ class SQLBuilder<T> {
         }
         if (dslQuery.getSort() != null) {
             lines.add(getSortSQL());
+            lines.add(nullsOrder);
         }
         return lines.stream().collect(Collectors.joining("\n"));
     }

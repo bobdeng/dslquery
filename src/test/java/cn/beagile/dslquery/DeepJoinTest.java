@@ -13,6 +13,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class DeepJoinTest {
+    private String nullsOrder="";
+
     @View("t_user")
     @DeepJoinIncludes({"org.area","org.city", "org.city.area"})
     public static class User {
@@ -55,7 +57,7 @@ public class DeepJoinTest {
                 "left join t_org org_ on org_.id = t_user.org_id\n" +
                 "left join t_area org_area_ on org_area_.id = org_.area_id\n" +
                 "left join t_city org_city_ on org_city_.id = org_.city_id\n" +
-                "left join t_area org_city_area_ on org_city_area_.id = org_city_.area_id", sqlBuilder.sql());
+                "left join t_area org_city_area_ on org_city_area_.id = org_city_.area_id", sqlBuilder.sql(nullsOrder));
     }
 
     @Test
@@ -84,7 +86,7 @@ public class DeepJoinTest {
                 "left join t_city org_city_ on org_city_.id = org_.city_id\n" +
                 "left join t_area org_city_area_ on org_city_area_.id = org_city_.area_id\n" +
                 " where ((org_area_.name = :p1))";
-        assertEquals(expect, sqlBuilder.sql());
+        assertEquals(expect, sqlBuilder.sql(nullsOrder));
     }
 
 }

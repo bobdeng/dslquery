@@ -8,4 +8,6 @@ public interface QueryExecutor {
     <T> List<T> list(Function<ResultSet, T> resultSetReader, SQLQuery sqlQuery);
 
     int count(SQLQuery sqlQuery);
+
+    String nullsOrder(NullsOrder nullsOrder);
 }

@@ -26,6 +26,8 @@ public class DSLQueryTest {
         ArrayList<QueryResultBean> list = new ArrayList<>();
         list.add(new QueryResultBean("bob"));
         when(queryExecutor.list(any(), any())).thenReturn(Collections.singletonList(list));
+        when(queryExecutor.nullsOrder(NullsOrder.NONE)).thenReturn("");
+        when(queryExecutor.nullsOrder(NullsOrder.NULL_FIRST)).thenReturn("nulls first");
     }
 
     private static void expectSqlWithoudEnter(String expected, String sql) {
@@ -78,11 +80,11 @@ public class DSLQueryTest {
 
     @Test
     public void should_execute_query_with_where_notnull() {
-        DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultBean.class);
+        DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultBean.class,NullsOrder.NULL_FIRST);
         dslQuery.where("(and(name notnull))").sort("name desc").query();
         verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
-        expectSqlWithoudEnter("select " + fields + " from view_query where ((view_query.name is not null))order by view_query.name desc", sqlQuery.getSql());
+        expectSqlWithoudEnter("select " + fields + " from view_query where ((view_query.name is not null))order by view_query.name descnulls first", sqlQuery.getSql());
         Map<String, Object> params = sqlQuery.getParams();
         assertNull(params.get("p1"));
     }
@@ -95,6 +97,7 @@ public class DSLQueryTest {
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
         expectSqlWithoudEnter("select " + fields + " from view_query", sqlQuery.getSql());
     }
+
     @Test
     public void when_where_empty() {
         DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultBean.class);
@@ -102,15 +105,16 @@ public class DSLQueryTest {
         verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
         expectSqlWithoudEnter("select " + fields + " from view_query", sqlQuery.getSql());
-        assertEquals(NullsOrder.NONE,sqlQuery.getNullsOrder());
+        assertEquals(NullsOrder.NONE, sqlQuery.getNullsOrder());
     }
+
     @Test
     public void when_set_nulls_order() {
-        DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultBean.class,NullsOrder.NULL_FIRST);
+        DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultBean.class, NullsOrder.NULL_FIRST);
         dslQuery.where("").sort("").query();
         verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
         expectSqlWithoudEnter("select " + fields + " from view_query", sqlQuery.getSql());
-        assertEquals(NullsOrder.NULL_FIRST,sqlQuery.getNullsOrder());
+        assertEquals(NullsOrder.NULL_FIRST, sqlQuery.getNullsOrder());
     }
 }

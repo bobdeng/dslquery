@@ -9,6 +9,7 @@ import static cn.beagile.dslquery.WhereBuilder.where;
 
 public class One2ManyField {
     private final Field field;
+    private String nullsOrder="";
 
     public One2ManyField(Field field) {
 
@@ -25,7 +26,7 @@ public class One2ManyField {
                 .findFirst().orElseThrow(() -> new RuntimeException("can not find master field value"));
         dslQuery.where(where().and().equals(joinColumn.referencedColumnName(), masterFieldValue).build());
         SQLQuery sqlQuery = new SQLBuilder<>(dslQuery)
-                .build();
+                .build(nullsOrder);
         ReflectField reflectField = new ReflectField(master, field);
         reflectField.set(queryExecutor.list(new DefaultResultSetReader<>(dslQuery), sqlQuery));
     }

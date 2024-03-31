@@ -15,6 +15,7 @@ public class IgnoreDeepJoinTest {
 
     private DSLQuery<User> dslQuery;
     private SQLBuilder<User> sqlBuilder;
+    private String nullsOrder="";
 
     @View("t_user")
     public static class User {
@@ -51,7 +52,7 @@ public class IgnoreDeepJoinTest {
         sqlBuilder = new SQLBuilder<>(dslQuery);
         assertEquals("select t_user.name name_,org_.name org_name_,area_.name area_name_ from t_user\n" +
                 "left join t_org org_ on org_.id = t_user.org_id\n" +
-                "left join t_area area_ on area_.id = t_user.area_id", sqlBuilder.sql()
+                "left join t_area area_ on area_.id = t_user.area_id", sqlBuilder.sql(nullsOrder)
         );
     }
 

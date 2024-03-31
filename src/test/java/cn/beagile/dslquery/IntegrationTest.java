@@ -110,6 +110,15 @@ public class IntegrationTest {
         public int count(SQLQuery sqlQuery) {
             return jdbcTemplate.query(sqlQuery.getCountSql(), sqlQuery.getParams(), (rs, rowNum) -> rs.getInt(1)).get(0);
         }
+
+        @Override
+        public String nullsOrder(NullsOrder nullsOrder) {
+            return switch (nullsOrder) {
+                case NULL_FIRST -> "nulls first";
+                case NULL_LAST -> "nulls last";
+                default -> "";
+            };
+        }
     }
 
     @Test
