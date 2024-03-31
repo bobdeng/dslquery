@@ -48,6 +48,8 @@ public class SelectIgnoresOuterTest {
         );
         assertEquals("select distinct v_query_result.name name_ from v_query_result\n" +
                 "left join t_ignore_bean ignoreBean_ on ignoreBean_.parent_id = v_query_result.id", sqlBuilder.build().getSql());
+        assertEquals("select count(distinct v_query_result.id) from v_query_result\n" +
+                "left join t_ignore_bean ignoreBean_ on ignoreBean_.parent_id = v_query_result.id", sqlBuilder.countSql());
     }
 
     @Test

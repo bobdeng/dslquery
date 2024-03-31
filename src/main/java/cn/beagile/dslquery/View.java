@@ -11,4 +11,5 @@ public @interface View {
     String value() default "";
 
     boolean distinct() default false;
+    String distinctField() default "id";
 }
