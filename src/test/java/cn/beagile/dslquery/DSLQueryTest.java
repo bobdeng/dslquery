@@ -102,5 +102,15 @@ public class DSLQueryTest {
         verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
         expectSqlWithoudEnter("select " + fields + " from view_query", sqlQuery.getSql());
+        assertEquals(NullsOrder.NONE,sqlQuery.getNullsOrder());
+    }
+    @Test
+    public void when_set_nulls_order() {
+        DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultBean.class,NullsOrder.NULL_FIRST);
+        dslQuery.where("").sort("").query();
+        verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
+        SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
+        expectSqlWithoudEnter("select " + fields + " from view_query", sqlQuery.getSql());
+        assertEquals(NullsOrder.NULL_FIRST,sqlQuery.getNullsOrder());
     }
 }

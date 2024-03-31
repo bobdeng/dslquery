@@ -14,11 +14,20 @@ public class DSLQuery<T> {
     private int timezoneOffset;
     private List<String> deepJoins = new ArrayList<>();
     private List<String> selectIgnores = new ArrayList<>();
+    private NullsOrder nullsOrder;
 
     public DSLQuery(QueryExecutor queryExecutor, Class<T> queryResultClass) {
+        this(queryExecutor, queryResultClass, NullsOrder.NONE);
+    }
+    public DSLQuery(QueryExecutor queryExecutor, Class<T> queryResultClass,NullsOrder nullsOrder) {
         this.queryExecutor = queryExecutor;
         this.queryResultClass = queryResultClass;
         this.whereList = new ArrayList<>();
+        this.nullsOrder = nullsOrder;
+    }
+
+    public NullsOrder getNullsOrder() {
+        return nullsOrder;
     }
 
     public List<String> getDeepJoins() {

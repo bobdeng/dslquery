@@ -133,7 +133,7 @@ class SQLBuilder<T> {
     }
 
     public SQLQuery build() {
-        return new SQLQuery(this.sql(), this.countSql(), this.params, dslQuery.getPage());
+        return new SQLQuery(this.sql(), this.countSql(), this.params, dslQuery.getPage(), dslQuery.getNullsOrder());
     }
 
     private String getSQL() {
