@@ -3,6 +3,7 @@ package cn.beagile.dslquery;
 import org.junit.jupiter.api.Test;
 
 import javax.persistence.Column;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -40,6 +41,8 @@ public class SQLBuilderTest {
         private Boolean passed;
         @Column(name = "passed")
         private boolean anotherBoolean;
+        @Column(name = "big_decimal")
+        private BigDecimal bigDecimal;
     }
 
     @Test
@@ -47,6 +50,12 @@ public class SQLBuilderTest {
         SQLBuilder sqlQuery = getSqlBuilder();
         sqlQuery.addParam("weight", "weight", "55.4");
         assertEquals(55.4f, sqlQuery.getParams().get("weight"));
+    }
+    @Test
+    public void add_big_decimal_param() {
+        SQLBuilder sqlQuery = getSqlBuilder();
+        sqlQuery.addParam("bigDecimal", "bigDecimal", "55.4");
+        assertEquals(new BigDecimal("55.4"), sqlQuery.getParams().get("bigDecimal"));
     }
 
     @Test

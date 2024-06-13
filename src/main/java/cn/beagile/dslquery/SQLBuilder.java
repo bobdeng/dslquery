@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 
 import javax.persistence.Column;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -40,6 +41,7 @@ class SQLBuilder<T> {
         FIELD_CAST_MAP.put(Boolean.class, v -> "true".equalsIgnoreCase(v) || "1".equals(v));
         FIELD_CAST_MAP.put(boolean.class, v -> "true".equalsIgnoreCase(v) || "1".equals(v));
         FIELD_CAST_MAP.put(String.class, s -> s);
+        FIELD_CAST_MAP.put(BigDecimal.class, BigDecimal::new);
     }
 
     SQLBuilder(DSLQuery<T> dslQuery) {
