@@ -17,8 +17,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-class SQLBuilder<T> {
-    private static final Map<Class, Function<String, Object>> FIELD_CAST_MAP = new HashMap<>();
+class SQLBuilder<T> implements SQLBuild{
+    public static final Map<Class, Function<String, Object>> FIELD_CAST_MAP = new HashMap<>();
 
     private final Map<String, Object> params;
     private final DSLQuery<T> dslQuery;
@@ -51,15 +51,15 @@ class SQLBuilder<T> {
     }
 
 
-    int nextParamId() {
+    public int nextParamId() {
         return ++this.paramIndex;
     }
 
-    void addParam(String paramName, String fieldName, String value) {
+    public void addParam(String paramName, String fieldName, String value) {
         setParam(paramName, fieldName, value, this::castValueByField);
     }
 
-    void addParamArray(String paramName, String fieldName, String value) {
+    public void addParamArray(String paramName, String fieldName, String value) {
         setParam(paramName, fieldName, value, this::castValueToList);
     }
 

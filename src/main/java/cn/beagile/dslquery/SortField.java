@@ -1,5 +1,6 @@
 package cn.beagile.dslquery;
 
+import java.util.List;
 import java.util.Objects;
 
 class SortField implements FilterExpression {
@@ -34,5 +35,10 @@ class SortField implements FilterExpression {
     @Override
     public String toDSL() {
         return this.field + " " + direction;
+    }
+
+    @Override
+    public String toSQL(List<SQLField> fields, SQLWhere sqlWhere) {
+        return "";
     }
 }

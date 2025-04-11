@@ -36,4 +36,11 @@ class ComplexExpression implements FilterExpression {
     public String toDSL() {
         return expressions.stream().map(FilterExpression::toDSL).collect(Collectors.joining("", "(" + this.condition, ")"));
     }
+
+    @Override
+    public String toSQL(List<SQLField> fields, SQLWhere sqlWhere) {
+          return expressions.stream()
+                .map(predicate -> predicate.toSQL(fields, sqlWhere))
+                .collect(Collectors.joining(" " + this.condition + " ", "(", ")"));
+    }
 }

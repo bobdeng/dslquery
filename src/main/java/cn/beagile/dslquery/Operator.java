@@ -64,4 +64,11 @@ enum Operator {
         }
         return new String[]{"p" + sqlBuilder.nextParamId(), ""};
     }
+
+    public String[] params(SQLWhere sqlWhere) {
+        if (this == Between) {
+            return new String[]{"p" + sqlWhere.nextParamId(), "p" + sqlWhere.nextParamId()};
+        }
+        return new String[]{"p" + sqlWhere.nextParamId(), ""};
+    }
 }

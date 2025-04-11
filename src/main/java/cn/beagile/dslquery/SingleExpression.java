@@ -1,6 +1,7 @@
 package cn.beagile.dslquery;
 
 
+import java.util.List;
 import java.util.Objects;
 
 
@@ -56,7 +57,7 @@ class SingleExpression implements FilterExpression {
         return String.format(operatorEnum.whereFormat(), sqlBuilder.aliasOf(field), operatorEnum.operator, paramNames[0], paramNames[1]);
     }
 
-    private void addParams(SQLBuilder sqlBuilder, Operator operatorEnum, String[] paramNames) {
+    private void addParams(SQLBuild sqlBuilder, Operator operatorEnum, String[] paramNames) {
         if (operatorEnum.isArray()) {
             sqlBuilder.addParamArray(paramNames[0], field, operatorEnum.transferValue(this.value));
             return;
@@ -75,5 +76,20 @@ class SingleExpression implements FilterExpression {
             return String.format("(%s %s %s)", field, operator, value);
         }
         return String.format("(%s %s)", field, operator);
+    }
+
+    @Override
+    public String toSQL(List<SQLField> fields, SQLWhere sqlWhere) {
+        Operator operatorEnum = Operators.byName(this.operator);
+        String sqlName = fields.stream()
+                .filter(field -> field.getName().equals(this.field))
+                .map(SQLField::getWhereName)
+                .findFirst().orElseThrow();
+        String[] paramNames = operatorEnum.params(sqlWhere);
+        if (operatorEnum.requireValue) {
+            addParams(sqlWhere, operatorEnum, paramNames);
+        }
+        return String.format(operatorEnum.whereFormat(), sqlName, operatorEnum.operator, paramNames[0], paramNames[1]);
+
     }
 }
