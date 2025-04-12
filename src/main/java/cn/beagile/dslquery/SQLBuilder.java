@@ -116,7 +116,7 @@ class SQLBuilder<T> implements SQLBuild{
         return params;
     }
 
-    String aliasOf(String field) {
+    public String aliasOf(String field) {
         return columnFields.findFieldByName(field).selectName();
     }
 

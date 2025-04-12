@@ -23,7 +23,7 @@ class ComplexExpression implements FilterExpression {
         return condition;
     }
 
-    public String toSQL(SQLBuilder sqlBuilder) {
+    public String toSQL(SQLBuild sqlBuilder) {
         return expressions.stream()
                 .map(predicate -> predicate.toSQL(sqlBuilder))
                 .collect(Collectors.joining(" " + this.condition + " ", "(", ")"));

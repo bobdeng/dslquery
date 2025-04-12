@@ -1,24 +1,26 @@
 package cn.beagile.dslquery;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.persistence.*;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = TestApplication.class)
-@Disabled
+//@Disabled
 public class IntegrationTest {
     @Autowired
     NamedParameterJdbcTemplate jdbcTemplate;
@@ -126,6 +128,47 @@ public class IntegrationTest {
         DSLQuery<Person> query = new DSLQuery<>(new SpringQueryExecutor(jdbcTemplate), Person.class);
         List<Person> result = query.timezoneOffset(-8).where("(and(org.area.name equals cn))").skip(0).limit(10).query();
         assertEquals(1, result.size());
+    }
+
+    @Test
+    public void sql_query() {
+        List<SQLField> fields = List.of(new SQLField("name", "person.name1", String.class));
+        SQLWhere where = new SQLWhere(fields, "(and(name equals John smith))");
+        String sql = "select person.name1 from person";
+        String countSql = "select count(*) from person";
+        Paging page = new Paging(0, 10);
+        SQLQuery sqlQuery = where.toSQLQuery(sql, countSql, page);
+        SpringQueryExecutor springQueryExecutor = new SpringQueryExecutor(jdbcTemplate);
+        List<Map<String, Object>> list = springQueryExecutor.list(resultSet -> {
+            try {
+                return new ColumnMapRowMapper().mapRow(resultSet, 0);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }, sqlQuery);
+        assertEquals(1, list.size());
+
+    }
+
+    @Test
+    public void sql_query_no_where_with_sort() {
+        List<SQLField> fields = List.of(new SQLField("name", "person.name1", String.class));
+        SQLWhere where = new SQLWhere(fields, null, "name asc");
+        String sql = "select person.name1 from person";
+        String countSql = "select count(*) from person";
+        Paging page = new Paging(0, 10);
+        SQLQuery sqlQuery = where.toSQLQuery(sql, countSql, page);
+        SpringQueryExecutor springQueryExecutor = new SpringQueryExecutor(jdbcTemplate);
+        List<Map<String, Object>> list = springQueryExecutor.list(resultSet -> {
+            try {
+                return new ColumnMapRowMapper().mapRow(resultSet, 0);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }, sqlQuery);
+        assertEquals("bob robert", list.get(0).get("name1"));
+        assertEquals(2, list.size());
+
     }
 
     @Test

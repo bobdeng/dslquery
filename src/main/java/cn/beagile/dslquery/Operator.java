@@ -58,17 +58,11 @@ enum Operator {
         return "(%s %s :%s)";
     }
 
-    public String[] params(SQLBuilder sqlBuilder) {
+    public String[] params(SQLBuild sqlBuilder) {
         if (this == Between) {
             return new String[]{"p" + sqlBuilder.nextParamId(), "p" + sqlBuilder.nextParamId()};
         }
         return new String[]{"p" + sqlBuilder.nextParamId(), ""};
     }
 
-    public String[] params(SQLWhere sqlWhere) {
-        if (this == Between) {
-            return new String[]{"p" + sqlWhere.nextParamId(), "p" + sqlWhere.nextParamId()};
-        }
-        return new String[]{"p" + sqlWhere.nextParamId(), ""};
-    }
 }

@@ -12,18 +12,36 @@ import static cn.beagile.dslquery.SQLBuilder.FIELD_CAST_MAP;
 
 public class SQLWhere implements SQLBuild {
     private final List<SQLField> fields;
-    private final ComplexExpression expression;
+    private String sort;
+    private ComplexExpression expression;
     private int paramIndex = 1;
     private Map<String, Object> params;
 
     public SQLWhere(List<SQLField> fields, String filter) {
+        this(fields, filter, null);
+    }
+
+    public SQLWhere(List<SQLField> fields, String filter, String sort) {
         this.fields = fields;
-        expression = new WhereParser().parse(filter);
+        if (filter != null) {
+            expression = new WhereParser().parse(filter);
+        }
+        this.sort = sort;
         this.params = new HashMap<>();
     }
 
-    public String sql() {
+    public String where() {
+        if (expression == null) {
+            return "";
+        }
         return "where " + expression.toSQL(fields, this);
+    }
+
+    public String sort() {
+        if (sort == null) {
+            return "";
+        }
+        return "order by " + new Sort(sort).toSQL(this);
     }
 
     public int nextParamId() {
@@ -32,16 +50,20 @@ public class SQLWhere implements SQLBuild {
 
     @Override
     public void addParamArray(String paramName, String fieldName, String value) {
-        SQLField field = fields.stream()
+        SQLField field = getSqlField(fieldName);
+        params.put(paramName, castValueToList(value, field));
+    }
+
+    private SQLField getSqlField(String fieldName) {
+        return fields.stream()
                 .filter(f -> f.getName().equals(fieldName))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("field not found:" + fieldName));
-        params.put(paramName, castValueToList(value,field));
     }
 
     private List<Object> castValueToList(String value, SQLField field) {
         return Stream.of(new Gson().fromJson(value, String[].class))
-                .map(v -> castValueByField(v,field))
+                .map(v -> castValueByField(v, field))
                 .collect(Collectors.toList());
     }
 
@@ -54,7 +76,16 @@ public class SQLWhere implements SQLBuild {
         params.put(paramName, value);
     }
 
+    @Override
+    public String aliasOf(String field) {
+        return getSqlField(field).getWhereName();
+    }
+
     public Object param(String name) {
         return this.params.get(name);
+    }
+
+    public SQLQuery toSQLQuery(String sql, String countSql, Paging page) {
+        return new SQLQuery(sql + " " + where()+" "+sort(), countSql + " " + where(), this.params, page);
     }
 }

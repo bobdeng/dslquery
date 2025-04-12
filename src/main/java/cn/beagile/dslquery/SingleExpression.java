@@ -48,7 +48,7 @@ class SingleExpression implements FilterExpression {
                 '}';
     }
 
-    public String toSQL(SQLBuilder sqlBuilder) {
+    public String toSQL(SQLBuild sqlBuilder) {
         Operator operatorEnum = Operators.byName(this.operator);
         String[] paramNames = operatorEnum.params(sqlBuilder);
         if (operatorEnum.requireValue) {

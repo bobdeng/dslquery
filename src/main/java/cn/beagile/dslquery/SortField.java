@@ -28,9 +28,11 @@ class SortField implements FilterExpression {
         }
     }
 
-    public String toSQL(SQLBuilder sqlQuery) {
+    public String toSQL(SQLBuild sqlQuery) {
         return sqlQuery.aliasOf(field) + (Objects.isNull(direction) ? "" : " " + direction);
     }
+
+
 
     @Override
     public String toDSL() {

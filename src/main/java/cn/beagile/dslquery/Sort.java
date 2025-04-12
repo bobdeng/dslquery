@@ -11,7 +11,7 @@ class Sort {
                 .map(SortField::new).collect(Collectors.toList());
     }
 
-    public String toSQL(SQLBuilder sqlQuery) {
+    public String toSQL(SQLBuild sqlQuery) {
         return fields.stream().map(sortField -> sortField.toSQL(sqlQuery)).collect(Collectors.joining(","));
     }
 }
