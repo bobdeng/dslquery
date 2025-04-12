@@ -84,7 +84,7 @@ class SingleExpression implements FilterExpression {
         String sqlName = fields.stream()
                 .filter(field -> field.getName().equals(this.field))
                 .map(SQLField::getWhereName)
-                .findFirst().orElseThrow();
+                .findFirst().orElseThrow(() -> new RuntimeException("invalid field:" + this.field));
         String[] paramNames = operatorEnum.params(sqlWhere);
         if (operatorEnum.requireValue) {
             addParams(sqlWhere, operatorEnum, paramNames);
