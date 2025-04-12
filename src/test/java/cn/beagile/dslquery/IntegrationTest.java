@@ -168,6 +168,7 @@ public class IntegrationTest {
         }, sqlQuery);
         assertEquals("bob robert", list.get(0).get("name1"));
         assertEquals(2, list.size());
+        assertEquals(2,springQueryExecutor.count(sqlQuery));
 
     }
 
