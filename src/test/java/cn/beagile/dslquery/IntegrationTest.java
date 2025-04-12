@@ -132,7 +132,7 @@ public class IntegrationTest {
 
     @Test
     public void sql_query() {
-        List<SQLField> fields = List.of(new SQLField("name", "person.name1", String.class));
+        List<SQLField> fields = List.of(new SQLField(new SQLField.ViewName("name"), new SQLField.SQLName("person.name1"), String.class));
         RawSQLBuilder where = new RawSQLBuilder(fields, "(and(name equals John smith))");
         String sql = "select person.name1 from person";
         String countSql = "select count(*) from person";
@@ -152,7 +152,7 @@ public class IntegrationTest {
 
     @Test
     public void sql_query_no_where_with_sort() {
-        List<SQLField> fields = List.of(new SQLField("name", "person.name1", String.class));
+        List<SQLField> fields = List.of(new SQLField(new SQLField.ViewName("name"), new SQLField.SQLName("person.name1"), String.class));
         RawSQLBuilder where = new RawSQLBuilder(fields, null, "name asc");
         String sql = "select person.name1 from person";
         String countSql = "select count(*) from person";

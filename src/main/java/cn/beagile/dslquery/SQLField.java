@@ -5,9 +5,9 @@ public class SQLField {
     private String whereName;
     private Class<?> type;
 
-    public SQLField(String name, String whereName, Class<?> type) {
-        this.name = name;
-        this.whereName = whereName;
+    public SQLField(ViewName viewName, SQLName sqlName, Class<?> type) {
+        this.name = viewName.name;
+        this.whereName = sqlName.name;
         this.type = type;
     }
 
@@ -21,5 +21,21 @@ public class SQLField {
 
     public Class<?> getType() {
         return type;
+    }
+
+    public static class ViewName {
+        private String name;
+
+        public ViewName(String name) {
+            this.name = name;
+        }
+    }
+
+    public static class SQLName {
+        private String name;
+
+        public SQLName(String name) {
+            this.name = name;
+        }
     }
 }
