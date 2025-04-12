@@ -8,20 +8,20 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static cn.beagile.dslquery.SQLBuilder.FIELD_CAST_MAP;
+import static cn.beagile.dslquery.DSLSQLBuilder.FIELD_CAST_MAP;
 
-public class SQLWhere implements SQLBuild {
+public class RawSQLBuilder implements SQLBuilder {
     private final List<SQLField> fields;
     private String sort;
     private ComplexExpression expression;
     private int paramIndex = 1;
     private Map<String, Object> params;
 
-    public SQLWhere(List<SQLField> fields, String filter) {
+    public RawSQLBuilder(List<SQLField> fields, String filter) {
         this(fields, filter, null);
     }
 
-    public SQLWhere(List<SQLField> fields, String filter, String sort) {
+    public RawSQLBuilder(List<SQLField> fields, String filter, String sort) {
         this.fields = fields;
         if (filter != null) {
             expression = new WhereParser().parse(filter);

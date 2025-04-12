@@ -15,7 +15,7 @@ import static org.mockito.Mockito.when;
 public class JoinAndEmbeddedTest {
 
     private DSLQuery<User> dslQuery;
-    private SQLBuilder<User> sqlBuilder;
+    private DSLSQLBuilder<User> sqlBuilder;
 
     @View("t_user")
     public static class User {

@@ -30,7 +30,7 @@ public class SelectIgnoresTest {
 
     @Test
     public void should_has_distinct() {
-        SQLBuilder<QueryResult> sqlBuilder = new SQLBuilder<>(new DSLQuery<QueryResult>(null, QueryResult.class));
+        DSLSQLBuilder<QueryResult> sqlBuilder = new DSLSQLBuilder<>(new DSLQuery<QueryResult>(null, QueryResult.class));
         assertEquals("select distinct v_query_result.name name_ from v_query_result\n" +
                 "left join t_ignore_bean ignoreBean_ on ignoreBean_.parent_id = v_query_result.id", sqlBuilder.build("").getSql());
     }
@@ -39,7 +39,7 @@ public class SelectIgnoresTest {
     public void should_set_params_not_select() {
         DSLQuery<QueryResult> dslQuery = new DSLQuery<>(null, QueryResult.class);
         dslQuery.where("(and(ignoreBean.id equals 1))");
-        SQLBuilder<QueryResult> sqlBuilder = new SQLBuilder<>(dslQuery);
+        DSLSQLBuilder<QueryResult> sqlBuilder = new DSLSQLBuilder<>(dslQuery);
         sqlBuilder.addParam("ignoreBean.id", "ignoreBean.id", "1");
         assertEquals(1L, sqlBuilder.getParams().get("ignoreBean.id"));
         assertEquals("select distinct v_query_result.name name_ from v_query_result\n" +

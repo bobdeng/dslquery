@@ -17,7 +17,7 @@ import static org.mockito.Mockito.when;
 public class DoubleJoinTest {
 
     private DSLQuery<User> dslQuery;
-    private SQLBuilder<User> sqlBuilder;
+    private DSLSQLBuilder<User> sqlBuilder;
     private String nullsOrder="";
 
     @View("t_user")
@@ -52,7 +52,7 @@ public class DoubleJoinTest {
     @BeforeEach
     public void setup() {
         dslQuery = new DSLQuery<>(null, User.class);
-        sqlBuilder = new SQLBuilder<>(dslQuery);
+        sqlBuilder = new DSLSQLBuilder<>(dslQuery);
     }
 
     @Test
@@ -69,7 +69,7 @@ public class DoubleJoinTest {
     @Test
     public void should_select_join() {
         dslQuery.selectIgnores("org");
-        sqlBuilder = new SQLBuilder<>(dslQuery);
+        sqlBuilder = new DSLSQLBuilder<>(dslQuery);
         assertEquals("select t_user.name name_ from t_user\n" +
                 "left join t_inner on t_inner.id = t_user.inner_id\n" +
                 "left join t_org org_ on org_.id = t_inner.org_id\n" +
@@ -82,7 +82,7 @@ public class DoubleJoinTest {
     public void should_select_join1() {
         dslQuery.selectIgnores("org.area");
         dslQuery.where("(and(org.area.name eq area))");
-        sqlBuilder = new SQLBuilder<>(dslQuery);
+        sqlBuilder = new DSLSQLBuilder<>(dslQuery);
         assertDoesNotThrow(() -> sqlBuilder.sql(nullsOrder));
     }
 

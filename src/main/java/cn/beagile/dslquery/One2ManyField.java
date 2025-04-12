@@ -25,7 +25,7 @@ public class One2ManyField {
                 .map(Object::toString)
                 .findFirst().orElseThrow(() -> new RuntimeException("can not find master field value"));
         dslQuery.where(where().and().equals(joinColumn.referencedColumnName(), masterFieldValue).build());
-        SQLQuery sqlQuery = new SQLBuilder<>(dslQuery)
+        SQLQuery sqlQuery = new DSLSQLBuilder<>(dslQuery)
                 .build(nullsOrder);
         ReflectField reflectField = new ReflectField(master, field);
         reflectField.set(queryExecutor.list(new DefaultResultSetReader<>(dslQuery), sqlQuery));

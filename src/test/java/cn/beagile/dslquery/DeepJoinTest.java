@@ -52,7 +52,7 @@ public class DeepJoinTest {
     @Test
     public void should_select_join() {
         DSLQuery<User> dslQuery = new DSLQuery<>(null, User.class);
-        SQLBuilder<User> sqlBuilder = new SQLBuilder<>(dslQuery);
+        DSLSQLBuilder<User> sqlBuilder = new DSLSQLBuilder<>(dslQuery);
         assertEquals("select t_user.name name_,org_.name org_name_,org_area_.name org_area_name_,org_city_.name org_city_name_,org_city_area_.name org_city_area_name_ from t_user\n" +
                 "left join t_org org_ on org_.id = t_user.org_id\n" +
                 "left join t_area org_area_ on org_area_.id = org_.area_id\n" +
@@ -79,7 +79,7 @@ public class DeepJoinTest {
     public void should_add_where_with_join_column() {
         DSLQuery<User> dslQuery = new DSLQuery<>(null, User.class);
         dslQuery = dslQuery.where("(and(org.area.name equals 123))");
-        SQLBuilder sqlBuilder = new SQLBuilder<>(dslQuery);
+        DSLSQLBuilder sqlBuilder = new DSLSQLBuilder<>(dslQuery);
         String expect = "select t_user.name name_,org_.name org_name_,org_area_.name org_area_name_,org_city_.name org_city_name_,org_city_area_.name org_city_area_name_ from t_user\n" +
                 "left join t_org org_ on org_.id = t_user.org_id\n" +
                 "left join t_area org_area_ on org_area_.id = org_.area_id\n" +

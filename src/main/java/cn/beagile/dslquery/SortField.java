@@ -28,7 +28,7 @@ class SortField implements FilterExpression {
         }
     }
 
-    public String toSQL(SQLBuild sqlQuery) {
+    public String toSQL(SQLBuilder sqlQuery) {
         return sqlQuery.aliasOf(field) + (Objects.isNull(direction) ? "" : " " + direction);
     }
 
@@ -40,7 +40,7 @@ class SortField implements FilterExpression {
     }
 
     @Override
-    public String toSQL(List<SQLField> fields, SQLWhere sqlWhere) {
+    public String toSQL(List<SQLField> fields, RawSQLBuilder sqlWhere) {
         return "";
     }
 }

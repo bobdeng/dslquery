@@ -48,7 +48,7 @@ class SingleExpression implements FilterExpression {
                 '}';
     }
 
-    public String toSQL(SQLBuild sqlBuilder) {
+    public String toSQL(SQLBuilder sqlBuilder) {
         Operator operatorEnum = Operators.byName(this.operator);
         String[] paramNames = operatorEnum.params(sqlBuilder);
         if (operatorEnum.requireValue) {
@@ -57,7 +57,7 @@ class SingleExpression implements FilterExpression {
         return String.format(operatorEnum.whereFormat(), sqlBuilder.aliasOf(field), operatorEnum.operator, paramNames[0], paramNames[1]);
     }
 
-    private void addParams(SQLBuild sqlBuilder, Operator operatorEnum, String[] paramNames) {
+    private void addParams(SQLBuilder sqlBuilder, Operator operatorEnum, String[] paramNames) {
         if (operatorEnum.isArray()) {
             sqlBuilder.addParamArray(paramNames[0], field, operatorEnum.transferValue(this.value));
             return;
@@ -79,7 +79,7 @@ class SingleExpression implements FilterExpression {
     }
 
     @Override
-    public String toSQL(List<SQLField> fields, SQLWhere sqlWhere) {
+    public String toSQL(List<SQLField> fields, RawSQLBuilder sqlWhere) {
         Operator operatorEnum = Operators.byName(this.operator);
         String sqlName = fields.stream()
                 .filter(field -> field.getName().equals(this.field))

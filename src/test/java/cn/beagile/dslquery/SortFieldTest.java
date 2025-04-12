@@ -26,17 +26,17 @@ public class SortFieldTest {
     }
     @Test
     public void default_is_asc() {
-        String sort = new SortField("name").toSQL(new SQLBuilder(new DSLQuery<>(null, ClassForSort.class)));
+        String sort = new SortField("name").toSQL(new DSLSQLBuilder(new DSLQuery<>(null, ClassForSort.class)));
         assertEquals("test_view.person_name",sort);
     }
     @Test
     public void sort_asc() {
-        String sort = new SortField("name asc").toSQL(new SQLBuilder(new DSLQuery<>(null, ClassForSort.class)));
+        String sort = new SortField("name asc").toSQL(new DSLSQLBuilder(new DSLQuery<>(null, ClassForSort.class)));
         assertEquals("test_view.person_name asc",sort);
     }
     @Test
     public void sort_desc() {
-        String sort = new SortField("name desc").toSQL(new SQLBuilder(new DSLQuery<>(null, ClassForSort.class)));
+        String sort = new SortField("name desc").toSQL(new DSLSQLBuilder(new DSLQuery<>(null, ClassForSort.class)));
         assertEquals("test_view.person_name desc",sort);
     }
 }

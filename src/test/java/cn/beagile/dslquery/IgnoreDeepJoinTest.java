@@ -14,7 +14,7 @@ import static org.mockito.Mockito.mock;
 public class IgnoreDeepJoinTest {
 
     private DSLQuery<User> dslQuery;
-    private SQLBuilder<User> sqlBuilder;
+    private DSLSQLBuilder<User> sqlBuilder;
     private String nullsOrder="";
 
     @View("t_user")
@@ -49,7 +49,7 @@ public class IgnoreDeepJoinTest {
 
     @Test
     public void should_select_join() {
-        sqlBuilder = new SQLBuilder<>(dslQuery);
+        sqlBuilder = new DSLSQLBuilder<>(dslQuery);
         assertEquals("select t_user.name name_,org_.name org_name_,area_.name area_name_ from t_user\n" +
                 "left join t_org org_ on org_.id = t_user.org_id\n" +
                 "left join t_area area_ on area_.id = t_user.area_id", sqlBuilder.sql(nullsOrder)
@@ -60,7 +60,7 @@ public class IgnoreDeepJoinTest {
     @Test
     public void should_select_count_join() {
         dslQuery.selectIgnores("org", "area");
-        sqlBuilder = new SQLBuilder<>(dslQuery);
+        sqlBuilder = new DSLSQLBuilder<>(dslQuery);
         assertEquals("select count(distinct t_user.name) from t_user\n" +
                 "left join t_org org_ on org_.id = t_user.org_id\n" +
                 "left join t_area area_ on area_.id = t_user.area_id", sqlBuilder.countSql()
@@ -69,7 +69,7 @@ public class IgnoreDeepJoinTest {
 
     @Test
     public void should_select_count_join_withignore() {
-        sqlBuilder = new SQLBuilder<>(dslQuery);
+        sqlBuilder = new DSLSQLBuilder<>(dslQuery);
         assertEquals("select count(distinct t_user.name) from t_user\n" +
                 "left join t_org org_ on org_.id = t_user.org_id\n" +
                 "left join t_area area_ on area_.id = t_user.area_id", sqlBuilder.countSql()
