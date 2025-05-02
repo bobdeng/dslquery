@@ -86,6 +86,13 @@ public class RawSQLBuilder implements SQLBuilder {
     }
 
     public SQLQuery toSQLQuery(String sql, String countSql, Paging page) {
-        return new SQLQuery(sql + " " + where()+" "+sort(), countSql + " " + where(), this.params, page);
+        return new SQLQuery(getSqlAndWhere(sql) + " " + sort(), getSqlAndWhere(countSql), this.params, page);
+    }
+
+    private String getSqlAndWhere(String sql) {
+        if (sql.contains("${where}")) {
+            return sql.replace("${where}", where());
+        }
+        return sql + " " + where();
     }
 }

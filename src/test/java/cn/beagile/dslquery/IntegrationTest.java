@@ -21,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = TestApplication.class)
-@Disabled
 public class IntegrationTest {
     @Autowired
     NamedParameterJdbcTemplate jdbcTemplate;
@@ -135,7 +134,7 @@ public class IntegrationTest {
     public void sql_query() {
         List<SQLField> fields = List.of(new SQLField(new SQLField.ViewName("name"), new SQLField.SQLName("person.name1"), String.class));
         RawSQLBuilder where = new RawSQLBuilder(fields, "(and(name equals John smith))");
-        String sql = "select person.name1 from person";
+        String sql = "select person.name1 from person ${where} group by person.name1";
         String countSql = "select count(*) from person";
         Paging page = new Paging(0, 10);
         SQLQuery sqlQuery = where.toSQLQuery(sql, countSql, page);
