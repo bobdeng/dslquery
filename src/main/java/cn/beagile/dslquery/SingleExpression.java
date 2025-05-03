@@ -3,6 +3,7 @@ package cn.beagile.dslquery;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 
 class SingleExpression implements FilterExpression {
@@ -81,15 +82,18 @@ class SingleExpression implements FilterExpression {
     @Override
     public String toSQL(List<SQLField> fields, RawSQLBuilder sqlWhere) {
         Operator operatorEnum = Operators.byName(this.operator);
-        String sqlName = fields.stream()
+        Optional<String> sqlName = fields.stream()
                 .filter(field -> field.getName().equals(this.field))
                 .map(SQLField::getWhereName)
-                .findFirst().orElseThrow(() -> new RuntimeException("invalid field:" + this.field));
+                .findFirst();
+        if (sqlName.isEmpty()) {
+            return "true";
+        }
         String[] paramNames = operatorEnum.params(sqlWhere);
         if (operatorEnum.requireValue) {
             addParams(sqlWhere, operatorEnum, paramNames);
         }
-        return String.format(operatorEnum.whereFormat(), sqlName, operatorEnum.operator, paramNames[0], paramNames[1]);
+        return String.format(operatorEnum.whereFormat(), sqlName.get(), operatorEnum.operator, paramNames[0], paramNames[1]);
 
     }
 }

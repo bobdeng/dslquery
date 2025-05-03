@@ -14,6 +14,13 @@ class SQLWhereTest {
         assertEquals("where ((a.name = :p1))", sqlWhere.where());
         assertEquals(sqlWhere.param("p1"), "123");
     }
+    @Test
+    void 条件里有存在的字段忽略之() {
+        List<SQLField> fields = List.of(new SQLField(new SQLField.ViewName("name"), new SQLField.SQLName("a.name"), String.class));
+        RawSQLBuilder sqlWhere = new RawSQLBuilder(fields, "(and(name eq 123)(age ge 3))");
+        assertEquals("where ((a.name = :p1) and true)", sqlWhere.where());
+        assertEquals(sqlWhere.param("p1"), "123");
+    }
 
     @Test
     void test_array() {
