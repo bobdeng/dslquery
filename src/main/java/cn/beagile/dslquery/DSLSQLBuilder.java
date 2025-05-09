@@ -51,10 +51,6 @@ class DSLSQLBuilder<T> implements SQLBuilder {
     }
 
 
-    public int nextParamId() {
-        return ++this.paramIndex;
-    }
-
     public void addParam(String paramName, String fieldName, String value) {
         setParam(paramName, fieldName, value, this::castValueByField);
     }

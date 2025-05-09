@@ -62,6 +62,6 @@ public class One2ManyTest {
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
         assertEquals("select slave.slave_name name_,slave.master_id masterId_ from slave\n" +
                 "\n" +
-                " where ((slave.master_id = :p1))", sqlQuery.getSql().trim());
+                " where ((slave.master_id = :p0))", sqlQuery.getSql().trim());
     }
 }

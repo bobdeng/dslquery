@@ -1,6 +1,7 @@
 package cn.beagile.dslquery;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import javax.persistence.Column;

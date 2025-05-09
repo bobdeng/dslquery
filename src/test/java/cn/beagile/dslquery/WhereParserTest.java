@@ -12,8 +12,14 @@ public class WhereParserTest {
         assertNotNull(where);
         assertEquals(where.getCondition(), "and");
         assertEquals(1, where.getExpressions().size());
-        assertEquals(new SingleExpression("org.name", "equals", "bob"), where.getExpressions().get(0));
+        assertEquals(new SingleExpression("org.name", "equals", "bob","p0"), where.getExpressions().get(0));
     }
+
+//    @Test
+//    public void where_param_name() {
+//        WhereParser whereParser = new WhereParser();
+//        ComplexExpression where = whereParser.parse("(and(org.name equals bob))");
+//    }
 
     @Test
     public void should_parse_where_has_embrace_in_value() {
@@ -22,7 +28,7 @@ public class WhereParserTest {
         assertNotNull(where);
         assertEquals(where.getCondition(), "and");
         assertEquals(1, where.getExpressions().size());
-        assertEquals(new SingleExpression("name", "equals", "bob)"), where.getExpressions().get(0));
+        assertEquals(new SingleExpression("name", "equals", "bob)","p0"), where.getExpressions().get(0));
     }
 
     @Test
@@ -32,7 +38,7 @@ public class WhereParserTest {
         assertNotNull(where);
         assertEquals(where.getCondition(), "or");
         assertEquals(1, where.getExpressions().size());
-        assertEquals(new SingleExpression("name", "isnull", ""), where.getExpressions().get(0));
+        assertEquals(new SingleExpression("name", "isnull", "","p0"), where.getExpressions().get(0));
     }
 
 
@@ -43,10 +49,10 @@ public class WhereParserTest {
         assertNotNull(where);
         assertEquals(where.getCondition(), "and");
         assertEquals(4, where.getExpressions().size());
-        assertEquals(new SingleExpression("name", "equals", "bob"), where.getExpressions().get(0));
-        assertEquals(new SingleExpression("age", "notequals", "18"), where.getExpressions().get(1));
-        assertEquals(new SingleExpression("name", "notnull", ""), where.getExpressions().get(2));
-        assertEquals(new SingleExpression("name", "isnull", ""), where.getExpressions().get(3));
+        assertEquals(new SingleExpression("name", "equals", "bob","p0"), where.getExpressions().get(0));
+        assertEquals(new SingleExpression("age", "notequals", "18","p1"), where.getExpressions().get(1));
+        assertEquals(new SingleExpression("name", "notnull", "","p2"), where.getExpressions().get(2));
+        assertEquals(new SingleExpression("name", "isnull", "","p3"), where.getExpressions().get(3));
     }
 
     @Test
@@ -56,7 +62,7 @@ public class WhereParserTest {
         assertNotNull(where);
         assertEquals(where.getCondition(), "and");
         assertEquals(2, where.getExpressions().size());
-        assertEquals(new SingleExpression("age", "greaterthan", "18"), where.getExpressions().get(1));
+        assertEquals(new SingleExpression("age", "greaterthan", "18","p2"), where.getExpressions().get(1));
     }
 
     @Test
@@ -67,7 +73,7 @@ public class WhereParserTest {
         assertEquals(where.getCondition(), "or");
         assertEquals(2, where.getExpressions().size());
         assertEquals("and", ((ComplexExpression) where.getExpressions().get(0)).getCondition());
-        assertEquals(new SingleExpression("age", "greaterthan", "18"), where.getExpressions().get(1));
+        assertEquals(new SingleExpression("age", "greaterthan", "18","p2"), where.getExpressions().get(1));
     }
 
     //当不是以and或者or开头的时候，会默认以and开头
@@ -78,8 +84,8 @@ public class WhereParserTest {
         assertNotNull(where);
         assertEquals(where.getCondition(), "and");
         assertEquals(2, where.getExpressions().size());
-        assertEquals(new SingleExpression("name", "equals", "bob"), where.getExpressions().get(0));
-        assertEquals(new SingleExpression("age", "greaterthan", "18"), where.getExpressions().get(1));
+        assertEquals(new SingleExpression("name", "equals", "bob","p0"), where.getExpressions().get(0));
+        assertEquals(new SingleExpression("age", "greaterthan", "18","p1"), where.getExpressions().get(1));
     }
 
     //当条件不是and or的时候，抛出异常
@@ -126,4 +132,5 @@ public class WhereParserTest {
         });
         assertEquals("invalid predicate:(name equals )", e.getMessage());
     }
+
 }

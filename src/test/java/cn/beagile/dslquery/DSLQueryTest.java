@@ -49,9 +49,9 @@ public class DSLQueryTest {
         dslQuery.where("(and(name equals bob))").query();
         verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
-        expectSqlWithoudEnter("select " + fields + " from view_query where ((view_query.name = :p1))", sqlQuery.getSql());
+        expectSqlWithoudEnter("select " + fields + " from view_query where ((view_query.name = :p0))", sqlQuery.getSql());
         Map<String, Object> params = sqlQuery.getParams();
-        assertEquals("bob", params.get("p1"));
+        assertEquals("bob", params.get("p0"));
         assertEquals(1, params.size());
     }
 
@@ -61,10 +61,10 @@ public class DSLQueryTest {
         dslQuery.where("(and(age between 18,26))").query();
         verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
-        expectSqlWithoudEnter("select " + fields + " from view_query where ((view_query.age between :p1 and :p2))", sqlQuery.getSql());
+        expectSqlWithoudEnter("select " + fields + " from view_query where ((view_query.age between :p0_0 and :p0_1))", sqlQuery.getSql());
         Map<String, Object> params = sqlQuery.getParams();
-        assertEquals(18, params.get("p1"));
-        assertEquals(26, params.get("p2"));
+        assertEquals(18, params.get("p0_0"));
+        assertEquals(26, params.get("p0_1"));
     }
 
     @Test
@@ -73,9 +73,9 @@ public class DSLQueryTest {
         dslQuery.where("(and(name in ['bob','alice']))").query();
         verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
         SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
-        expectSqlWithoudEnter("select " + fields + " from view_query where ((view_query.name in (:p1)))", sqlQuery.getSql());
+        expectSqlWithoudEnter("select " + fields + " from view_query where ((view_query.name in (:p0)))", sqlQuery.getSql());
         Map<String, Object> params = sqlQuery.getParams();
-        assertEquals(Arrays.asList("bob", "alice"), params.get("p1"));
+        assertEquals(Arrays.asList("bob", "alice"), params.get("p0"));
     }
 
     @Test

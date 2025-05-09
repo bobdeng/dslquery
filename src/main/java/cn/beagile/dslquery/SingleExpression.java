@@ -9,7 +9,15 @@ class SingleExpression implements FilterExpression {
     private final String field;
     private final String operator;
     private final String value;
+    private String paramName;
 
+    public SingleExpression(String field, String operator, String value,String paramName) {
+        this.field = field;
+        this.operator = operator;
+        this.value = value;
+        this.paramName=paramName;
+        checkFields();
+    }
     public SingleExpression(String field, String operator, String value) {
         this.field = field;
         this.operator = operator;
@@ -45,12 +53,13 @@ class SingleExpression implements FilterExpression {
                 "field='" + field + '\'' +
                 ", operator='" + operator + '\'' +
                 ", value='" + value + '\'' +
+                ", paramName='" + paramName + '\'' +
                 '}';
     }
 
     public String toSQL(SQLBuilder sqlBuilder) {
         Operator operatorEnum = Operators.byName(this.operator);
-        String[] paramNames = operatorEnum.params(sqlBuilder);
+        String[] paramNames = operatorEnum.params(paramName);
         if (operatorEnum.requireValue) {
             addParams(sqlBuilder, operatorEnum, paramNames);
         }
@@ -86,7 +95,7 @@ class SingleExpression implements FilterExpression {
                 .map(SQLField::getWhereName)
                 .findFirst()
                 .map(sqlName -> {
-                    String[] paramNames = operatorEnum.params(sqlWhere);
+                    String[] paramNames = operatorEnum.params(paramName);
                     if (operatorEnum.requireValue) {
                         addParams(sqlWhere, operatorEnum, paramNames);
                     }

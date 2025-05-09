@@ -44,10 +44,6 @@ public class RawSQLBuilder implements SQLBuilder {
         return "order by " + new Sort(sort).toSQL(this);
     }
 
-    public int nextParamId() {
-        return paramIndex++;
-    }
-
     @Override
     public void addParamArray(String paramName, String fieldName, String value) {
         SQLField field = getSqlField(fieldName);

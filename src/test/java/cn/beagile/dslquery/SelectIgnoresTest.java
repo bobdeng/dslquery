@@ -44,7 +44,7 @@ public class SelectIgnoresTest {
         assertEquals(1L, sqlBuilder.getParams().get("ignoreBean.id"));
         assertEquals("select distinct v_query_result.name name_ from v_query_result\n" +
                 "left join t_ignore_bean ignoreBean_ on ignoreBean_.parent_id = v_query_result.id\n" +
-                " where ((ignoreBean_.id = :p1))", sqlBuilder.build("").getSql());
+                " where ((ignoreBean_.id = :p0))", sqlBuilder.build("").getSql());
     }
 
     @Test

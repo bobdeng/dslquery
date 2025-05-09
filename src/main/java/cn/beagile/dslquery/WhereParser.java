@@ -8,6 +8,12 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 class WhereParser {
+    private int index = 0;
+
+    private String nextName() {
+        return "p" + index++;
+    }
+
     public ComplexExpression parse(String whereString) {
         return new ComplexExpression(getCondition(whereString), getFilterExpressions(whereString));
     }
@@ -40,7 +46,7 @@ class WhereParser {
         if (value.equals("") && Operators.byName(operator).requireValue) {
             throw new RuntimeException("invalid predicate:" + subWhere);
         }
-        return new SingleExpression(fieldName, operator, urlDecode(value));
+        return new SingleExpression(fieldName, operator, urlDecode(value),nextName());
     }
 
     private String urlDecode(String value) {
