@@ -46,13 +46,12 @@ public class RawSQLBuilder implements SQLBuilder {
 
     @Override
     public void addParamArray(String paramName, String fieldName, String value) {
-        getSqlField(fieldName).ifPresentOrElse(
-                (sqlField -> params.put(paramName, castValueToList(value, sqlField))),
-                () -> {
-                    params.put(paramName, new Gson().fromJson(value, String[].class));
-                }
-        );
-
+        Optional<SQLField> sqlField = getSqlField(fieldName);
+        if (sqlField.isPresent()) {
+            params.put(paramName, castValueToList(value, sqlField.get()));
+            return;
+        }
+        params.put(paramName, new Gson().fromJson(value, String[].class));
     }
 
     private Optional<SQLField> getSqlField(String fieldName) {
