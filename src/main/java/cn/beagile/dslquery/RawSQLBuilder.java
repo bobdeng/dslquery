@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -45,15 +46,19 @@ public class RawSQLBuilder implements SQLBuilder {
 
     @Override
     public void addParamArray(String paramName, String fieldName, String value) {
-        SQLField field = getSqlField(fieldName);
-        params.put(paramName, castValueToList(value, field));
+        getSqlField(fieldName).ifPresentOrElse(
+                (sqlField -> params.put(paramName, castValueToList(value, sqlField))),
+                () -> {
+                    params.put(paramName, new Gson().fromJson(value, String[].class));
+                }
+        );
+
     }
 
-    private SQLField getSqlField(String fieldName) {
+    private Optional<SQLField> getSqlField(String fieldName) {
         return fields.stream()
                 .filter(f -> f.getName().equals(fieldName))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("field not found:" + fieldName));
+                .findFirst();
     }
 
     private List<Object> castValueToList(String value, SQLField field) {
@@ -73,7 +78,7 @@ public class RawSQLBuilder implements SQLBuilder {
 
     @Override
     public String aliasOf(String field) {
-        return getSqlField(field).getWhereName();
+        return getSqlField(field).map(SQLField::getWhereName).orElse("");
     }
 
     public Object param(String name) {
