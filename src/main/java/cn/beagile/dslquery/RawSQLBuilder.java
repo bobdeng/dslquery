@@ -14,7 +14,6 @@ public class RawSQLBuilder implements SQLBuilder {
     private final List<SQLField> fields;
     private String sort;
     private ComplexExpression expression;
-    private int paramIndex = 1;
     private Map<String, Object> params;
 
     public RawSQLBuilder(List<SQLField> fields, String filter) {

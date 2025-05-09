@@ -11,13 +11,14 @@ class SingleExpression implements FilterExpression {
     private final String value;
     private String paramName;
 
-    public SingleExpression(String field, String operator, String value,String paramName) {
+    public SingleExpression(String field, String operator, String value, String paramName) {
         this.field = field;
         this.operator = operator;
         this.value = value;
-        this.paramName=paramName;
+        this.paramName = paramName;
         checkFields();
     }
+
     public SingleExpression(String field, String operator, String value) {
         this.field = field;
         this.operator = operator;
@@ -90,17 +91,16 @@ class SingleExpression implements FilterExpression {
     @Override
     public String toSQL(List<SQLField> fields, RawSQLBuilder sqlWhere) {
         Operator operatorEnum = Operators.byName(this.operator);
+        String[] paramNames = operatorEnum.params(paramName);
+        if (operatorEnum.requireValue) {
+            addParams(sqlWhere, operatorEnum, paramNames);
+        }
         return fields.stream()
                 .filter(field -> field.getName().equals(this.field))
                 .map(SQLField::getWhereName)
                 .findFirst()
-                .map(sqlName -> {
-                    String[] paramNames = operatorEnum.params(paramName);
-                    if (operatorEnum.requireValue) {
-                        addParams(sqlWhere, operatorEnum, paramNames);
-                    }
-                    return String.format(operatorEnum.whereFormat(), sqlName, operatorEnum.operator, paramNames[0], paramNames[1]);
-                }).orElse("true");
+                .map(sqlName -> String.format(operatorEnum.whereFormat(), sqlName, operatorEnum.operator, paramNames[0], paramNames[1]))
+                .orElse("true");
 
     }
 }
