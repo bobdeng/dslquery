@@ -2,10 +2,7 @@ package cn.beagile.dslquery;
 
 import com.google.gson.Gson;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -51,7 +48,7 @@ public class RawSQLBuilder implements SQLBuilder {
             params.put(paramName, castValueToList(value, sqlField.get()));
             return;
         }
-        params.put(paramName, new Gson().fromJson(value, String[].class));
+        params.put(paramName, Arrays.asList(new Gson().fromJson(value, String[].class)));
     }
 
     private Optional<SQLField> getSqlField(String fieldName) {
