@@ -15,11 +15,14 @@ public class DSLQuery<T> {
     private List<String> deepJoins = new ArrayList<>();
     private List<String> selectIgnores = new ArrayList<>();
     private NullsOrder nullsOrder;
+    private WhereParser whereParser = new WhereParser();
+    ;
 
     public DSLQuery(QueryExecutor queryExecutor, Class<T> queryResultClass) {
         this(queryExecutor, queryResultClass, NullsOrder.NONE);
     }
-    public DSLQuery(QueryExecutor queryExecutor, Class<T> queryResultClass,NullsOrder nullsOrder) {
+
+    public DSLQuery(QueryExecutor queryExecutor, Class<T> queryResultClass, NullsOrder nullsOrder) {
         this.queryExecutor = queryExecutor;
         this.queryResultClass = queryResultClass;
         this.whereList = new ArrayList<>();
@@ -42,7 +45,7 @@ public class DSLQuery<T> {
         if (where == null || where.isEmpty()) {
             return this;
         }
-        this.whereList.add(new WhereParser().parse(where));
+        this.whereList.add(whereParser.parse(where));
         return this;
     }
 

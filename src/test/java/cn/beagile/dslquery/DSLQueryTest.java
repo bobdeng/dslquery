@@ -117,4 +117,16 @@ public class DSLQueryTest {
         expectSqlWithoudEnter("select " + fields + " from view_query", sqlQuery.getSql());
         assertEquals(NullsOrder.NULL_FIRST, sqlQuery.getNullsOrder());
     }
+    @Test
+    public void 多条Where(){
+        DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultBean.class, NullsOrder.NULL_FIRST);
+        dslQuery.where("(and(name eq 1))");
+        dslQuery.where("(and(age ge 18))");
+        dslQuery.query();
+        verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
+        SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
+        System.out.println(sqlQuery.getParams());
+        assertEquals(2,sqlQuery.getParams().size());
+
+    }
 }
