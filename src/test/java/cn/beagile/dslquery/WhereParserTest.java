@@ -2,6 +2,8 @@ package cn.beagile.dslquery;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class WhereParserTest {
@@ -29,6 +31,12 @@ public class WhereParserTest {
         assertEquals(where.getCondition(), "and");
         assertEquals(1, where.getExpressions().size());
         assertEquals(new SingleExpression("name", "equals", "bob)","p0"), where.getExpressions().get(0));
+    }
+    @Test
+    public void parse_array_has_plus() {
+        WhereParser whereParser = new WhereParser();
+        ComplexExpression where = whereParser.parse("(and(kolName in %5B\"%E6%AF%94%E4%BA%9A%E8%BF%AA\"%5D))");
+        assertEquals(new SingleExpression("kolName", "in", "[\"比亚迪\"]","p0"), where.getExpressions().get(0));
     }
 
     @Test

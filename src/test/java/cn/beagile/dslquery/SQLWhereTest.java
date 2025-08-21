@@ -14,6 +14,16 @@ class SQLWhereTest {
         assertEquals("where ((a.name = :p0))", sqlWhere.where());
         assertEquals(sqlWhere.param("p0"), "123");
     }
+
+    @Test
+    void 多个条件() {
+        List<SQLField> fields = List.of(new SQLField(new SQLField.ViewName("name"), new SQLField.SQLName("a.name"), String.class));
+        RawSQLBuilder sqlWhere = new RawSQLBuilder(fields, "(and(name eq 123))", "(and(name eq 124))");
+        assertEquals("where (((a.name = :p0)) and ((a.name = :p1)))", sqlWhere.where());
+        assertEquals(sqlWhere.param("p0"), "123");
+        assertEquals(sqlWhere.param("p1"), "124");
+    }
+
     @Test
     void 条件里有存在的字段忽略之() {
         List<SQLField> fields = List.of(new SQLField(new SQLField.ViewName("name"), new SQLField.SQLName("a.name"), String.class));
@@ -38,6 +48,7 @@ class SQLWhereTest {
         assertEquals("where ((a.name in (:p0)))", sqlWhere.where());
         assertEquals(sqlWhere.param("p0"), List.of("1", "2"));
     }
+
     @Test
     void test_in_int() {
         List<SQLField> fields = List.of(new SQLField(new SQLField.ViewName("name"), new SQLField.SQLName("a.name"), Integer.class));

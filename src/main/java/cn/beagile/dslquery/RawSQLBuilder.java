@@ -14,14 +14,20 @@ public class RawSQLBuilder implements SQLBuilder {
     private ComplexExpression expression;
     private Map<String, Object> params;
 
-    public RawSQLBuilder(List<SQLField> fields, String filter) {
-        this(fields, filter, null);
+    public RawSQLBuilder(List<SQLField> fields, String... filters) {
+        this(fields, null, filters);
     }
 
-    public RawSQLBuilder(List<SQLField> fields, String filter, String sort) {
+    private RawSQLBuilder(List<SQLField> fields, String sort, String... filters) {
         this.fields = fields;
-        if (filter != null) {
-            expression = new WhereParser().parse(filter);
+        if (filters != null && filters.length > 0) {
+            if (filters.length > 1) {
+                this.expression = new WhereParser().parse(new ComplexExpression("and",
+                        Arrays.stream(filters).map(filter -> new WhereParser().parse(filter)).collect(Collectors.toList())
+                ).toDSL());
+            } else {
+                this.expression = new WhereParser().parse(filters[0]);
+            }
         }
         this.sort = sort;
         this.params = new HashMap<>();
