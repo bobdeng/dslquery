@@ -1,6 +1,8 @@
 package cn.beagile.dslquery;
 
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
 
@@ -82,10 +84,11 @@ class SingleExpression implements FilterExpression {
 
     @Override
     public String toDSL() {
-        if (Operators.byName(this.operator).requireValue) {
-            return String.format("(%s %s %s)", field, operator, value);
+        Operator operator = Operators.byName(this.operator);
+        if (operator.requireValue) {
+            return String.format("(%s %s %s)", field, this.operator, URLEncoder.encode(value, StandardCharsets.UTF_8));
         }
-        return String.format("(%s %s)", field, operator);
+        return String.format("(%s %s)", field, this.operator);
     }
 
     @Override

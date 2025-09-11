@@ -22,8 +22,8 @@ public class RawSQLBuilder implements SQLBuilder {
         this.fields = fields;
         if (filters != null && filters.length > 0) {
             if (filters.length > 1) {
-                this.expression = new ComplexExpression("and", Arrays.stream(filters).map(filter -> new WhereParser().parse(filter)).collect(Collectors.toList())
-                );
+                this.expression = new WhereParser().parse(new ComplexExpression("and", Arrays.stream(filters).map(filter -> new WhereParser().parse(filter)).collect(Collectors.toList())
+                ).toDSL());
             } else {
                 this.expression = new WhereParser().parse(filters[0]);
             }
@@ -95,5 +95,9 @@ public class RawSQLBuilder implements SQLBuilder {
             return sql.replace("${where}", where());
         }
         return sql + " " + where();
+    }
+
+    public String toDSL() {
+        return this.expression.toDSL();
     }
 }

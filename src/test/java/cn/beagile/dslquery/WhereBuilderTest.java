@@ -107,7 +107,7 @@ public class WhereBuilderTest {
         String result = new WhereBuilder().and()
                 .in("name", new String[]{"bob", "alice"})
                 .build();
-        assertEquals("(and(name in [\"bob\",\"alice\"]))", result);
+        assertEquals("(and(name in %5B%22bob%22%2C%22alice%22%5D))", result);
     }
 
     @Test
@@ -115,7 +115,7 @@ public class WhereBuilderTest {
         String result = new WhereBuilder().and()
                 .notin("name", new String[]{"bob", "alice"})
                 .build();
-        assertEquals("(and(name ni [\"bob\",\"alice\"]))", result);
+        assertEquals("(and(name ni %5B%22bob%22%2C%22alice%22%5D))", result);
     }
 
     @Test
@@ -123,7 +123,7 @@ public class WhereBuilderTest {
         String result = new WhereBuilder().and()
                 .between("age", 1, 32)
                 .build();
-        assertEquals("(and(age bt 1,32))", result);
+        assertEquals("(and(age bt 1%2C32))", result);
     }
 
     @Test

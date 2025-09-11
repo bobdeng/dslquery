@@ -19,16 +19,20 @@ class RawSQLBuilderTest {
     @Test
     void params_string_array() {
         SQLField nameField = new SQLField(new SQLField.ViewName("name"), new SQLField.SQLName("a.name"), String.class);
-        RawSQLBuilder rawSQLBuilder = new RawSQLBuilder(List.of(nameField), "(and(name in %5B\"VC%2BVA\",\"VC\"%5D))","(and(name in %5B\"VC%2BVA\",\"VC\"%5D))");
+        RawSQLBuilder rawSQLBuilder = new RawSQLBuilder(List.of(nameField), "(and(name in %5B\"VC%2BVA\",\"VC\"%5D))", "(and(name in %5B\"VC%2BVA\",\"VC\"%5D))");
         String where = rawSQLBuilder.where();
-        assertEquals(List.of("VC+VA","VC"), rawSQLBuilder.param("p0"));
+        assertEquals(List.of("VC+VA", "VC"), rawSQLBuilder.param("p0"));
+        String dsl = rawSQLBuilder.toDSL();
+        ComplexExpression expression = new WhereParser().parse(dsl);
+        assertEquals(dsl, expression.toDSL());
     }
+
     @Test
     void params_string_array1() {
         SQLField nameField = new SQLField(new SQLField.ViewName("name"), new SQLField.SQLName("a.name"), String.class);
         RawSQLBuilder rawSQLBuilder = new RawSQLBuilder(List.of(nameField), "(and(name in %5B\"VC%2BVA\",\"VC\"%5D))");
         String where = rawSQLBuilder.where();
-        assertEquals(List.of("VC+VA","VC"), rawSQLBuilder.param("p0"));
+        assertEquals(List.of("VC+VA", "VC"), rawSQLBuilder.param("p0"));
     }
 
     @Test
