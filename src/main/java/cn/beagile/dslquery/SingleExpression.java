@@ -1,6 +1,7 @@
 package cn.beagile.dslquery;
 
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -86,7 +87,11 @@ class SingleExpression implements FilterExpression {
     public String toDSL() {
         Operator operator = Operators.byName(this.operator);
         if (operator.requireValue) {
-            return String.format("(%s %s %s)", field, this.operator, URLEncoder.encode(value, StandardCharsets.UTF_8));
+            try {
+                return String.format("(%s %s %s)", field, this.operator, URLEncoder.encode(value, "UTF-8"));
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
         }
         return String.format("(%s %s)", field, this.operator);
     }

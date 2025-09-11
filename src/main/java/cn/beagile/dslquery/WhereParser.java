@@ -1,5 +1,6 @@
 package cn.beagile.dslquery;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -50,7 +51,11 @@ class WhereParser {
     }
 
     private String urlDecode(String value) {
-        return URLDecoder.decode(value, StandardCharsets.UTF_8);
+        try {
+            return URLDecoder.decode(value, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private String nextMatch(String subWhere, Matcher matcher) {
