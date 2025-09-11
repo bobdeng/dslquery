@@ -35,8 +35,8 @@ public class WhereParserTest {
     @Test
     public void parse_array_has_plus() {
         WhereParser whereParser = new WhereParser();
-        ComplexExpression where = whereParser.parse("(and(kolName in %5B\"%E6%AF%94%E4%BA%9A%E8%BF%AA\"%5D))");
-        assertEquals(new SingleExpression("kolName", "in", "[\"比亚迪\"]","p0"), where.getExpressions().get(0));
+        ComplexExpression where = whereParser.parse("(and(kolName in %5B\"VC%2BVA\"%5D))");
+        assertEquals(new SingleExpression("kolName", "in", "[\"VC+VA\"]","p0"), where.getExpressions().get(0));
     }
 
     @Test

@@ -22,9 +22,9 @@ public class RawSQLBuilder implements SQLBuilder {
         this.fields = fields;
         if (filters != null && filters.length > 0) {
             if (filters.length > 1) {
-                this.expression = new WhereParser().parse(new ComplexExpression("and",
+                this.expression = new ComplexExpression("and",
                         Arrays.stream(filters).map(filter -> new WhereParser().parse(filter)).collect(Collectors.toList())
-                ).toDSL());
+                );
             } else {
                 this.expression = new WhereParser().parse(filters[0]);
             }
