@@ -14,6 +14,15 @@ class SQLWhereTest {
         assertEquals("where ((a.name = :p0))", sqlWhere.where());
         assertEquals(sqlWhere.param("p0"), "123");
     }
+    @Test
+    void test_single_boolean() {
+        List<SQLField> fields = List.of(new SQLField(new SQLField.ViewName("name"), new SQLField.SQLName("a.name"), Boolean.class));
+        RawSQLBuilder sqlWhere = new RawSQLBuilder(fields, "(and(name eq true))");
+        assertEquals("where ((a.name = :p0))", sqlWhere.where());
+        assertEquals(sqlWhere.param("p0"), true);
+    }
+
+
 
     @Test
     void 多个条件() {
