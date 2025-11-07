@@ -74,14 +74,13 @@ public class RawSQLBuilder implements SQLBuilder {
 
     @Override
     public void addParam(String paramName, String fieldName, String value) {
-        if (getSqlField(fieldName).isEmpty()) {
-            return;
-        }
-        if (getSqlField(fieldName).orElseThrow().getType().equals(Boolean.class)) {
-            params.put(paramName, "true".equalsIgnoreCase(value));
-            return;
-        }
-        params.put(paramName, value);
+       getSqlField(fieldName).ifPresent(sqlField -> {
+           if (getSqlField(fieldName).orElseThrow().getType().equals(Boolean.class)) {
+               params.put(paramName, "true".equalsIgnoreCase(value));
+               return;
+           }
+           params.put(paramName, value);
+       });
     }
 
     @Override
