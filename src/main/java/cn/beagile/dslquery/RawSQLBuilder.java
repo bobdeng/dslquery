@@ -75,11 +75,7 @@ public class RawSQLBuilder implements SQLBuilder {
     @Override
     public void addParam(String paramName, String fieldName, String value) {
         getSqlField(fieldName).ifPresent(sqlField -> {
-            if (sqlField.getType().equals(Boolean.class)) {
-                params.put(paramName, "true".equalsIgnoreCase(value));
-                return;
-            }
-            params.put(paramName, value);
+            params.put(paramName, FIELD_CAST_MAP.get(sqlField.getType()).apply(value));
         });
     }
 
