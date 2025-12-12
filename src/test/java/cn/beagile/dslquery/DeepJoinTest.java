@@ -16,7 +16,7 @@ public class DeepJoinTest {
     private String nullsOrder="";
 
     @View("t_user")
-    @DeepJoinIncludes({"org.area","org.city", "org.city.area"})
+    @DeepJoinIncludes({"org.area", "org.city.area"})
     public static class User {
         @Column(name = "name")
         private String name;

@@ -89,7 +89,14 @@ public class ColumnFields {
             return true;
         }
         String fieldName = Stream.concat(parents.stream(), Stream.of(field)).map(Field::getName).collect(Collectors.joining("."));
-        return includes.contains(fieldName);
+        return isContains(fieldName);
+    }
+
+    private boolean isContains(String fieldName) {
+        if (includes.contains(fieldName)) {
+            return true;
+        }
+        return includes.stream().anyMatch(includes -> includes.startsWith(fieldName));
     }
 
     private boolean isEmbeddedInclude(List<Field> parents) {
@@ -97,7 +104,7 @@ public class ColumnFields {
             return true;
         }
         String fieldName = parents.stream().map(Field::getName).collect(Collectors.joining("."));
-        return includes.contains(fieldName) && !this.selectIgnores.contains(fieldName);
+        return isContains(fieldName) && !this.selectIgnores.contains(fieldName);
     }
 
     private void readJoinFields(Class clz, List<Field> parents, Class<? extends Annotation> annotation) {
