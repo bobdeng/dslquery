@@ -9,4 +9,11 @@ interface Validators {
             throw new RuntimeException("invalid field:" + field);
         }
     }
+
+    static void validateJoinPath(String path) {
+        Pattern validJoinPathPattern = Pattern.compile("[a-zA-Z][a-zA-Z0-9_]*(\\.[a-zA-Z][a-zA-Z0-9_]*)*$");
+        if (!validJoinPathPattern.matcher(path).matches()) {
+            throw new RuntimeException("invalid join path:" + path);
+        }
+    }
 }
