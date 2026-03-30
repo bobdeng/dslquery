@@ -4,6 +4,7 @@ package cn.beagile.dslquery;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -63,11 +64,27 @@ class SingleExpression implements FilterExpression {
 
     public String toSQL(SQLBuilder sqlBuilder) {
         Operator operatorEnum = Operators.byName(this.operator);
-        String[] paramNames = operatorEnum.params(paramName);
+        String[] paramNames = Arrays.stream(operatorEnum.params(paramName))
+                .map(sqlBuilder::paramName)
+                .toArray(String[]::new);
+        if (operatorEnum.requireValue && sqlBuilder.supportsFieldReferenceValues() && isFieldReferenceValue()) {
+            return toFieldReferenceSQL(sqlBuilder, operatorEnum);
+        }
         if (operatorEnum.requireValue) {
             addParams(sqlBuilder, operatorEnum, paramNames);
         }
         return String.format(operatorEnum.whereFormat(), sqlBuilder.aliasOf(field), operatorEnum.operator, paramNames[0], paramNames[1]);
+    }
+
+    private boolean isFieldReferenceValue() {
+        return value != null && value.startsWith("@");
+    }
+
+    private String toFieldReferenceSQL(SQLBuilder sqlBuilder, Operator operatorEnum) {
+        if (operatorEnum.isArray() || operatorEnum == Operator.Between) {
+            throw new RuntimeException("field reference value not supported for operator:" + operatorEnum.keyword);
+        }
+        return String.format("(%s %s %s)", sqlBuilder.aliasOf(field), operatorEnum.operator, sqlBuilder.aliasOf(value.substring(1)));
     }
 
     private void addParams(SQLBuilder sqlBuilder, Operator operatorEnum, String[] paramNames) {

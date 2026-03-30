@@ -60,9 +60,7 @@ class DSLSQLBuilder<T> implements SQLBuilder {
     }
 
     private List<Object> castValueToList(String value, Field field) {
-        return Stream.of(new Gson().fromJson(value, String[].class))
-                .map(v -> castValueByField(v, field))
-                .collect(Collectors.toList());
+        return castValueToList(value, field, this.dslQuery.getTimezoneOffset());
     }
 
     private void setParam(String paramName, String fieldName, String value, BiFunction<String, Field, Object> valueConverter) {
@@ -72,23 +70,33 @@ class DSLSQLBuilder<T> implements SQLBuilder {
     }
 
     private Object castValueByField(String value, Field field) {
+        return castValueByField(value, field, this.dslQuery.getTimezoneOffset());
+    }
+
+    static List<Object> castValueToList(String value, Field field, int timezoneOffset) {
+        return Stream.of(new Gson().fromJson(value, String[].class))
+                .map(v -> castValueByField(v, field, timezoneOffset))
+                .collect(Collectors.toList());
+    }
+
+    static Object castValueByField(String value, Field field, int timezoneOffset) {
         if (isInstant(field.getType())) {
-            return getInstantValue(value, field);
+            return getInstantValue(value, field, timezoneOffset);
         }
         if (isTimestampAsDate(field)) {
             if (field.getType().equals(Timestamp.class)) {
-                return Timestamp.from(getInstantValue(value, field));
+                return Timestamp.from(getInstantValue(value, field, timezoneOffset));
             }
-            return getInstantValue(value, field).toEpochMilli();
+            return getInstantValue(value, field, timezoneOffset).toEpochMilli();
         }
         return FIELD_CAST_MAP.get(field.getType()).apply(value);
     }
 
-    private boolean isInstant(Class<?> type) {
+    private static boolean isInstant(Class<?> type) {
         return type.equals(Instant.class);
     }
 
-    private boolean isTimestampAsDate(Field field) {
+    private static boolean isTimestampAsDate(Field field) {
         if (field.getType().equals(Long.class)) {
             return field.isAnnotationPresent(DateFormat.class);
         }
@@ -101,10 +109,10 @@ class DSLSQLBuilder<T> implements SQLBuilder {
         return false;
     }
 
-    private Instant getInstantValue(String value, Field field) {
+    private static Instant getInstantValue(String value, Field field, int timezoneOffset) {
         String dateFormat = field.getAnnotation(DateFormat.class).value();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateFormat);
-        ZoneId zoneId = ZoneOffset.ofHours(this.dslQuery.getTimezoneOffset()).normalized();
+        ZoneId zoneId = ZoneOffset.ofHours(timezoneOffset).normalized();
         return LocalDateTime.parse(value, formatter).atZone(zoneId).toInstant();
     }
 
@@ -160,7 +168,7 @@ class DSLSQLBuilder<T> implements SQLBuilder {
 
     private String getSelectSQL() {
         String select = "select" + columnFields.distinct() + columnFields.selectFields().stream().map(ColumnField::expression).collect(Collectors.joining(",")) + " from " + columnFields.from();
-        String join = columnFields.joins();
+        String join = columnFields.joins(this.params, this.dslQuery.getTimezoneOffset());
         return String.join("\n", select, join);
     }
 
@@ -171,7 +179,7 @@ class DSLSQLBuilder<T> implements SQLBuilder {
     private String getCountSQL() {
         List<String> lines = new ArrayList<>();
         String countField = getCountField();
-        lines.add(String.format("select count(" + countField + ") from %s\n%s", columnFields.from(), columnFields.joins()));
+        lines.add(String.format("select count(" + countField + ") from %s\n%s", columnFields.from(), columnFields.joins(this.params, this.dslQuery.getTimezoneOffset())));
         if (!getWhereList().isEmpty()) {
             lines.add(getWhereSQL());
         }
