@@ -21,13 +21,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = TestApplication.class)
-@Disabled
+//@Disabled
 public class IntegrationTest {
     @Autowired
     NamedParameterJdbcTemplate jdbcTemplate;
 
     @View("person")
-    @DeepJoinIncludes("org.area")
+    @DeepJoinIncludes("org.area.other")
     public static class Person {
         @Column(name = "id")
         private Integer id;
@@ -169,7 +169,7 @@ public class IntegrationTest {
         }, sqlQuery);
         assertEquals("bob robert", list.get(0).get("name1"));
         assertEquals(2, list.size());
-        assertEquals(2,springQueryExecutor.count(sqlQuery));
+        assertEquals(2, springQueryExecutor.count(sqlQuery));
 
     }
 

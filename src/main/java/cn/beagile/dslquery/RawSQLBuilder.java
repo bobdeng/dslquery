@@ -18,7 +18,7 @@ public class RawSQLBuilder implements SQLBuilder {
         this(fields, null, filters);
     }
 
-    private RawSQLBuilder(List<SQLField> fields, String sort, String... filters) {
+    public RawSQLBuilder(List<SQLField> fields, String sort, String... filters) {
         this.fields = fields;
         if (filters != null && filters.length > 0) {
             if (filters.length > 1) {
