@@ -56,6 +56,16 @@ public class DSLQueryTest {
     }
 
     @Test
+    public void should_treat_at_prefixed_where_value_as_literal() {
+        DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultBean.class);
+        dslQuery.where("(and(name equals @bob))").query();
+        verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
+        SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
+        expectSqlWithoudEnter("select " + fields + " from view_query where ((view_query.name = :p0))", sqlQuery.getSql());
+        assertEquals("@bob", sqlQuery.getParams().get("p0"));
+    }
+
+    @Test
     public void should_execute_query_with_where_between() {
         DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultBean.class);
         dslQuery.where("(and(age between 18,26))").query();

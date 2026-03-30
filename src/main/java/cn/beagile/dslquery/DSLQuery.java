@@ -2,7 +2,9 @@ package cn.beagile.dslquery;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DSLQuery<T> {
     private final QueryExecutor queryExecutor;
@@ -14,6 +16,7 @@ public class DSLQuery<T> {
     private int timezoneOffset;
     private List<String> deepJoins = new ArrayList<>();
     private List<String> selectIgnores = new ArrayList<>();
+    private Map<String, List<String>> joinOns = new LinkedHashMap<>();
     private NullsOrder nullsOrder;
     private WhereParser whereParser = new WhereParser();
     ;
@@ -123,5 +126,17 @@ public class DSLQuery<T> {
 
     public List<String> getSelectIgnores() {
         return selectIgnores;
+    }
+
+    public DSLQuery<T> joinOn(String path, String dsl) {
+        if (path == null || path.isEmpty() || dsl == null || dsl.isEmpty()) {
+            return this;
+        }
+        joinOns.computeIfAbsent(path, key -> new ArrayList<>()).add(dsl);
+        return this;
+    }
+
+    public Map<String, List<String>> getJoinOns() {
+        return joinOns;
     }
 }

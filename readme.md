@@ -11,6 +11,7 @@
 - **类型安全**：基于JPA注解的强类型映射
 - **自动SQL生成**：自动将DSL转换为优化的SQL查询
 - **深度关联查询**：支持多级JOIN和OneToMany关系
+- **Join On扩展**：支持在关联ON子句中追加DSL条件
 - **灵活配置**：支持字段忽略、深度关联控制、时区转换
 - **分页支持**：内置分页查询功能
 - **数据库无关**：通过QueryExecutor接口适配不同数据库
@@ -250,6 +251,22 @@ private Contact contact;
 private Org org;
 ```
 
+#### @JoinOn
+为关联的 `join on` 子句追加DSL条件
+
+```java
+@JoinColumn(name = "org_id", referencedColumnName = "id")
+@JoinOn("(and(enabled eq true)(tenantId eq @parent.tenantId))")
+private Org org;
+```
+
+支持以下作用域：
+
+- 裸字段名或 `self.xxx`：当前join目标对象
+- `parent.xxx`：当前join的上一级对象
+- `root.xxx`：根查询对象
+- `@fieldPath`：把值解释为字段引用，而不是绑定参数
+
 #### @OneToMany
 一对多关系（JPA标准注解）
 
@@ -364,6 +381,59 @@ List<Person> result = new DSLQuery<>(executor, Person.class)
 // left join org on org.id = person.org_id
 // left join area on area.id = org.area_id
 // where area.name = 'Beijing'
+```
+
+### 关联Join On扩展条件
+
+```java
+@View("person")
+public class Person {
+    @Column(name = "tenant_id")
+    private Long tenantId;
+
+    @JoinColumn(name = "org_id", referencedColumnName = "id")
+    @JoinOn("(and(enabled eq true)(tenantId eq @parent.tenantId))")
+    private Org org;
+}
+
+@View("org")
+public class Org {
+    @Column(name = "tenant_id")
+    private Long tenantId;
+
+    @Column(name = "enabled")
+    private Boolean enabled;
+
+    @Column(name = "type")
+    private String type;
+}
+
+// 注解条件 + 运行时条件一起追加到ON
+List<Person> result = new DSLQuery<>(executor, Person.class)
+    .joinOn("org", "(and(type eq SALES))")
+    .query();
+
+// 生成的SQL类似：
+// select person.tenant_id, org.tenant_id, org.enabled, org.type
+// from person
+// left join org on org.id = person.org_id
+//   and org.enabled = true
+//   and org.tenant_id = person.tenant_id
+//   and org.type = 'SALES'
+```
+
+深层关联同样支持作用域字段引用：
+
+```java
+@View("org")
+public class Org {
+    @Column(name = "tenant_id")
+    private Long tenantId;
+
+    @JoinColumn(name = "area_id", referencedColumnName = "id")
+    @JoinOn("(and(code eq @root.areaCode)(tenantId eq @parent.tenantId))")
+    private Area area;
+}
 ```
 
 ### OneToMany关系

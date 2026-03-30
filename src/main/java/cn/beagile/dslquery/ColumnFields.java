@@ -119,10 +119,27 @@ public class ColumnFields {
 
     private void readJoinFieldsFromField(List<Field> parents, Field field) {
         List<Field> newParents = newParents(parents, field);
-        joinFields.add(new JoinField(field, newParents));
+        joinFields.add(new JoinField(field, newParents, joinOnConditions(field, newParents), joinFields.size()));
         readJoinColumnFields(field, newParents);
         readEmbeddedFields(field.getType(), newParents);
         readJoins(field.getType(), newParents);
+    }
+
+    private List<String> joinOnConditions(Field field, List<Field> parents) {
+        List<String> result = new ArrayList<>();
+        if (field.isAnnotationPresent(JoinOn.class)) {
+            result.addAll(Arrays.asList(field.getAnnotation(JoinOn.class).value()));
+        }
+        @SuppressWarnings("unchecked")
+        List<String> outerJoinOns = (List<String>) dslQuery.getJoinOns().get(pathOf(parents));
+        if (outerJoinOns != null) {
+            result.addAll(outerJoinOns);
+        }
+        return result;
+    }
+
+    private String pathOf(List<Field> parents) {
+        return parents.stream().map(Field::getName).collect(Collectors.joining("."));
     }
 
     private void readJoinColumnFields(Field field, List<Field> newParents) {
@@ -183,7 +200,11 @@ public class ColumnFields {
     }
 
     public String joins() {
-        return joinFields.stream().map(JoinField::joinStatement).collect(Collectors.joining("\n"));
+        return joins(new HashMap<>(), 0);
+    }
+
+    public String joins(Map<String, Object> params, int timezoneOffset) {
+        return joinFields.stream().map(joinField -> joinField.joinStatement(params, timezoneOffset)).collect(Collectors.joining("\n"));
     }
 
     public boolean hasField(Field field, List<Field> parents) {
