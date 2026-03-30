@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 class JoinOnSQLBuilder implements SQLBuilder {
+    private static final int MAX_JOIN_ON_EXPRESSION_LENGTH = 2048;
+    private static final int MAX_JOIN_ON_NESTING_DEPTH = 10;
     private final Map<String, ColumnField> fields = new LinkedHashMap<>();
     private final Map<String, Object> params;
     private final String paramPrefix;
@@ -31,9 +33,31 @@ class JoinOnSQLBuilder implements SQLBuilder {
         }
         WhereParser parser = new WhereParser();
         return joinOns.stream()
+                .peek(this::validateJoinOn)
                 .map(parser::parse)
                 .map(expression -> expression.toSQL(this))
                 .collect(Collectors.joining(" and "));
+    }
+
+    private void validateJoinOn(String joinOn) {
+        if (joinOn.length() > MAX_JOIN_ON_EXPRESSION_LENGTH) {
+            throw new RuntimeException("join on expression too long");
+        }
+        int depth = 0;
+        int maxDepth = 0;
+        for (int i = 0; i < joinOn.length(); i++) {
+            char ch = joinOn.charAt(i);
+            if (ch == '(') {
+                depth++;
+                maxDepth = Math.max(maxDepth, depth);
+            }
+            if (ch == ')') {
+                depth--;
+            }
+        }
+        if (maxDepth > MAX_JOIN_ON_NESTING_DEPTH) {
+            throw new RuntimeException("join on nesting too deep");
+        }
     }
 
     private void initFields(Field joinField, List<Field> parents) {
