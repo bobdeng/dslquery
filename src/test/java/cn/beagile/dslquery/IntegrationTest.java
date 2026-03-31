@@ -9,7 +9,7 @@ import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Instant;

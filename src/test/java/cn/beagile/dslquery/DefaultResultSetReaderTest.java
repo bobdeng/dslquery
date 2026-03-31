@@ -1,6 +1,6 @@
 package cn.beagile.dslquery;
 
-import jakarta.persistence.*;import org.junit.jupiter.api.Test;
+import javax.persistence.*;import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;

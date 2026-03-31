@@ -2,7 +2,7 @@ package cn.beagile.dslquery;
 
 import org.junit.jupiter.api.Test;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 

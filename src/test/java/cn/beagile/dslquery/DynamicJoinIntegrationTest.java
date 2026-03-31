@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import jakarta.persistence.Column;
+import javax.persistence.Column;
 import java.sql.ResultSet;
 import java.util.List;
 import java.util.function.Function;
@@ -112,21 +112,7 @@ public class DynamicJoinIntegrationTest {
     public void should_query_with_dynamic_join() {
         // 定义动态Join的字段映射
         List<SQLField> fields = List.of(
-                new SQLField(
-                        new SQLField.ViewName("orgId"),
-                        new SQLField.SQLName("org.id"),
-                        Integer.class
-                ),
-                new SQLField(
-                        new SQLField.ViewName("personCount"),
-                        new SQLField.SQLName("count(*)"),
-                        Integer.class
-                ),
-                new SQLField(
-                        new SQLField.ViewName("orgName"),
-                        new SQLField.SQLName("org.name"),
-                        String.class
-                )
+
         );
 
         // 创建RawSQLBuilder

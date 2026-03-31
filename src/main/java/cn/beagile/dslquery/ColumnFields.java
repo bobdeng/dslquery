@@ -1,6 +1,6 @@
 package cn.beagile.dslquery;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.*;

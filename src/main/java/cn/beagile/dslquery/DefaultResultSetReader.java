@@ -1,9 +1,9 @@
 package cn.beagile.dslquery;
 
 import com.google.gson.Gson;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinColumns;
+import javax.persistence.Embedded;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;

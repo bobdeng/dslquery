@@ -1,6 +1,6 @@
 package cn.beagile.dslquery;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 
 @View("view_query")
 public class QueryResultBean {

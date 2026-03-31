@@ -1,6 +1,6 @@
 package cn.beagile.dslquery;
 
-import com.google.gson.Gson;import jakarta.persistence.Column;
+import com.google.gson.Gson;import javax.persistence.Column;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
