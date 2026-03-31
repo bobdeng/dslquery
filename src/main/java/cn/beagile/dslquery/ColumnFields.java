@@ -12,6 +12,7 @@ public class ColumnFields {
     private final DSLQuery dslQuery;
     private List<ColumnField> fields;
     private List<JoinField> joinFields = new ArrayList<>();
+    private List<DynamicJoinField> dynamicJoinFields = new ArrayList<>();
     private List<One2ManyField> one2ManyFields = new ArrayList<>();
     private Set<String> includes;
     private Set<String> selectIgnores;
@@ -27,6 +28,7 @@ public class ColumnFields {
     private <T> void readFields(Class<T> clz) {
         readPrimitiveFields(clz);
         readJoins(clz, new ArrayList<>());
+        readDynamicJoins(clz);
         readEmbeddedFields(clz);
         readOneToManyFields(clz);
     }
@@ -82,6 +84,23 @@ public class ColumnFields {
     private void readJoins(Class clz, List<Field> parents) {
         readJoinFields(clz, parents, JoinColumn.class);
         readJoinFields(clz, parents, JoinColumns.class);
+    }
+
+    private void readDynamicJoins(Class clz) {
+        Map<String, DynamicJoinConfig> dynamicJoins = dslQuery.getDynamicJoins();
+        if (dynamicJoins == null || dynamicJoins.isEmpty()) {
+            return;
+        }
+
+        Arrays.stream(clz.getDeclaredFields())
+                .filter(field -> field.isAnnotationPresent(DynamicJoin.class))
+                .filter(field -> dynamicJoins.containsKey(field.getName()))
+                .forEach(field -> {
+                    DynamicJoinConfig config = dynamicJoins.get(field.getName());
+                    DynamicJoinField dynamicJoinField = new DynamicJoinField(field, config);
+                    dynamicJoinFields.add(dynamicJoinField);
+                    fields.addAll(dynamicJoinField.getSubFields());
+                });
     }
 
     private boolean isJoinInclude(Field field, List<Field> parents) {
@@ -204,7 +223,21 @@ public class ColumnFields {
     }
 
     public String joins(Map<String, Object> params, int timezoneOffset) {
-        return joinFields.stream().map(joinField -> joinField.joinStatement(params, timezoneOffset)).collect(Collectors.joining("\n"));
+        String regularJoins = joinFields.stream()
+                .map(joinField -> joinField.joinStatement(params, timezoneOffset))
+                .collect(Collectors.joining("\n"));
+
+        String dynamicJoinsStr = dynamicJoinFields.stream()
+                .map(dynamicJoinField -> dynamicJoinField.joinStatement(params, timezoneOffset))
+                .collect(Collectors.joining("\n"));
+
+        if (regularJoins.isEmpty()) {
+            return dynamicJoinsStr;
+        }
+        if (dynamicJoinsStr.isEmpty()) {
+            return regularJoins;
+        }
+        return regularJoins + "\n" + dynamicJoinsStr;
     }
 
     public boolean hasField(Field field, List<Field> parents) {

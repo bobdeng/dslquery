@@ -545,6 +545,76 @@ SQLQuery sqlQuery = builder.toSQLQuery(sql, countSql, page);
 List<Map<String, Object>> result = executor.list(resultSetReader, sqlQuery);
 ```
 
+### 动态SQL Join
+
+除了传统的实体对象Join，还支持通过RawSQLBuilder构建动态SQL作为Join源：
+
+```java
+// 1. 定义实体
+@View("person")
+public class Person {
+    @Column(name = "id")
+    private Integer id;
+    
+    @Column(name = "org_id")
+    private Integer orgId;
+    
+    // 使用@DynamicJoin标记动态Join字段
+    @DynamicJoin(joinKey = "org_id", targetKey = "id")
+    private OrgStats orgStats;
+}
+
+// 映射目标对象（不需要@View注解）
+public class OrgStats {
+    @Column(name = "id")
+    private Integer id;
+    
+    @Column(name = "total_employees")
+    private Integer totalEmployees;
+    
+    @Column(name = "avg_salary")
+    private Double avgSalary;
+}
+
+// 2. 构建动态Join查询
+List<SQLField> fields = List.of(
+    new SQLField(new SQLField.ViewName("id"), 
+                 new SQLField.SQLName("org.id"), Integer.class),
+    new SQLField(new SQLField.ViewName("totalEmployees"), 
+                 new SQLField.SQLName("count(*)"), Integer.class),
+    new SQLField(new SQLField.ViewName("avgSalary"), 
+                 new SQLField.SQLName("avg(salary)"), Double.class)
+);
+
+RawSQLBuilder statsBuilder = new RawSQLBuilder(fields, "(and(status eq active))");
+
+String subQuerySql = """
+    select org.id, count(*) as total_employees, avg(salary) as avg_salary
+    from employee
+    join org on org.id = employee.org_id
+    ${where}
+    group by org.id
+    """;
+
+// 3. 执行查询
+List<Person> result = new DSLQuery<>(executor, Person.class)
+    .dynamicJoin("orgStats", statsBuilder, subQuerySql)
+    .where("(and(name contains John))")
+    .query();
+
+// 生成的SQL类似：
+// select person.id, person.org_id, orgStats_.id, orgStats_.total_employees, orgStats_.avg_salary
+// from person
+// left join (
+//   select org.id, count(*) as total_employees, avg(salary) as avg_salary
+//   from employee
+//   join org on org.id = employee.org_id
+//   where org.status = 'active'
+//   group by org.id
+// ) orgStats_ on orgStats_.id = person.org_id
+// where person.name like '%John%'
+```
+
 ### 字段忽略
 
 ```java

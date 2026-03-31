@@ -88,6 +88,10 @@ public class RawSQLBuilder implements SQLBuilder {
         return this.params.get(name);
     }
 
+    public Map<String, Object> getParams() {
+        return this.params;
+    }
+
     public SQLQuery toSQLQuery(String sql, String countSql, Paging page) {
         return new SQLQuery(getSqlAndWhere(sql) + " " + sort(), getSqlAndWhere(countSql), this.params, page);
     }

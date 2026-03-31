@@ -17,9 +17,9 @@ public class DSLQuery<T> {
     private List<String> deepJoins = new ArrayList<>();
     private List<String> selectIgnores = new ArrayList<>();
     private Map<String, List<String>> joinOns = new LinkedHashMap<>();
+    private Map<String, DynamicJoinConfig> dynamicJoins = new LinkedHashMap<>();
     private NullsOrder nullsOrder;
     private WhereParser whereParser = new WhereParser();
-    ;
 
     public DSLQuery(QueryExecutor queryExecutor, Class<T> queryResultClass) {
         this(queryExecutor, queryResultClass, NullsOrder.NONE);
@@ -138,5 +138,17 @@ public class DSLQuery<T> {
 
     public Map<String, List<String>> getJoinOns() {
         return joinOns;
+    }
+
+    public DSLQuery<T> dynamicJoin(String fieldName, RawSQLBuilder builder, String subQuerySql) {
+        if (fieldName == null || fieldName.isEmpty() || builder == null || subQuerySql == null) {
+            return this;
+        }
+        dynamicJoins.put(fieldName, new DynamicJoinConfig(fieldName, builder, subQuerySql));
+        return this;
+    }
+
+    public Map<String, DynamicJoinConfig> getDynamicJoins() {
+        return dynamicJoins;
     }
 }
