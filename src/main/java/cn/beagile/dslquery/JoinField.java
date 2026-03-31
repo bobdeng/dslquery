@@ -1,9 +1,7 @@
 package cn.beagile.dslquery;
 
 
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
-import java.lang.reflect.Field;
+import jakarta.persistence.JoinColumn;import jakarta.persistence.JoinColumns;import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

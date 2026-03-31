@@ -1,6 +1,6 @@
 package cn.beagile.dslquery;
 
-import javax.persistence.Column;
+import jakarta.persistence.Column;
 
 @View("view_query")
 public class QueryResultWithIntFieldBean {

@@ -1,8 +1,6 @@
 package cn.beagile.dslquery;
 
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import java.lang.reflect.Field;
+import jakarta.persistence.Column;import jakarta.persistence.Embedded;import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;

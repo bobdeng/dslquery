@@ -1,6 +1,6 @@
 package cn.beagile.dslquery;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.*;
@@ -250,7 +250,9 @@ public class ColumnFields {
     }
 
     public boolean hasJoinField(Field field) {
-        return this.joinFields.stream().anyMatch(joinField -> joinField.is(field));
+        boolean hasRegularJoin = this.joinFields.stream().anyMatch(joinField -> joinField.is(field));
+        boolean hasDynamicJoin = this.dynamicJoinFields.stream().anyMatch(dynamicJoinField -> dynamicJoinField.is(field));
+        return hasRegularJoin || hasDynamicJoin;
     }
 
     public String distinct() {

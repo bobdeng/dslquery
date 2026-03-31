@@ -1,11 +1,8 @@
 package cn.beagile.dslquery;
 
-import org.junit.jupiter.api.Test;
+import jakarta.persistence.Column;import jakarta.persistence.JoinColumn;import jakarta.persistence.OneToMany;import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-import javax.persistence.Column;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 import java.util.Arrays;
 import java.util.List;
 

@@ -1,9 +1,9 @@
 package cn.beagile.dslquery;
 
-import org.junit.jupiter.api.BeforeEach;
+import jakarta.persistence.Column;import jakarta.persistence.Embeddable;import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

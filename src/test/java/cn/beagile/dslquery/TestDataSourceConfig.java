@@ -13,7 +13,7 @@ public class TestDataSourceConfig {
 
     @Bean
     public DataSource dataSource() {
-        DockerImageName dockerImageName = DockerImageName.parse("mysql:8.0.32");
+        DockerImageName dockerImageName = DockerImageName.parse("mysql:8.0");
         MySQLContainer mySQLContainer = new MySQLContainer(dockerImageName);
         mySQLContainer.withReuse(false).start();
         return DataSourceBuilder.create()

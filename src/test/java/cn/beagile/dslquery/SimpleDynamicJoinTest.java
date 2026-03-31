@@ -2,7 +2,7 @@ package cn.beagile.dslquery;
 
 import org.junit.jupiter.api.Test;
 
-import javax.persistence.Column;
+import jakarta.persistence.Column;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;

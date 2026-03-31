@@ -1,10 +1,10 @@
 package cn.beagile.dslquery;
 
 import com.google.gson.Gson;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinColumns;
 
-import javax.persistence.Embedded;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
@@ -65,7 +65,10 @@ class DefaultResultSetReader<T> implements Function<ResultSet, T> {
 
     private void setJoinedFields(ResultSet resultSet, Class clz, Object result) {
         Stream.of(clz.getDeclaredFields())
-                .filter(field -> field.isAnnotationPresent(JoinColumn.class) || field.isAnnotationPresent(JoinColumns.class))
+                .filter(field -> field.isAnnotationPresent(JoinColumn.class) ||
+                        field.isAnnotationPresent(JoinColumns.class)
+                        || field.isAnnotationPresent(DynamicJoin.class)
+                )
                 .filter(columnFields::hasJoinField)
                 .filter(field -> !columnFields.isIgnored(field))
                 .forEach(field -> setEmbeddedFieldValue(resultSet, result, field));

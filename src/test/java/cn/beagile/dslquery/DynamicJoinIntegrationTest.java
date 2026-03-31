@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import javax.persistence.Column;
+import jakarta.persistence.Column;
 import java.sql.ResultSet;
 import java.util.List;
 import java.util.function.Function;
@@ -204,7 +204,7 @@ public class DynamicJoinIntegrationTest {
         DSLQuery<Person> query = new DSLQuery<>(new SpringQueryExecutor(jdbcTemplate), Person.class);
         List<Person> result = query
                 .dynamicJoin("orgStats", statsBuilder, subQuerySql)
-                .where("(and(name1 contains bob))")
+                .where("(and(name contains bob))")
                 .query();
 
         // 验证结果

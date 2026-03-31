@@ -1,8 +1,7 @@
 package cn.beagile.dslquery;
 
-import org.junit.jupiter.api.Test;
+import jakarta.persistence.Column;import org.junit.jupiter.api.Test;
 
-import javax.persistence.Column;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;

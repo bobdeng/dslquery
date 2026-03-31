@@ -1,8 +1,6 @@
 package cn.beagile.dslquery;
 
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import java.lang.reflect.Field;
+import jakarta.persistence.JoinColumn;import jakarta.persistence.OneToMany;import java.lang.reflect.Field;
 import java.util.Arrays;
 
 import static cn.beagile.dslquery.WhereBuilder.where;
