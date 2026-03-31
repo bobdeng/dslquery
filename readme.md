@@ -750,7 +750,7 @@ try {
 
 ## 技术要求
 
-- Java 8+
+- Java 21+
 - Gson 2.10.1+
 - Jakarta Persistence API 2.2.1+
 
