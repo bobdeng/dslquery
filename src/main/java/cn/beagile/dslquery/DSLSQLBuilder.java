@@ -79,6 +79,9 @@ class DSLSQLBuilder<T> implements SQLBuilder {
     }
 
     static Object castValueByField(String value, Field field, int timezoneOffset) {
+        if (value == null) {
+            return null;
+        }
         if (isInstant(field.getType())) {
             return getInstantValue(value, field, timezoneOffset);
         }
