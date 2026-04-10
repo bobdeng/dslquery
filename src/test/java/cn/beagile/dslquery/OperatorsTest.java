@@ -21,5 +21,9 @@ class OperatorsTest {
         assertEquals(Operator.Contains, Operators.byName("ct"));
         assertEquals(Operator.StartsWith, Operators.byName("sw"));
         assertEquals(Operator.EndsWith, Operators.byName("ew"));
+        assertEquals(Operator.NotStartsWith, Operators.byName("nsw"));
+        assertEquals(Operator.NotEndsWith, Operators.byName("new"));
+        assertEquals(Operator.NotContains, Operators.byName("nct"));
+        assertEquals(Operator.NotBetween, Operators.byName("nbt"));
     }
 }

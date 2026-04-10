@@ -1,6 +1,6 @@
 package cn.beagile.dslquery;
 
-import javax.persistence.Column;import javax.persistence.Embedded;import java.lang.reflect.Field;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,17 +10,15 @@ public class ColumnField {
     private final Field field;
     private final Class rootClass;
     private final List<Field> parents;
-    private final Column column;
+    private final AnnotationReader.ColumnInfo column;
     private final boolean joined;
 
 
     public ColumnField(Field field, Class rootClass) {
-
-        this(field, rootClass, new ArrayList<>(), field.getAnnotation(Column.class), false);
+        this(field, rootClass, new ArrayList<>(), AnnotationReader.getColumn(field), false);
     }
 
-    public ColumnField(Field field, Class rootClass, List<Field> parents, Column column, boolean joined) {
-
+    public ColumnField(Field field, Class rootClass, List<Field> parents, AnnotationReader.ColumnInfo column, boolean joined) {
         this.field = field;
         this.rootClass = rootClass;
         this.parents = parents;
@@ -29,7 +27,7 @@ public class ColumnField {
     }
 
     public String columnName() {
-        return this.column.name();
+        return this.column.name;
     }
 
     public String alias() {
@@ -48,7 +46,7 @@ public class ColumnField {
     private Object getTableName() {
         if (joined) {
             Field lastParentField = parents.get(parents.size() - 1);
-            if (lastParentField.isAnnotationPresent(Embedded.class)) {
+            if (AnnotationReader.hasEmbedded(lastParentField)) {
                 return parents.stream().map(Field::getName).limit(parents.size() - 1).collect(Collectors.joining("_", "", "_"));
             }
             return parents.stream().map(Field::getName).collect(Collectors.joining("_", "", "_"));

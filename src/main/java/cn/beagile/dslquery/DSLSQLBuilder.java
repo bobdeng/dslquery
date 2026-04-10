@@ -1,6 +1,6 @@
 package cn.beagile.dslquery;
 
-import com.google.gson.Gson;import javax.persistence.Column;
+import com.google.gson.Gson;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -191,10 +191,10 @@ class DSLSQLBuilder<T> implements SQLBuilder {
     private String getCountField() {
         String tableName = this.dslQuery.getQueryResultClass().getAnnotation(View.class).value();
         return Arrays.stream(this.dslQuery.getQueryResultClass().getDeclaredFields())
-                .filter(field -> field.isAnnotationPresent(Column.class))
-                .filter(field -> field.getAnnotation(Column.class).unique())
+                .map(AnnotationReader::getColumn)
+                .filter(col -> col != null && col.unique)
                 .findFirst()
-                .map(field -> "distinct " + tableName + "." + field.getAnnotation(Column.class).name())
+                .map(col -> "distinct " + tableName + "." + col.name)
                 .orElse("*");
     }
 

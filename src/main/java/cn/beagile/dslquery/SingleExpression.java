@@ -81,7 +81,7 @@ class SingleExpression implements FilterExpression {
     }
 
     private String toFieldReferenceSQL(SQLBuilder sqlBuilder, Operator operatorEnum) {
-        if (operatorEnum.isArray() || operatorEnum == Operator.Between) {
+        if (operatorEnum.isArray() || operatorEnum == Operator.Between || operatorEnum == Operator.NotBetween) {
             throw new RuntimeException("field reference value not supported for operator:" + operatorEnum.keyword);
         }
         return String.format("(%s %s %s)", sqlBuilder.aliasOf(field), operatorEnum.operator, sqlBuilder.aliasOf(value.substring(1)));
@@ -92,7 +92,7 @@ class SingleExpression implements FilterExpression {
             sqlBuilder.addParamArray(paramNames[0], field, operatorEnum.transferValue(this.value));
             return;
         }
-        if (operatorEnum == Operator.Between) {
+        if (operatorEnum == Operator.Between || operatorEnum == Operator.NotBetween) {
             sqlBuilder.addParam(paramNames[0], field, operatorEnum.transferValue(this.value.split(",")[0]));
             sqlBuilder.addParam(paramNames[1], field, operatorEnum.transferValue(this.value.split(",")[1]));
             return;

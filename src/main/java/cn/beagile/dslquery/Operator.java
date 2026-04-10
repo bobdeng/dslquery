@@ -13,10 +13,14 @@ enum Operator {
     StartsWith("startswith", "like", (value) -> value + "%", "sw"),
     EndsWith("endswith", "like", (value) -> "%" + value, "ew"),
     Contains("contains", "like", (value) -> "%" + value + "%", "ct"),
+    NotStartsWith("notstartswith", "not like", (value) -> value + "%", "nsw"),
+    NotEndsWith("notendswith", "not like", (value) -> "%" + value, "new"),
+    NotContains("notcontains", "not like", (value) -> "%" + value + "%", "nct"),
     IsNull("isnull", "is null", null, "isn", false),
     NotNull("notnull", "is not null", null, "inn", false),
     NotIn("notin", "not in", (value) -> value, "ni", true),
     Between("between", "between", (value) -> value, "bt", true),
+    NotBetween("notbetween", "not between", (value) -> value, "nbt", true),
     In("in", "in", (value) -> value, "in", true);
 
     final String operator;
@@ -52,14 +56,14 @@ enum Operator {
         if (isArray()) {
             return "(%s %s (:%s))";
         }
-        if (this == Between) {
+        if (this == Between || this == NotBetween) {
             return "(%s %s :%s and :%s)";
         }
         return "(%s %s :%s)";
     }
 
     public String[] params(String paramName) {
-        if (this == Between) {
+        if (this == Between || this == NotBetween) {
             return new String[]{paramName + "_0", paramName + "_1"};
         }
         return new String[]{paramName, ""};

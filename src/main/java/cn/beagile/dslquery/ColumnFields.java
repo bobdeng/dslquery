@@ -1,6 +1,5 @@
 package cn.beagile.dslquery;
 
-import javax.persistence.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.*;
@@ -52,7 +51,7 @@ public class ColumnFields {
 
     private void readOneToManyFields(Class clz) {
         Arrays.stream(clz.getDeclaredFields()).filter(
-                field -> field.isAnnotationPresent(OneToMany.class)
+                AnnotationReader::hasOneToMany
         ).forEach(field -> {
             one2ManyFields.add(new One2ManyField(field));
         });
@@ -61,7 +60,7 @@ public class ColumnFields {
 
     private void readPrimitiveFields(Class clz) {
         this.fields = Arrays.stream(clz.getDeclaredFields())
-                .filter(field -> field.isAnnotationPresent(Column.class))
+                .filter(AnnotationReader::hasColumn)
                 .map(field1 -> new ColumnField(field1, clz)).collect(Collectors.toList());
     }
 
@@ -71,19 +70,25 @@ public class ColumnFields {
 
     private void readEmbeddedFields(Class clz, List<Field> parents) {
         Arrays.stream(clz.getDeclaredFields())
-                .filter(field -> field.isAnnotationPresent(Embedded.class))
+                .filter(AnnotationReader::hasEmbedded)
                 .filter(field -> isEmbeddedInclude(parents))
                 .forEach(field -> {
                     List<Field> newParents = new ArrayList<>(parents);
                     newParents.add(field);
-                    AttributeOverrides overrides = field.getAnnotation(AttributeOverrides.class);
-                    readEmbedded(clz, field, newParents, overrides);
+                    // Check if has AttributeOverrides annotation
+                    if (AnnotationReader.hasAttributeOverrides(field)) {
+                        // Has AttributeOverrides, use it (even if empty)
+                        AnnotationReader.AttributeOverrideInfo[] overrides = AnnotationReader.getAttributeOverrides(field);
+                        readEmbedded(clz, field, newParents, overrides);
+                    } else {
+                        // No AttributeOverrides, read all fields
+                        readEmbedded(clz, field, newParents);
+                    }
                 });
     }
 
     private void readJoins(Class clz, List<Field> parents) {
-        readJoinFields(clz, parents, JoinColumn.class);
-        readJoinFields(clz, parents, JoinColumns.class);
+        readJoinFields(clz, parents);
     }
 
     private void readDynamicJoins(Class clz) {
@@ -126,10 +131,10 @@ public class ColumnFields {
         return isContains(fieldName) && !this.selectIgnores.contains(fieldName);
     }
 
-    private void readJoinFields(Class clz, List<Field> parents, Class<? extends Annotation> annotation) {
+    private void readJoinFields(Class clz, List<Field> parents) {
         Arrays.stream(clz.getDeclaredFields())
-                .filter(field -> field.isAnnotationPresent(annotation))
-                .filter(field -> !field.isAnnotationPresent(OneToMany.class))
+                .filter(AnnotationReader::hasJoinColumn)
+                .filter(field -> !AnnotationReader.hasOneToMany(field))
                 .filter(field -> isJoinInclude(field, parents))
                 .forEach(field -> {
                     readJoinFieldsFromField(parents, field);
@@ -163,9 +168,9 @@ public class ColumnFields {
 
     private void readJoinColumnFields(Field field, List<Field> newParents) {
         Arrays.stream(field.getType().getDeclaredFields())
-                .filter(f -> f.isAnnotationPresent(Column.class))
+                .filter(AnnotationReader::hasColumn)
                 .forEach(it -> {
-                    fields.add(new ColumnField(it, field.getType(), newParents, it.getAnnotation(Column.class), true));
+                    fields.add(new ColumnField(it, field.getType(), newParents, AnnotationReader.getColumn(it), true));
                 });
     }
 
@@ -176,14 +181,23 @@ public class ColumnFields {
         return newParents;
     }
 
-    private void readEmbedded(Class clz, Field field, List<Field> parents, AttributeOverrides overrides) {
-        Arrays.stream(overrides.value()).forEach(attributeOverride -> {
+    private void readEmbedded(Class clz, Field field, List<Field> parents) {
+        Arrays.stream(field.getType().getDeclaredFields())
+                .filter(AnnotationReader::hasColumn)
+                .forEach(embeddedField -> {
+                    List<Field> newParents = new ArrayList<>(parents);
+                    AnnotationReader.ColumnInfo columnInfo = AnnotationReader.getColumn(embeddedField);
+                    fields.add(new ColumnField(embeddedField, clz, newParents, columnInfo, !clz.equals(this.clz)));
+                });
+    }
+
+    private void readEmbedded(Class clz, Field field, List<Field> parents, AnnotationReader.AttributeOverrideInfo[] overrides) {
+        Arrays.stream(overrides).forEach(attributeOverride -> {
             try {
-                String[] names = attributeOverride.name().split("\\.");
-                List<Field> newParents = new ArrayList<>();
-                newParents.addAll(parents);
+                String[] names = attributeOverride.name.split("\\.");
+                List<Field> newParents = new ArrayList<>(parents);
                 Field embeddedField = getFieldByName(field, names, newParents);
-                fields.add(new ColumnField(embeddedField, clz, newParents, attributeOverride.column(), !clz.equals(this.clz)));
+                fields.add(new ColumnField(embeddedField, clz, newParents, attributeOverride.column, !clz.equals(this.clz)));
             } catch (NoSuchFieldException e) {
                 throw new RuntimeException(e);
             }

@@ -1,6 +1,6 @@
 package cn.beagile.dslquery;
 
-import com.google.gson.Gson;import javax.persistence.Column;
+import com.google.gson.Gson;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -53,8 +53,8 @@ class JoinOnSQLBuilder implements SQLBuilder {
 
     private List<ColumnField> readColumns(Class<?> ownerClass, Class<?> rootClass, List<Field> parents, boolean joined) {
         return Arrays.stream(ownerClass.getDeclaredFields())
-                .filter(field -> field.isAnnotationPresent(Column.class))
-                .map(field -> new ColumnField(field, rootClass, new ArrayList<>(parents), field.getAnnotation(Column.class), joined))
+                .filter(AnnotationReader::hasColumn)
+                .map(field -> new ColumnField(field, rootClass, new ArrayList<>(parents), AnnotationReader.getColumn(field), joined))
                 .collect(Collectors.toList());
     }
 

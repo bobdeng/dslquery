@@ -127,6 +127,38 @@ public class WhereBuilderTest {
     }
 
     @Test
+    public void build_notstartswith() {
+        String result = new WhereBuilder().and()
+                .notstartswith("name", "bob")
+                .build();
+        assertEquals("(and(name nsw bob))", result);
+    }
+
+    @Test
+    public void build_notendswith() {
+        String result = new WhereBuilder().and()
+                .notendswith("name", "bob")
+                .build();
+        assertEquals("(and(name new bob))", result);
+    }
+
+    @Test
+    public void build_notcontains() {
+        String result = new WhereBuilder().and()
+                .notcontains("name", "bob")
+                .build();
+        assertEquals("(and(name nct bob))", result);
+    }
+
+    @Test
+    public void build_notbetween() {
+        String result = new WhereBuilder().and()
+                .notbetween("age", 1, 32)
+                .build();
+        assertEquals("(and(age nbt 1%2C32))", result);
+    }
+
+    @Test
     public void build_with_multiple() {
         String result = new WhereBuilder().and()
                 .equals("name", "bob")

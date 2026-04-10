@@ -1,7 +1,7 @@
 package cn.beagile.dslquery;
 
 
-import javax.persistence.JoinColumn;import javax.persistence.JoinColumns;import java.lang.reflect.Field;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,30 +26,30 @@ public class JoinField {
     }
 
     public String joinStatement(Map<String, Object> params, int timezoneOffset) {
-        if (field.isAnnotationPresent(JoinColumn.class)) {
-            return singleJoinStatement(params, timezoneOffset);
+        AnnotationReader.JoinColumnInfo[] joinColumns = AnnotationReader.getJoinColumns(field);
+        if (joinColumns.length == 1) {
+            return singleJoinStatement(params, timezoneOffset, joinColumns[0]);
         }
-        return multiJoinStatement(params, timezoneOffset);
+        return multiJoinStatement(params, timezoneOffset, joinColumns);
     }
 
-    private String multiJoinStatement(Map<String, Object> params, int timezoneOffset) {
+    private String multiJoinStatement(Map<String, Object> params, int timezoneOffset, AnnotationReader.JoinColumnInfo[] columns) {
         List<String> result = new ArrayList<>();
-        JoinColumn[] columns = field.getAnnotation(JoinColumns.class).value();
         for (int i = 0; i < columns.length; i++) {
-            JoinColumn preColumn = i == 0 ? null : columns[i - 1];
-            JoinColumn joinColumn = columns[i];
+            AnnotationReader.JoinColumnInfo preColumn = i == 0 ? null : columns[i - 1];
+            AnnotationReader.JoinColumnInfo joinColumn = columns[i];
             if (i == 0) {
-                result.add(JoinBuilder.joinBuilder().joinTable(joinColumn.table())
-                        .joinField(joinColumn.referencedColumnName())
+                result.add(JoinBuilder.joinBuilder().joinTable(getTableFromJoinColumn(joinColumn))
+                        .joinField(joinColumn.referencedColumnName)
                         .onTable(getJoinTable())
-                        .onField(joinColumn.name()).build());
+                        .onField(joinColumn.name).build());
             }
             if (i == columns.length - 1) {
                 result.add(JoinBuilder.joinBuilder().joinTable(field.getType().getAnnotation(View.class).value())
                         .joinTableAlias(getTableAlias())
-                        .joinField(joinColumn.referencedColumnName())
-                        .onTable(preColumn.table())
-                        .onField(joinColumn.name())
+                        .joinField(joinColumn.referencedColumnName)
+                        .onTable(getTableFromJoinColumn(preColumn))
+                        .onField(joinColumn.name)
                         .joinOnClause(joinOnClause(params, timezoneOffset))
                         .build());
             }
@@ -57,18 +57,29 @@ public class JoinField {
         return result.stream().collect(Collectors.joining("\n"));
     }
 
+    private String getTableFromJoinColumn(AnnotationReader.JoinColumnInfo joinColumn) {
+        // Use table attribute if specified
+        if (joinColumn.table != null && !joinColumn.table.isEmpty()) {
+            return joinColumn.table;
+        }
+        // Extract table name from column name if it contains a dot
+        if (joinColumn.name.contains(".")) {
+            return joinColumn.name.substring(0, joinColumn.name.lastIndexOf("."));
+        }
+        return getJoinTable();
+    }
+
     private String getTableAlias() {
         return parents.stream().map(Field::getName).collect(Collectors.joining("_", "", "_"));
     }
 
-    private String singleJoinStatement(Map<String, Object> params, int timezoneOffset) {
-        JoinColumn joinColumn = field.getAnnotation(JoinColumn.class);
+    private String singleJoinStatement(Map<String, Object> params, int timezoneOffset, AnnotationReader.JoinColumnInfo joinColumn) {
         return JoinBuilder.joinBuilder()
                 .joinTable(field.getType().getAnnotation(View.class).value())
                 .joinTableAlias(getTableAlias())
-                .joinField(joinColumn.referencedColumnName())
+                .joinField(joinColumn.referencedColumnName)
                 .onTable(getJoinTable())
-                .onField(joinColumn.name())
+                .onField(joinColumn.name)
                 .joinOnClause(joinOnClause(params, timezoneOffset))
                 .build();
     }

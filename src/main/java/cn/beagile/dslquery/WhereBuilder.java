@@ -83,6 +83,21 @@ public class WhereBuilder {
         return this;
     }
 
+    public WhereBuilder notstartswith(String name, String value) {
+        appendExpression(name, value, Operator.NotStartsWith.abbr);
+        return this;
+    }
+
+    public WhereBuilder notendswith(String name, String value) {
+        appendExpression(name, value, Operator.NotEndsWith.abbr);
+        return this;
+    }
+
+    public WhereBuilder notcontains(String name, String value) {
+        appendExpression(name, value, Operator.NotContains.abbr);
+        return this;
+    }
+
     public WhereBuilder isnull(String name) {
         appendExpression(name, null, Operator.IsNull.abbr);
         return this;
@@ -112,6 +127,11 @@ public class WhereBuilder {
 
     public WhereBuilder between(String name, Object valueStart, Object valueEnd) {
         appendExpression(name, valueStart + "," + valueEnd, Operator.Between.abbr);
+        return this;
+    }
+
+    public WhereBuilder notbetween(String name, Object valueStart, Object valueEnd) {
+        appendExpression(name, valueStart + "," + valueEnd, Operator.NotBetween.abbr);
         return this;
     }
     public static WhereBuilder where(){

@@ -31,7 +31,13 @@ dependencies {
 
     // 生产依赖
     implementation 'com.google.code.gson:gson:2.10.1'
-    implementation 'javax.persistence:javax.persistence-api:2.2'  // 使用 javax.persistence 保持向后兼容
+
+    // JPA 注解支持 - 改为 compileOnly，运行时由用户环境提供
+    // 支持 javax.persistence 和 jakarta.persistence 两种注解
+    compileOnly 'javax.persistence:javax.persistence-api:2.2'
+
+    // 测试时使用 javax.persistence（可根据需要切换到 jakarta）
+    testImplementation 'javax.persistence:javax.persistence-api:2.2'
 }
 
 test {

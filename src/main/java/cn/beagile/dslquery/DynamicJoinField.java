@@ -1,6 +1,6 @@
 package cn.beagile.dslquery;
 
-import javax.persistence.Column;import java.lang.reflect.Field;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -29,8 +29,8 @@ public class DynamicJoinField {
         parents.add(field);
 
         return Arrays.stream(targetClass.getDeclaredFields())
-                .filter(f -> f.isAnnotationPresent(Column.class))
-                .map(f -> new ColumnField(f, targetClass, parents, f.getAnnotation(Column.class), true))
+                .filter(AnnotationReader::hasColumn)
+                .map(f -> new ColumnField(f, targetClass, parents, AnnotationReader.getColumn(f), true))
                 .collect(Collectors.toList());
     }
 
