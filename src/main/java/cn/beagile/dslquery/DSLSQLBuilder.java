@@ -30,6 +30,7 @@ class DSLSQLBuilder<T> implements SQLBuilder {
 
     static {
         FIELD_CAST_MAP.put(Integer.class, Integer::parseInt);
+        FIELD_CAST_MAP.put(Timestamp.class, Integer::parseInt);
         FIELD_CAST_MAP.put(int.class, Integer::parseInt);
         FIELD_CAST_MAP.put(Long.class, Long::parseLong);
         FIELD_CAST_MAP.put(long.class, Long::parseLong);

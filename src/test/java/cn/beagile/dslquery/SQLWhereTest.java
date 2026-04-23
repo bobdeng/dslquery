@@ -2,7 +2,10 @@ package cn.beagile.dslquery;
 
 import org.junit.jupiter.api.Test;
 
+import java.sql.Timestamp;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -64,5 +67,14 @@ class SQLWhereTest {
         RawSQLBuilder sqlWhere = new RawSQLBuilder(fields, null, new String[]{"(and(name in [1,2]))"});
         assertEquals("where ((a.name in (:p0)))", sqlWhere.where());
         assertEquals(sqlWhere.param("p0"), List.of(1, 2));
+    }
+
+    @Test
+    void test_with_converter() {
+        Function<String, Timestamp> converter = s -> Timestamp.valueOf(s + " 00:00:00");
+        List<SQLField> fields = List.of(new SQLField(new SQLField.ViewName("name"), new SQLField.SQLName("a.name"), Timestamp.class,converter));
+        RawSQLBuilder sqlWhere = new RawSQLBuilder(fields, null, new String[]{"(and(name eq 2020-01-01))"});
+        assertEquals("where ((a.name = :p0))", sqlWhere.where());
+        assertEquals(sqlWhere.param("p0"), Timestamp.valueOf("2020-01-01 00:00:00"));
     }
 }

@@ -69,13 +69,16 @@ public class RawSQLBuilder implements SQLBuilder {
     }
 
     private Object castValueByField(String value, SQLField field) {
+        if(field.getParser() != null){
+            return field.getParser().apply(value);
+        }
         return FIELD_CAST_MAP.get(field.getType()).apply(value);
     }
 
     @Override
     public void addParam(String paramName, String fieldName, String value) {
         getSqlField(fieldName).ifPresent(sqlField -> {
-            params.put(paramName, FIELD_CAST_MAP.get(sqlField.getType()).apply(value));
+            params.put(paramName, castValueByField(value,sqlField));
         });
     }
 
