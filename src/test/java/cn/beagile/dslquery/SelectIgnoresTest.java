@@ -22,6 +22,8 @@ public class SelectIgnoresTest {
         private String name;
         @JoinColumn(name = "id", referencedColumnName = "id")
         private IgnoreBeanName ignoreBeanName;
+        @Column(name = "ignoreBeanName_id")
+        private String ignoreBeanName_id;
     }
 
     @View("t_ignore_bean")
@@ -39,7 +41,7 @@ public class SelectIgnoresTest {
     public void should_has_distinct() {
         DSLSQLBuilder<QueryResult> sqlBuilder = new DSLSQLBuilder<>(new DSLQuery<QueryResult>(null, QueryResult.class));
         assertEquals("""
-                select distinct v_query_result.name name_,ignoreBeanName_.id ignoreBeanName_id_ from v_query_result
+                select distinct v_query_result.name name_,v_query_result.ignoreBeanName_id ignoreBeanName_id_,ignoreBeanName_.id ignoreBeanName_id_ from v_query_result
                 left join t_ignore_bean ignoreBean_ on ignoreBean_.parent_id = v_query_result.id
                 left join t_ignore_bean_name ignoreBeanName_ on ignoreBeanName_.id = v_query_result.id
                 """.trim(), sqlBuilder.build("").getSql());
@@ -53,7 +55,7 @@ public class SelectIgnoresTest {
         sqlBuilder.addParam("ignoreBean.id", "ignoreBean.id", "1");
         assertEquals(1L, sqlBuilder.getParams().get("ignoreBean.id"));
         assertEquals("""
-                select distinct v_query_result.name name_,ignoreBeanName_.id ignoreBeanName_id_ from v_query_result
+                select distinct v_query_result.name name_,v_query_result.ignoreBeanName_id ignoreBeanName_id_,ignoreBeanName_.id ignoreBeanName_id_ from v_query_result
                 left join t_ignore_bean ignoreBean_ on ignoreBean_.parent_id = v_query_result.id
                 left join t_ignore_bean_name ignoreBeanName_ on ignoreBeanName_.id = v_query_result.id
                  where ((ignoreBean_.id = :p0))
