@@ -120,7 +120,7 @@ public class ColumnFields {
         if (includes.contains(fieldName)) {
             return true;
         }
-        return includes.stream().anyMatch(includes -> includes.startsWith(fieldName + "."));
+        return includes.stream().anyMatch(includes -> includes.startsWith(fieldName));
     }
 
     private boolean isEmbeddedInclude(List<Field> parents) {
@@ -217,7 +217,7 @@ public class ColumnFields {
 
     public List<ColumnField> selectFields() {
         return fields.stream().filter(field -> {
-            if (this.selectIgnores.stream().anyMatch(ignore -> field.parentNames().startsWith(ignore))) {
+            if (this.selectIgnores.stream().anyMatch(ignore -> (field.parentNames() + ".").startsWith(ignore + "."))) {
                 return false;
             }
             return true;
