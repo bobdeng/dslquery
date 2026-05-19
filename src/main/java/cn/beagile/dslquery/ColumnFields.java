@@ -120,7 +120,7 @@ public class ColumnFields {
         if (includes.contains(fieldName)) {
             return true;
         }
-        return includes.stream().anyMatch(includes -> includes.startsWith(fieldName));
+        return includes.stream().anyMatch(includes -> includes.startsWith(fieldName + "."));
     }
 
     private boolean isEmbeddedInclude(List<Field> parents) {
