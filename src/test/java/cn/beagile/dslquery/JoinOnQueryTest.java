@@ -113,4 +113,47 @@ class JoinOnQueryTest {
         RuntimeException exception = assertThrows(RuntimeException.class, () -> sqlBuilder.build(nullsOrder));
         assertEquals("field not found: missing", exception.getMessage());
     }
+
+    @Test
+    void should_reject_invalid_runtime_join_on_path() {
+        DSLQuery<User> dslQuery = new DSLQuery<>(null, User.class);
+
+        RuntimeException exception = assertThrows(RuntimeException.class,
+                () -> dslQuery.joinOn("org;drop", "(and(type eq SALES))"));
+
+        assertEquals("invalid join path:org;drop", exception.getMessage());
+    }
+
+    @Test
+    void should_fail_when_runtime_join_on_path_is_not_joined() {
+        DSLQuery<User> dslQuery = new DSLQuery<>(null, User.class)
+                .joinOn("org.area", "(and(active eq true))");
+
+        RuntimeException exception = assertThrows(RuntimeException.class,
+                () -> new DSLSQLBuilder<>(dslQuery).build(nullsOrder));
+        assertEquals("join path not found: org.area", exception.getMessage());
+    }
+
+    @Test
+    void should_fail_when_join_on_expression_is_too_deep() {
+        DSLQuery<User> dslQuery = new DSLQuery<>(null, User.class)
+                .joinOn("org", "(and(or(and(or(and(or(and(or(and(or(and(type eq SALES))))))))))))");
+
+        DSLSQLBuilder<User> sqlBuilder = new DSLSQLBuilder<>(dslQuery);
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> sqlBuilder.build(nullsOrder));
+        assertEquals("join on nesting too deep", exception.getMessage());
+    }
+
+    @Test
+    void should_fail_when_join_on_expression_is_too_long() {
+        String longValue = "a".repeat(2050);
+        DSLQuery<User> dslQuery = new DSLQuery<>(null, User.class)
+                .joinOn("org", "(and(type eq " + longValue + "))");
+
+        DSLSQLBuilder<User> sqlBuilder = new DSLSQLBuilder<>(dslQuery);
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> sqlBuilder.build(nullsOrder));
+        assertEquals("join on expression too long", exception.getMessage());
+    }
 }
