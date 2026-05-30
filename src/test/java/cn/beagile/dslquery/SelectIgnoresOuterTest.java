@@ -103,4 +103,26 @@ public class SelectIgnoresOuterTest {
         verify(resultSet, times(0)).getLong("ignoreBean_id_");
         assertNull(result.ignoreBean);
     }
+
+    @Test
+    public void should_ignore_root_column_in_select() {
+        DSLQuery<QueryResult> dslQuery = new DSLQuery<>(null, QueryResult.class)
+                .selectIgnores("name");
+        DSLSQLBuilder<QueryResult> sqlBuilder = new DSLSQLBuilder<>(dslQuery);
+        String sql = sqlBuilder.build(nullsOrder).getSql();
+        // "name" root column excluded, but "id" root column and join column "ignoreBean_.id" remain
+        assertEquals("select distinct v_query_result.id id_,ignoreBean_.id ignoreBean_id_ from v_query_result\n" +
+                "left join t_ignore_bean ignoreBean_ on ignoreBean_.parent_id = v_query_result.id", sql);
+    }
+
+    @Test
+    public void should_ignore_all_root_columns_in_select() {
+        DSLQuery<QueryResult> dslQuery = new DSLQuery<>(null, QueryResult.class)
+                .selectIgnores("name", "id");
+        DSLSQLBuilder<QueryResult> sqlBuilder = new DSLSQLBuilder<>(dslQuery);
+        String sql = sqlBuilder.build(nullsOrder).getSql();
+        // Both root columns ("id", "name") excluded, but join column "ignoreBean_.id" remains
+        assertEquals("select distinct ignoreBean_.id ignoreBean_id_ from v_query_result\n" +
+                "left join t_ignore_bean ignoreBean_ on ignoreBean_.parent_id = v_query_result.id", sql);
+    }
 }

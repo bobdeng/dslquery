@@ -217,7 +217,8 @@ public class ColumnFields {
 
     public List<ColumnField> selectFields() {
         return fields.stream().filter(field -> {
-            if (this.selectIgnores.stream().anyMatch(ignore -> (field.parentNames() + ".").startsWith(ignore + "."))) {
+            String fieldPath = field.parentNames().isEmpty() ? field.fieldName() : field.parentNames();
+            if (this.selectIgnores.stream().anyMatch(ignore -> (fieldPath + ".").startsWith(ignore + "."))) {
                 return false;
             }
             return true;
