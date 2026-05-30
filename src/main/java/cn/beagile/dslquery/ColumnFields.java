@@ -284,6 +284,15 @@ public class ColumnFields {
 
     }
 
+    public boolean isIgnored(Field field, List<Field> parents) {
+        String parentPath = parents.stream()
+                .map(Field::getName)
+                .collect(Collectors.joining("."));
+        String fieldPath = parentPath.isEmpty() ? field.getName() : parentPath + "." + field.getName();
+        return this.selectIgnores.stream()
+                .anyMatch(ignore -> (fieldPath + ".").startsWith(ignore + "."));
+    }
+
     public List<One2ManyField> oneToManyFields() {
         return one2ManyFields;
     }

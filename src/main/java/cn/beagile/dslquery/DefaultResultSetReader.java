@@ -71,6 +71,7 @@ class DefaultResultSetReader<T> implements Function<ResultSet, T> {
     private void setPrimitiveFields(ResultSet resultSet, Class clz, Object result) {
         Stream.of(clz.getDeclaredFields())
                 .filter(field1 -> columnFields.hasField(field1, new ArrayList<>(parents)))
+                .filter(field -> !columnFields.isIgnored(field, new ArrayList<>(parents)))
                 .forEach(field -> setFieldValue(resultSet, result, field));
     }
 

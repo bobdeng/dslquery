@@ -125,4 +125,18 @@ public class SelectIgnoresOuterTest {
         assertEquals("select distinct ignoreBean_.id ignoreBean_id_ from v_query_result\n" +
                 "left join t_ignore_bean ignoreBean_ on ignoreBean_.parent_id = v_query_result.id", sql);
     }
+
+    @Test
+    public void should_not_read_ignored_root_column() throws SQLException {
+        DSLQuery<QueryResult> dslQuery = new DSLQuery<>(null, QueryResult.class)
+                .selectIgnores("name");
+        DefaultResultSetReader<QueryResult> reader = new DefaultResultSetReader<>(dslQuery);
+        ResultSet resultSet = mock(ResultSet.class);
+        // if reader tries to read name_ column, mock throws — simulating it's excluded from SQL
+        when(resultSet.getString("name_")).thenThrow(new SQLException("column not found"));
+
+        // Should not throw because "name" is ignored and should not be read
+        reader.apply(resultSet);
+        verify(resultSet, times(0)).getString("name_");
+    }
 }
