@@ -250,6 +250,7 @@ class AnnotationReader {
         final String name;
         final String referencedColumnName;
         final String table;
+        final String alias;
 
         JoinColumnInfo(String name, String referencedColumnName) {
             this(name, referencedColumnName, "");
@@ -258,7 +259,21 @@ class AnnotationReader {
         JoinColumnInfo(String name, String referencedColumnName, String table) {
             this.name = name;
             this.referencedColumnName = referencedColumnName;
-            this.table = table;
+            // Parse "table alias" format
+            if (table != null) {
+                String trimmed = table.trim();
+                int spaceIdx = trimmed.indexOf(' ');
+                if (spaceIdx > 0) {
+                    this.table = trimmed.substring(0, spaceIdx);
+                    this.alias = trimmed.substring(spaceIdx + 1).trim();
+                } else {
+                    this.table = trimmed;
+                    this.alias = "";
+                }
+            } else {
+                this.table = "";
+                this.alias = "";
+            }
         }
     }
 

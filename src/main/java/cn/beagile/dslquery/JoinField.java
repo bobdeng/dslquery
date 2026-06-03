@@ -39,20 +39,30 @@ public class JoinField {
             AnnotationReader.JoinColumnInfo preColumn = i == 0 ? null : columns[i - 1];
             AnnotationReader.JoinColumnInfo joinColumn = columns[i];
             if (i == 0) {
-                result.add(JoinBuilder.joinBuilder().joinTable(getTableFromJoinColumn(joinColumn))
+                JoinBuilder builder = JoinBuilder.joinBuilder()
+                        .joinTable(getTableFromJoinColumn(joinColumn))
                         .joinField(joinColumn.referencedColumnName)
                         .onTable(getJoinTable())
-                        .onField(joinColumn.name).build());
+                        .onField(joinColumn.name);
+                if (!joinColumn.alias.isEmpty()) {
+                    builder.joinTableAlias(joinColumn.alias);
+                }
+                result.add(builder.build());
             } else if (i < columns.length - 1) {
-                result.add(JoinBuilder.joinBuilder().joinTable(getTableFromJoinColumn(joinColumn))
+                JoinBuilder builder = JoinBuilder.joinBuilder()
+                        .joinTable(getTableFromJoinColumn(joinColumn))
                         .joinField(joinColumn.referencedColumnName)
-                        .onTable(getTableFromJoinColumn(preColumn))
-                        .onField(joinColumn.name).build());
+                        .onTable(getTableRef(preColumn))
+                        .onField(joinColumn.name);
+                if (!joinColumn.alias.isEmpty()) {
+                    builder.joinTableAlias(joinColumn.alias);
+                }
+                result.add(builder.build());
             } else {
                 result.add(JoinBuilder.joinBuilder().joinTable(field.getType().getAnnotation(View.class).value())
                         .joinTableAlias(getTableAlias())
                         .joinField(joinColumn.referencedColumnName)
-                        .onTable(getTableFromJoinColumn(preColumn))
+                        .onTable(getTableRef(preColumn))
                         .onField(joinColumn.name)
                         .joinOnClause(joinOnClause(params, timezoneOffset))
                         .build());
@@ -71,6 +81,13 @@ public class JoinField {
             return joinColumn.name.substring(0, joinColumn.name.lastIndexOf("."));
         }
         return getJoinTable();
+    }
+
+    private String getTableRef(AnnotationReader.JoinColumnInfo joinColumn) {
+        if (!joinColumn.alias.isEmpty()) {
+            return joinColumn.alias;
+        }
+        return getTableFromJoinColumn(joinColumn);
     }
 
     private String getTableAlias() {

@@ -68,6 +68,19 @@ public class DoubleJoinTest {
         private String name;
     }
 
+    @View("t_user")
+    @DeepJoinIncludes({"third"})
+    public static class UserWithAliasedJoinColumns {
+        @Column(name = "name")
+        private String name;
+        @JoinColumns({
+                @JoinColumn(name = "first_id", referencedColumnName = "id", table = "t_first_second a"),
+                @JoinColumn(name = "second_id", referencedColumnName = "id", table = "t_second_third b"),
+                @JoinColumn(name = "third_id", referencedColumnName = "id")
+        })
+        private Third third;
+    }
+
     @BeforeEach
     public void setup() {
         dslQuery = new DSLQuery<>(null, User.class);
@@ -116,6 +129,30 @@ public class DoubleJoinTest {
         when(resultSet.getString("name_")).thenReturn("user");
         when(resultSet.getString("third_name_")).thenReturn("third");
         UserWithThreeJoinColumns user = reader.apply(resultSet);
+        assertEquals("user", user.name);
+        assertNotNull(user.third);
+        assertEquals("third", user.third.name);
+    }
+
+    @Test
+    public void should_select_join_with_aliased_intermediate_tables() {
+        DSLQuery<UserWithAliasedJoinColumns> dslQuery = new DSLQuery<>(null, UserWithAliasedJoinColumns.class);
+        DSLSQLBuilder<UserWithAliasedJoinColumns> sqlBuilder = new DSLSQLBuilder<>(dslQuery);
+        assertEquals("select t_user.name name_,third_.name third_name_ from t_user\n" +
+                "left join t_first_second a on a.id = t_user.first_id\n" +
+                "left join t_second_third b on b.id = a.second_id\n" +
+                "left join t_third third_ on third_.id = b.third_id", sqlBuilder.sql(nullsOrder)
+        );
+    }
+
+    @Test
+    public void params_with_aliased_intermediate_tables() throws SQLException {
+        DefaultResultSetReader<UserWithAliasedJoinColumns> reader = new DefaultResultSetReader<>(
+                new DSLQuery<>(null, UserWithAliasedJoinColumns.class));
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.getString("name_")).thenReturn("user");
+        when(resultSet.getString("third_name_")).thenReturn("third");
+        UserWithAliasedJoinColumns user = reader.apply(resultSet);
         assertEquals("user", user.name);
         assertNotNull(user.third);
         assertEquals("third", user.third.name);
