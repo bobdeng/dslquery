@@ -49,6 +49,25 @@ public class DoubleJoinTest {
         private String name;
     }
 
+    @View("t_user")
+    @DeepJoinIncludes({"third"})
+    public static class UserWithThreeJoinColumns {
+        @Column(name = "name")
+        private String name;
+        @JoinColumns({
+                @JoinColumn(name = "first_id", referencedColumnName = "id", table = "t_first_second"),
+                @JoinColumn(name = "second_id", referencedColumnName = "id", table = "t_second_third"),
+                @JoinColumn(name = "third_id", referencedColumnName = "id")
+        })
+        private Third third;
+    }
+
+    @View("t_third")
+    public static class Third {
+        @Column(name = "name")
+        private String name;
+    }
+
     @BeforeEach
     public void setup() {
         dslQuery = new DSLQuery<>(null, User.class);
@@ -76,6 +95,30 @@ public class DoubleJoinTest {
                 "left join t_org_area on t_org_area.org_id = org_.id\n" +
                 "left join t_area org_area_ on org_area_.id = t_org_area.area_id", sqlBuilder.sql(nullsOrder)
         );
+    }
+
+    @Test
+    public void should_select_join_with_three_join_columns() {
+        DSLQuery<UserWithThreeJoinColumns> dslQuery = new DSLQuery<>(null, UserWithThreeJoinColumns.class);
+        DSLSQLBuilder<UserWithThreeJoinColumns> sqlBuilder = new DSLSQLBuilder<>(dslQuery);
+        assertEquals("select t_user.name name_,third_.name third_name_ from t_user\n" +
+                "left join t_first_second on t_first_second.id = t_user.first_id\n" +
+                "left join t_second_third on t_second_third.id = t_first_second.second_id\n" +
+                "left join t_third third_ on third_.id = t_second_third.third_id", sqlBuilder.sql(nullsOrder)
+        );
+    }
+
+    @Test
+    public void params_with_three_join_columns() throws SQLException {
+        DefaultResultSetReader<UserWithThreeJoinColumns> reader = new DefaultResultSetReader<>(
+                new DSLQuery<>(null, UserWithThreeJoinColumns.class));
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.getString("name_")).thenReturn("user");
+        when(resultSet.getString("third_name_")).thenReturn("third");
+        UserWithThreeJoinColumns user = reader.apply(resultSet);
+        assertEquals("user", user.name);
+        assertNotNull(user.third);
+        assertEquals("third", user.third.name);
     }
 
     @Test

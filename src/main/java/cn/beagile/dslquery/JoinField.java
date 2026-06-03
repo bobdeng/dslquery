@@ -43,8 +43,12 @@ public class JoinField {
                         .joinField(joinColumn.referencedColumnName)
                         .onTable(getJoinTable())
                         .onField(joinColumn.name).build());
-            }
-            if (i == columns.length - 1) {
+            } else if (i < columns.length - 1) {
+                result.add(JoinBuilder.joinBuilder().joinTable(getTableFromJoinColumn(joinColumn))
+                        .joinField(joinColumn.referencedColumnName)
+                        .onTable(getTableFromJoinColumn(preColumn))
+                        .onField(joinColumn.name).build());
+            } else {
                 result.add(JoinBuilder.joinBuilder().joinTable(field.getType().getAnnotation(View.class).value())
                         .joinTableAlias(getTableAlias())
                         .joinField(joinColumn.referencedColumnName)
