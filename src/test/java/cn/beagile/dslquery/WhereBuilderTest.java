@@ -101,6 +101,22 @@ public class WhereBuilderTest {
         assertEquals("(and(name inn))", result);
     }
 
+    @Test
+    public void build_empty_operator() {
+        String result = where().and()
+                .empty("name")
+                .build();
+        assertEquals("(and(name emp))", result);
+    }
+
+    @Test
+    public void build_notempty() {
+        String result = where().and()
+                .notempty("name")
+                .build();
+        assertEquals("(and(name nem))", result);
+    }
+
 
     @Test
     public void build_with_in() {

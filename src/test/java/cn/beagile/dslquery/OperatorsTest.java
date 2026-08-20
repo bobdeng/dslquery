@@ -16,6 +16,10 @@ class OperatorsTest {
         assertEquals(Operator.NotEquals, Operators.byName("ne"));
         assertEquals(Operator.NotNull, Operators.byName("inn"));
         assertEquals(Operator.IsNull, Operators.byName("isn"));
+        assertEquals(Operator.Empty, Operators.byName("emp"));
+        assertEquals(Operator.Empty, Operators.byName("empty"));
+        assertEquals(Operator.NotEmpty, Operators.byName("nem"));
+        assertEquals(Operator.NotEmpty, Operators.byName("notempty"));
         assertEquals(Operator.In, Operators.byName("in"));
         assertEquals(Operator.NotIn, Operators.byName("ni"));
         assertEquals(Operator.Contains, Operators.byName("ct"));

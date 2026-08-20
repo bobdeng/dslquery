@@ -89,6 +89,26 @@ public class DSLQueryTest {
     }
 
     @Test
+    public void should_execute_query_with_where_empty() {
+        DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultBean.class);
+        dslQuery.where("(and(name emp))").query();
+        verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
+        SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
+        expectSqlWithoudEnter("select " + fields + " from view_query where ((view_query.name = ''))", sqlQuery.getSql());
+        assertEquals(0, sqlQuery.getParams().size());
+    }
+
+    @Test
+    public void should_execute_query_with_where_notempty() {
+        DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultBean.class);
+        dslQuery.where("(and(name nem))").query();
+        verify(queryExecutor).list(any(), sqlQueryArgumentCaptor.capture());
+        SQLQuery sqlQuery = sqlQueryArgumentCaptor.getValue();
+        expectSqlWithoudEnter("select " + fields + " from view_query where ((view_query.name != ''))", sqlQuery.getSql());
+        assertEquals(0, sqlQuery.getParams().size());
+    }
+
+    @Test
     public void should_execute_query_with_where_notnull() {
         DSLQuery dslQuery = new DSLQuery(queryExecutor, QueryResultBean.class,NullsOrder.NULL_FIRST);
         dslQuery.where("(and(name notnull))").sort("name desc").query();

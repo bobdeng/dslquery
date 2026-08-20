@@ -108,6 +108,16 @@ public class WhereBuilder {
         return this;
     }
 
+    public WhereBuilder empty(String name) {
+        appendExpression(name, null, Operator.Empty.abbr);
+        return this;
+    }
+
+    public WhereBuilder notempty(String name) {
+        appendExpression(name, null, Operator.NotEmpty.abbr);
+        return this;
+    }
+
 
     public WhereBuilder prev() {
         expressionStack.pop();

@@ -18,6 +18,8 @@ enum Operator {
     NotContains("notcontains", "not like", (value) -> "%" + value + "%", "nct"),
     IsNull("isnull", "is null", null, "isn", false),
     NotNull("notnull", "is not null", null, "inn", false),
+    Empty("empty", "= ''", null, "emp", false),
+    NotEmpty("notempty", "!= ''", null, "nem", false),
     NotIn("notin", "not in", (value) -> value, "ni", true),
     Between("between", "between", (value) -> value, "bt", true),
     NotBetween("notbetween", "not between", (value) -> value, "nbt", true),

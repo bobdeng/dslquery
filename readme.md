@@ -153,6 +153,8 @@ List<Person> data = paged.getResult();
 | contains | ct | like '%value%' | 包含 | `(name ct John)` |
 | isnull | isn | is null | 为空 | `(name isn)` |
 | notnull | inn | is not null | 不为空 | `(name inn)` |
+| empty | emp | = '' | 等于空字符串 | `(name emp)` |
+| notempty | nem | != '' | 不等于空字符串 | `(name nem)` |
 | in | in | in (...) | 在集合中 | `(age in [18,20,22])` |
 | notin | ni | not in (...) | 不在集合中 | `(status ni [1,2])` |
 | between | bt | between ... and ... | 在范围内 | `(age bt 18,60)` |
@@ -508,6 +510,16 @@ List<Person> result = new DSLQuery<>(executor, Person.class)
 // NOT NULL操作符
 List<Person> result = new DSLQuery<>(executor, Person.class)
     .where("(and(email inn))")
+    .query();
+
+// EMPTY操作符（等于空字符串）
+List<Person> result = new DSLQuery<>(executor, Person.class)
+    .where("(and(name emp))")
+    .query();
+
+// NOT EMPTY操作符（不等于空字符串）
+List<Person> result = new DSLQuery<>(executor, Person.class)
+    .where("(and(name nem))")
     .query();
 
 // 字符串模糊匹配

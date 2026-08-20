@@ -45,6 +45,20 @@ class SQLWhereTest {
     }
 
     @Test
+    void test_empty() {
+        List<SQLField> fields = List.of(new SQLField(new SQLField.ViewName("name"), new SQLField.SQLName("a.name"), String.class));
+        RawSQLBuilder sqlWhere = new RawSQLBuilder(fields, null, new String[]{"(and(name emp))"});
+        assertEquals("where ((a.name = ''))", sqlWhere.where());
+    }
+
+    @Test
+    void test_notempty() {
+        List<SQLField> fields = List.of(new SQLField(new SQLField.ViewName("name"), new SQLField.SQLName("a.name"), String.class));
+        RawSQLBuilder sqlWhere = new RawSQLBuilder(fields, null, new String[]{"(and(name nem))"});
+        assertEquals("where ((a.name != ''))", sqlWhere.where());
+    }
+
+    @Test
     void test_array() {
         List<SQLField> fields = List.of(new SQLField(new SQLField.ViewName("name"), new SQLField.SQLName("a.name"), String.class));
         RawSQLBuilder sqlWhere = new RawSQLBuilder(fields, null, new String[]{"(and(name bt 1,2))"});

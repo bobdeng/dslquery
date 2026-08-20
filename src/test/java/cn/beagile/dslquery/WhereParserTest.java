@@ -51,6 +51,28 @@ public class WhereParserTest {
 
 
     @Test
+    public void should_parse_empty() {
+        WhereParser whereParser = new WhereParser();
+        ComplexExpression where = whereParser.parse("(or(name emp))");
+        assertNotNull(where);
+        assertEquals(where.getCondition(), "or");
+        assertEquals(1, where.getExpressions().size());
+        assertEquals(new SingleExpression("name", "emp", "","p0"), where.getExpressions().get(0));
+    }
+
+
+    @Test
+    public void should_parse_notempty() {
+        WhereParser whereParser = new WhereParser();
+        ComplexExpression where = whereParser.parse("(or(name nem))");
+        assertNotNull(where);
+        assertEquals(where.getCondition(), "or");
+        assertEquals(1, where.getExpressions().size());
+        assertEquals(new SingleExpression("name", "nem", "","p0"), where.getExpressions().get(0));
+    }
+
+
+    @Test
     public void should_parse_where_with_multiple_predicate() {
         WhereParser whereParser = new WhereParser();
         ComplexExpression where = whereParser.parse("(and(name equals bob)(age notequals 18)(name notnull)(name isnull))");
