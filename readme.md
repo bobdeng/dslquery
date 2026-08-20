@@ -306,7 +306,109 @@ List<Person> result = new DSLQuery<>(executor, Person.class)
     .query();
 ```
 
-### 编程式构建条件
+### 功能式构建条件（推荐）
+
+使用 `Conditions` 的静态工厂组合查询条件，无栈、无 `prev()`，嵌套优先级一目了然，与 SQL 一一对应：
+
+```java
+import static cn.beagile.dslquery.Conditions.*;
+
+String where = where(
+    and(
+        eq("name", "bob"),
+        gt("age", 18),
+        or(startsWith("email", "test"), contains("phone", "123"))
+    )
+);
+
+// 结果: (and(name eq bob)(age gt 18)(or(email sw test)(phone ct 123)))
+
+List<Person> result = new DSLQuery<>(executor, Person.class)
+    .where(where)
+    .query();
+```
+
+组合规则：
+- `and(expr...)` / `or(expr...)`：按 AND/OR 组合所有条件，产物即完整子句，可直接传给 `where`
+- `where(expr...)`：入口。多个条件隐式 AND；单个已包装条件原样透传
+- 叶子条件：`eq` `ne` `gt` `ge` `lt` `le` `startsWith` `endsWith` `contains` `notStartsWith` `notEndsWith` `notContains` `isNull` `notNull` `isEmpty` `isNotEmpty` `in` `notIn` `between` `notBetween`
+
+全 AND 简写（最常见场景连 `and(...)` 都省了）：
+
+```java
+String where = where(eq("name", "bob"), gt("age", 18));
+// 结果: (and(name eq bob)(age gt 18))
+```
+
+`(A AND B) OR (C AND D)` 这类嵌套也能直白表达：
+
+```java
+String where = where(or(
+    and(eq("a", "1"), eq("b", "2")),
+    and(eq("c", "3"), eq("d", "4"))
+));
+// 结果: (or(and(a eq 1)(b eq 2))(and(c eq 3)(d eq 4)))
+```
+
+条件需要**分步、按需追加**（例如按请求参数是否有值决定加不加条件）时，用累加器：
+
+```java
+import cn.beagile.dslquery.Conditions;
+
+Conditions conditions = Conditions.accumulator();   // 默认 AND；需要 OR 用 Conditions.orAccumulator()
+if (name != null)      conditions.add(eq("name", name));
+if (age != null)       conditions.add(gt("age", age));
+if (activeOnly)        conditions.add(or(eq("status", "active"), eq("status", "trial")));
+
+if (!conditions.isEmpty()) {
+    String where = conditions.build();   // (and(name eq bob)(age gt 18)(or(status eq active)(status eq trial)))
+    List<Person> result = new DSLQuery<>(executor, Person.class)
+        .where(where)
+        .query();
+}
+```
+
+- `add(...)` 追加条件片段（叶子条件或 `and(...)`/`or(...)` 组合出的分组），忽略 `null`，可直接写 `条件为真 ? eq(...) : null`
+- `build()` 收尾生成完整子句；未加任何条件时返回空字符串（`DSLQuery.where("")` 无过滤）
+- `isEmpty()` / `size()` 供判断
+
+### 规则驱动构建（buildFilter）
+
+条件常常来自查询参数——"表单里哪些字段有值"决定了加哪些条件。用 `FilterRules` 声明字段规则，传入表单自动构建（参考 JS 版 `buildFilter(rules, form, ...)`）：
+
+```java
+import cn.beagile.dslquery.FilterRules;
+import java.util.Collection;
+import static cn.beagile.dslquery.Conditions.*;
+
+// 规则只定义一次，可复用
+FilterRules rules = FilterRules.create()
+    .on("name",   value -> eq("name", value))
+    .on("minAge", value -> ge("age", value))
+    .on("status", value -> in("status", (Collection<?>) value))
+    .withDefault(form -> form.get("tenantId") != null ? eq("tenantId", form.get("tenantId")) : null);
+
+// 每次请求传入表单（如查询参数）
+Map<String, Object> params = new LinkedHashMap<>();
+params.put("name", "张三");
+params.put("minAge", 18);
+
+String where = rules.buildFilter(params, contains("phone", "123"));
+// 结果: (and(name eq 张三)(age ge 18)(phone ct 123))  —— 空值字段自动跳过
+
+List<Person> result = new DSLQuery<>(executor, Person.class)
+    .where(where)
+    .query();
+```
+
+规则要点：
+- `on(field, rule)`：字段 → 规则函数（入参是表单值，返回条件片段或 `null` 跳过）
+- `withDefault(rule)`：默认规则（入参是整个表单），追加在所有字段条件之后
+- `buildFilter(form, extra...)`：空值跳过、只对定义了规则的字段生成条件、按 `and` 组合；无条件时返回 `""`
+- 空值语义：`null` / 空字符串 / 空集合 / 空数组视为无值跳过；`false` 与数字 `0` 算有值
+- 输出顺序跟随表单 Map 的迭代顺序（需要确定性输出请用 `LinkedHashMap`）
+
+### 编程式构建条件（旧 API，向后兼容）
 
 使用WhereBuilder可以通过编程方式构建查询条件：
 
