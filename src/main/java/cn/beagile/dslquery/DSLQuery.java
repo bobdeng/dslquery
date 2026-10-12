@@ -132,6 +132,7 @@ public class DSLQuery<T> {
         if (path == null || path.isEmpty() || dsl == null || dsl.isEmpty()) {
             return this;
         }
+        Validators.validateJoinPath(path);
         joinOns.computeIfAbsent(path, key -> new ArrayList<>()).add(dsl);
         return this;
     }

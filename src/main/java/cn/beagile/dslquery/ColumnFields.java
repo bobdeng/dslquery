@@ -22,6 +22,7 @@ public class ColumnFields {
         initSelectIgnores(this.clz);
         initDeepJoins(this.clz);
         readFields(this.clz);
+        validateRuntimeJoinOnPaths();
     }
 
     private <T> void readFields(Class<T> clz) {
@@ -105,6 +106,20 @@ public class ColumnFields {
                     DynamicJoinField dynamicJoinField = new DynamicJoinField(field, config);
                     dynamicJoinFields.add(dynamicJoinField);
                     fields.addAll(dynamicJoinField.getSubFields());
+                });
+    }
+
+    private void validateRuntimeJoinOnPaths() {
+        Set<String> runtimeJoinOnPaths = Optional.ofNullable(dslQuery)
+                .map(DSLQuery::getJoinOns)
+                .map(Map::keySet)
+                .orElse(Collections.emptySet());
+        Set<String> joinedPaths = joinFields.stream().map(JoinField::parentNames).collect(Collectors.toSet());
+        runtimeJoinOnPaths.stream()
+                .filter(path -> !joinedPaths.contains(path))
+                .findFirst()
+                .ifPresent(path -> {
+                    throw new RuntimeException("join path not found: " + path);
                 });
     }
 
